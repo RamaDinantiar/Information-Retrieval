@@ -14,7 +14,7 @@ import {
     Users,
     Wrench,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import ProgramController from '@/actions/App/Http/Controllers/Asisten/ProgramController';
 import { EmptyState } from '@/components/empty-state';
 import { ProgramFormDialog } from '@/components/programs/program-form-dialog';
@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { PROGRAM_STATUS } from '@/types';
 import type { ProgramCard, ProgramOptions, ProgramTypeInfo } from '@/types';
 import { useClipboard } from '@/hooks/use-clipboard';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Props = {
     type: ProgramTypeInfo;
@@ -340,6 +341,9 @@ export default function ProgramsIndex({
     stats,
     options,
 }: Props) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const semester = usePage().props.activeSemester;
     const [tab, setTab] = useState<'all' | 'open' | 'closed'>('all');
     const shown = useMemo(
@@ -359,7 +363,10 @@ export default function ProgramsIndex({
     return (
         <>
             <Head title={`${type.label} Management`} />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <h1 className="text-h1 font-bold text-primary-900">
                         {maintenance

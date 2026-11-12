@@ -17,7 +17,7 @@ import {
     Users,
     X,
 } from 'lucide-react';
-import { Fragment, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import ProgramController from '@/actions/App/Http/Controllers/Asisten/ProgramController';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
@@ -49,6 +49,7 @@ import type {
     RegistrationStatus,
 } from '@/types';
 import { DateField } from '@/components/pickers/date-field';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Registration = {
     id: number;
@@ -1003,6 +1004,9 @@ function Timeline({
 
 /** Asisten › Program › kelola (FR-APR-02/03). */
 export default function ProgramShow(props: Props) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const {
         program,
         stages,
@@ -1039,10 +1043,13 @@ export default function ProgramShow(props: Props) {
     return (
         <>
             <Head title={program.title} />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <Link
                     href={ProgramController.index.url(program.typeSlug)}
-                    className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary-700 hover:underline"
+                    className="inline-flex min-h-6 w-fit items-center gap-1.5 text-sm font-medium text-primary-700 hover:underline"
                 >
                     <ArrowLeft className="size-4" aria-hidden /> {type.label}
                 </Link>

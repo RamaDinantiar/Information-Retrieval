@@ -1,7 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import { ChevronDown, ScrollText, Search } from 'lucide-react';
 import type { FormEvent } from 'react';
-import { Fragment, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import AuditLogController from '@/actions/App/Http/Controllers/Admin/AuditLogController';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import type { Paginated } from '@/types';
 import { DateField } from '@/components/pickers/date-field';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Log = {
     id: number;
@@ -125,6 +126,9 @@ export default function AuditLogs({
     modules: string[];
     actors: { id: number; name: string }[];
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const [open, setOpen] = useState<number | null>(null);
     const [q, setQ] = useState(filters.q);
     const go = (next: Partial<Filters>) =>
@@ -137,10 +141,13 @@ export default function AuditLogs({
     return (
         <>
             <Head title="Audit Log" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Audit Log"
-                    description="Jejak aksi sensitif (nilai, kontrak kursi, peran, semester, persetujuan, laporan, honor). Catatan tidak dapat diubah atau dihapus."
+                    description="Jejak aksi sensitif (nilai, kontrak kursi, peran, semester, persetujuan, laporan). Catatan tidak dapat diubah atau dihapus."
                 />
 
                 <div className="flex flex-wrap items-end gap-3 border bg-card p-4">

@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\AuditLog;
-use App\Models\HonorRate;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -50,14 +49,5 @@ class SystemTest extends TestCase
         $this->assertSame(15 * 1024, config('lab.files.limits.pdf'));
 
         $this->put(route('admin.system-settings.update'), [...$payload, 'idle_minutes' => 1])->assertSessionHasErrors('idle_minutes');
-    }
-
-    public function test_honor_rates_keep_history()
-    {
-        $this->actingAs($this->admin)->post(route('admin.honor-rates.store'), ['rate_per_hour' => 30000, 'effective_from' => now()->toDateString()])->assertSessionHasNoErrors();
-        HonorRate::create(['rate_per_hour' => 20000, 'effective_from' => now()->subYear()->toDateString()]);
-
-        $this->assertSame(30000, HonorRate::rateOn(now()->toDateString()));
-        $this->assertSame(20000, HonorRate::rateOn(now()->subMonths(6)->toDateString()));
     }
 }

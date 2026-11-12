@@ -32,6 +32,8 @@ import type {
     ProgramStageRow,
     RegistrationStatus,
 } from '@/types';
+import { useRef } from 'react';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Props = {
     program: ProgramCard & {
@@ -168,15 +170,21 @@ export default function PraktikanProgramShow({
     fields,
     registration,
 }: Props) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const recruitment = program.type === 'recruitment';
 
     return (
         <>
             <Head title={program.title} />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <Link
                     href={ProgramController.index.url(program.typeSlug)}
-                    className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary-700 hover:underline"
+                    className="inline-flex min-h-6 w-fit items-center gap-1.5 text-sm font-medium text-primary-700 hover:underline"
                 >
                     <ArrowLeft className="size-4" aria-hidden /> Kembali ke
                     etalase

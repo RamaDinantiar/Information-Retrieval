@@ -11,6 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { DateField } from '@/components/pickers/date-field';
 import { todayWib } from '@/lib/datetime';
+import { useRef } from 'react';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Settings = {
     idle_minutes: number;
@@ -20,20 +22,6 @@ type Settings = {
     registration_open: boolean;
     registration_domains: string;
 };
-
-type Rate = {
-    id: number;
-    rate: number;
-    effectiveFrom: string;
-    setBy: string | null;
-    createdAt: string;
-};
-
-const rupiah = new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-});
 
 function Section({
     icon: Icon,
@@ -103,22 +91,17 @@ function NumberField({
 }
 
 /** Admin › Pengaturan Sistem (FR-ADM-10). */
-export default function SystemSettings({
-    settings,
-    currentRate,
-    rates,
-}: {
-    settings: Settings;
-    currentRate: number;
-    rates: Rate[];
-}) {
+export default function SystemSettings({ settings }: { settings: Settings }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     return (
         <>
             <Head title="Pengaturan Sistem" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Pengaturan Sistem"
-                    description="Durasi sesi idle, batas ukuran unggahan, dan tarif honor asisten."
+                    description="Durasi sesi idle, dan batas ukuran unggahan."
                 />
 
                 <Form
@@ -232,90 +215,6 @@ export default function SystemSettings({
                         </>
                     )}
                 </Form>
-
-                <Section
-                    icon={Wallet}
-                    title="Tarif Honor Asisten"
-                    description={`Berlaku saat ini: ${rupiah.format(currentRate)}/jam. Perubahan tercatat sebagai riwayat.`}
-                >
-                    <Form
-                        {...SystemSettingController.storeRate.form()}
-                        options={{ preserveScroll: true }}
-                        resetOnSuccess
-                        className="flex flex-wrap items-end gap-3"
-                    >
-                        {({ processing, errors }) => (
-                            <>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="rate_per_hour">
-                                        Tarif per jam (Rp)
-                                    </Label>
-                                    <Input
-                                        id="rate_per_hour"
-                                        name="rate_per_hour"
-                                        type="number"
-                                        min={1000}
-                                        step={500}
-                                        required
-                                        className="w-40"
-                                    />
-                                    <InputError
-                                        message={errors.rate_per_hour}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="effective_from">
-                                        Berlaku mulai
-                                    </Label>
-                                    <DateField
-                                        id="effective_from"
-                                        name="effective_from"
-                                        required
-                                        defaultValue={todayWib()}
-                                    />
-                                    <InputError
-                                        message={errors.effective_from}
-                                    />
-                                </div>
-                                <Button type="submit" disabled={processing}>
-                                    {processing && <Spinner />} Tetapkan Tarif
-                                </Button>
-                            </>
-                        )}
-                    </Form>
-                    {rates.length > 0 && (
-                        <table className="w-full text-sm">
-                            <thead className="text-left text-xs text-muted-foreground">
-                                <tr>
-                                    <th className="py-2 font-medium">
-                                        Berlaku mulai
-                                    </th>
-                                    <th className="py-2 text-right font-medium">
-                                        Tarif / jam
-                                    </th>
-                                    <th className="py-2 pl-4 font-medium">
-                                        Ditetapkan oleh
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {rates.map((r) => (
-                                    <tr key={r.id} className="border-t">
-                                        <td className="py-2 font-mono text-xs">
-                                            {r.effectiveFrom}
-                                        </td>
-                                        <td className="py-2 text-right font-mono">
-                                            {rupiah.format(r.rate)}
-                                        </td>
-                                        <td className="py-2 pl-4 text-xs">
-                                            {r.setBy ?? '—'}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    )}
-                </Section>
             </div>
         </>
     );

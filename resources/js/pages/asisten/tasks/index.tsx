@@ -21,7 +21,7 @@ import {
     Unlock,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import GradeController from '@/actions/App/Http/Controllers/Asisten/GradeController';
 import TaskController from '@/actions/App/Http/Controllers/Asisten/TaskController';
 import TaskTargetController from '@/actions/App/Http/Controllers/Asisten/TaskTargetController';
@@ -67,6 +67,7 @@ import type {
     TaskType,
 } from '@/types';
 import type { RouteFormDefinition } from '@/wayfinder';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Target = {
     id: number;
@@ -170,6 +171,9 @@ export default function TasksIndex({
     createClassId?: number | null;
     editing: TaskFormData | null;
 } & TaskFormOptions) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const now = useNow();
     const label = type ? TASK_TYPE_LABEL[type] : 'Tugas';
     const indexUrl = TaskController.index.url(
@@ -268,7 +272,10 @@ export default function TasksIndex({
     return (
         <>
             <Head title={type ? PAGE_TITLE[type] : 'Task'} />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title={type ? PAGE_TITLE[type] : 'Manajemen Tugas'}
                     description="Kelola distribusi soal, jadwal timer buka/tutup, verifikasi berkas submission mahasiswa, dan publikasi evaluasi per sesi laboratorium secara terpusat."
@@ -571,7 +578,7 @@ function TaskCard({
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="-mt-1 -mr-2 size-8"
+                                className="-mt-1 -mr-2 size-8 shrink-0"
                                 aria-label={`Aksi lain untuk ${task.title}`}
                             >
                                 <MoreVertical />
@@ -812,7 +819,11 @@ function ActionPanel({
             <>
                 <div className="grid gap-2">
                     <p className="font-bold">Progress Submission</p>
-                    <ProgressBar value={pct} tone="bg-success" />
+                    <ProgressBar
+                        value={pct}
+                        tone="bg-success"
+                        label="Progres pengumpulan"
+                    />
                     <p className="text-xs text-success">
                         {target.submitted} / {target.members} Terkumpul ({pct}
                         %)
@@ -876,7 +887,11 @@ function ActionPanel({
                     <p className="font-bold">
                         {label} akan muncul sesuai jadwal
                     </p>
-                    <ProgressBar value={0} tone="bg-primary" />
+                    <ProgressBar
+                        value={0}
+                        tone="bg-primary"
+                        label="Belum dibuka"
+                    />
                     <p className="text-xs text-primary-700">
                         {target.openAt
                             ? `Soal dirilis otomatis ${formatRelative(target.openAt, now)}.`
@@ -939,10 +954,19 @@ function ActionPanel({
     );
 }
 
-function ProgressBar({ value, tone }: { value: number; tone: string }) {
+function ProgressBar({
+    value,
+    tone,
+    label,
+}: {
+    value: number;
+    tone: string;
+    label: string;
+}) {
     return (
         <div
             role="progressbar"
+            aria-label={label}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={value}

@@ -78,7 +78,7 @@ Galeri lengkap per peran ada di [panduan pengguna](docs/09-user-guide/).
 - Buat tugas dengan editor teks kaya & blok kode
 - **Split-Screen Grade** (PDF.js & penjelajah ZIP), simpan batch, publikasi nilai
 - **Laporan mengawas** + verifikasi oleh Sekretaris/Bendahara
-- **Generate** rekap bulanan (Word ZIP & Excel) dan honor
+- **Generate** rekap bulanan (Word ZIP & Excel) dan rekap jam & SKS mengawas per mata kuliah
 - Jadwal shift & **tukar shift**
 
 </td>

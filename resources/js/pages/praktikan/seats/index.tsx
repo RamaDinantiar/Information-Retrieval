@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button';
 import { formatSchedule } from '@/lib/days';
 import { cn } from '@/lib/utils';
 import type { SeatClassSummary, SeatMapPayload } from '@/types';
+import { useRef } from 'react';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type ClassCard = SeatClassSummary & { seat: string | null };
 
@@ -27,6 +29,9 @@ export default function PraktikanSeats({
     selectedId: number | null;
     map: SeatMapPayload | null;
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const { activeSemester } = usePage().props;
     const contracted = classes.filter((c) => c.seat);
     const pending = classes.filter((c) => !c.seat);
@@ -80,7 +85,10 @@ export default function PraktikanSeats({
     return (
         <>
             <Head title="Kontrak Tempat Duduk" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div className="space-y-2">
                         {activeSemester && (

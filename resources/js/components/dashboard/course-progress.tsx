@@ -55,6 +55,7 @@ export function CourseProgressList({ items }: { items: CourseProgress[] }) {
                                 className="mt-2 h-1.5 bg-primary-50"
                             >
                                 <div
+                                    data-grow
                                     className="h-full bg-primary"
                                     style={{ width: `${percent}%` }}
                                 />

@@ -3,11 +3,7 @@
 import type { ScheduleColor } from './dashboard';
 
 export type SwapStatus =
-    | 'pending'
-    | 'approved'
-    | 'rejected'
-    | 'expired'
-    | 'cancelled';
+    'pending' | 'approved' | 'rejected' | 'expired' | 'cancelled';
 
 export type ShiftSwapRow = {
     id: number;
@@ -111,13 +107,17 @@ export type ExportRow = {
     file: { name: string; size: number; url: string } | null;
 };
 
-export type HonorRow = {
-    id: number;
+export type HoursRecapRow = {
+    userId: number;
     name: string;
     nim: string | null;
     shifts: number;
     hours: number;
-    rate: number;
-    amount: number;
-    status: 'draft' | 'final';
+    courses: {
+        name: string;
+        code: string | null;
+        credits: number | null;
+        shifts: number;
+        hours: number;
+    }[];
 };

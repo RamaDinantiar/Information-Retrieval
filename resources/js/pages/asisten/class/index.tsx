@@ -8,7 +8,7 @@ import {
     Pencil,
     School,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import ClassProposalController from '@/actions/App/Http/Controllers/Asisten/ClassProposalController';
 import CourseProposalController from '@/actions/App/Http/Controllers/Asisten/CourseProposalController';
 import { ClassCard } from '@/components/classes/class-card';
@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import type { ClassRow, CourseRow, SelectOption } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Props = {
     semester: { id: number; name: string } | null;
@@ -42,7 +43,7 @@ type Sort = 'day' | 'course' | 'fill';
 const FILTERS: { value: Filter; label: string }[] = [
     { value: 'all', label: 'Semua Kelas' },
     { value: 'open', label: 'Kelas Dibuka' },
-    { value: 'locked', label: 'Kelas Terkunci' },
+    { value: 'locked', label: 'Pendaftaran Ditutup' },
     { value: 'pending', label: 'Menunggu Persetujuan' },
 ];
 
@@ -74,6 +75,9 @@ export default function AsistenClassIndex({
     proposals,
     options,
 }: Props) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const [filter, setFilter] = useState<Filter>('all');
     const [sort, setSort] = useState<Sort>('day');
 
@@ -119,7 +123,10 @@ export default function AsistenClassIndex({
     return (
         <>
             <Head title="Class" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Class"
                     description={
@@ -199,6 +206,7 @@ export default function AsistenClassIndex({
                                 className="h-1.5 flex-1 bg-primary-100"
                             >
                                 <div
+                                    data-grow
                                     className="h-full bg-primary-700"
                                     style={{ width: `${filledPercent}%` }}
                                 />

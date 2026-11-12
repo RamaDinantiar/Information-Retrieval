@@ -28,7 +28,7 @@ stateDiagram-v2
     Diverifikasi --> [*]
 ```
 
-Hanya laporan **Diverifikasi** yang masuk rekap dan perhitungan honor.
+Hanya laporan **Diverifikasi** yang masuk rekap dan rekap jam.
 
 ## Generate rekap bulanan
 
@@ -44,15 +44,19 @@ Hanya laporan **Diverifikasi** yang masuk rekap dan perhitungan honor.
 - File hasil berlaku 24 jam dan dihapus otomatis setelah 7 hari (`exports:prune`).
 - Kop & logo laporan diubah langsung di file template Word. Penanda `${...}` jangan dihapus.
 
-## Rekap honor
+## Rekap jam & SKS mengawas
 
-- Honor = **jam jaga dari laporan terverifikasi × tarif per jam**. Tarif diatur Admin di Pengaturan Sistem
-  dan berlaku mulai tanggal tertentu.
-- Sekretaris/Bendahara (atau Admin) **menyetujui** rekap honor bulanan; setiap asisten dapat melihat rekap
-  miliknya.
+Revisi Kepala Lab (12 Nov 2026): sistem **tidak menghitung honor**. Asisten tidak mengetahui tarif per jam,
+jadi yang dicatat hanya jam dan SKS.
+
+- Rekap bulanan per asisten: jumlah shift dan **jam jaga dari laporan terverifikasi**, dirinci **per mata kuliah**
+  beserta **SKS** mata kuliah itu. Setiap anggota tim jaga mendapat jam laporan tersebut.
+- Tampil di Generate; Excel punya sheet Ringkasan, Per Mata Kuliah, dan Detail.
+- Setiap asisten melihat rekap miliknya; Sekretaris/Bendahara (atau Admin) melihat semua asisten.
+- Tidak ada tarif, nominal rupiah, maupun persetujuan rekap.
 
 ## Kode terkait
 
 `app/Actions/Report/SaveSupervisionReport.php`, `app/Jobs/GenerateMonthlyReport.php`,
-`app/Support/Reports/DailyActivityReport.php`, `app/Actions/Honor/ComputeHonorRecaps.php`,
+`app/Support/Reports/DailyActivityReport.php`, `app/Support/Reports/HoursRecap.php`,
 `app/Http/Controllers/Asisten/ReportController.php`, `GenerateController.php`.

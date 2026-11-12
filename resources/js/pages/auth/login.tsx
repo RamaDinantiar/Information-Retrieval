@@ -119,7 +119,10 @@ export default function Login({
                                 </Label>
                             </div>
                             {canResetPassword && (
-                                <TextLink href={request()} className="text-sm">
+                                <TextLink
+                                    href={request()}
+                                    className="inline-flex min-h-6 items-center text-sm"
+                                >
                                     Lupa Password?
                                 </TextLink>
                             )}

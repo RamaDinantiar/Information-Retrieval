@@ -2,13 +2,11 @@
 
 namespace Tests\Feature\Asisten;
 
-use App\Actions\Honor\ComputeHonorRecaps;
 use App\Actions\Shift\SwapShift;
 use App\Enums\Position;
 use App\Jobs\GenerateMonthlyReport;
+use App\Models\Course;
 use App\Models\Export;
-use App\Models\HonorRate;
-use App\Models\HonorRecap;
 use App\Models\LabClass;
 use App\Models\Meeting;
 use App\Models\Room;
@@ -18,6 +16,7 @@ use App\Models\ShiftSwap;
 use App\Models\SupervisionReport;
 use App\Models\User;
 use App\Support\Files\FileStore;
+use App\Support\Reports\HoursRecap;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -28,7 +27,7 @@ use Tests\TestCase;
 use ZipArchive;
 
 /**
- * US-A03 (Laporan Ngawas), US-A04 (Generate), US-A05 (Tukar Shift), FR-AGN-03 (honor).
+ * US-A03 (Laporan Ngawas), US-A04 (Generate), US-A05 (Tukar Shift), FR-AGN-03 (rekap jam).
  */
 class OperationsTest extends TestCase
 {
@@ -218,27 +217,33 @@ class OperationsTest extends TestCase
         $this->assertSame('expired', $swap->fresh()->status);
     }
 
-    public function test_honor_counts_verified_hours_for_every_team_member()
+    public function test_hours_recap_counts_verified_hours_per_course_for_every_team_member()
     {
-        HonorRate::create(['rate_per_hour' => 25000, 'effective_from' => '2026-09-01']);
         $partner = User::factory()->asisten()->create();
+        $course = Course::factory()->for($this->semester)->create(['name' => 'Machine Learning', 'credits' => 3]);
+        $class = LabClass::factory()->for($course)->create(['semester_id' => $this->semester->id]);
 
-        $report = SupervisionReport::factory()->create(['user_id' => $this->asisten->id, 'semester_id' => $this->semester->id, 'date' => '2026-10-02', 'start_time' => '07:20', 'end_time' => '09:50', 'status' => 'verified']);
+        $report = SupervisionReport::factory()->create(['user_id' => $this->asisten->id, 'semester_id' => $this->semester->id, 'class_id' => $class->id, 'date' => '2026-10-02', 'start_time' => '07:20', 'end_time' => '09:50', 'status' => 'verified']);
         $report->assistants()->sync([$this->asisten->id => ['position' => 1], $partner->id => ['position' => 2]]);
         SupervisionReport::factory()->create(['user_id' => $this->asisten->id, 'semester_id' => $this->semester->id, 'date' => '2026-10-03', 'status' => 'submitted'])
             ->assistants()->sync([$this->asisten->id => ['position' => 1]]);
 
-        $recaps = app(ComputeHonorRecaps::class)('2026-10');
+        $recap = collect(HoursRecap::forMonth('2026-10'));
 
-        $this->assertCount(2, $recaps);
-        $mine = $recaps->firstWhere('user_id', $this->asisten->id);
-        $this->assertSame(2.5, (float) $mine->total_hours);
-        $this->assertSame(62500, $mine->amount);
+        $this->assertCount(2, $recap);
+        $mine = $recap->firstWhere('userId', $this->asisten->id);
+        $this->assertSame(1, $mine['shifts']);
+        $this->assertSame(2.5, $mine['hours']);
+        $this->assertSame([['name' => 'Machine Learning', 'code' => $course->code, 'credits' => 3, 'shifts' => 1, 'hours' => 2.5]], $mine['courses']);
 
-        // Sekretaris/Bendahara menyetujui → Final; asisten biasa tidak boleh.
-        $this->actingAs($this->asisten)->post(route('asisten.honor-recaps.approve'), ['month' => '2026-10'])->assertForbidden();
-        $this->actingAs(User::factory()->asisten(Position::SekretarisBendahara)->create())->post(route('asisten.honor-recaps.approve'), ['month' => '2026-10'])->assertSessionHasNoErrors();
-        $this->assertSame(2, HonorRecap::where('status', 'final')->count());
+        $this->assertCount(1, HoursRecap::forMonth('2026-10', $partner->id));
+        $this->assertCount(0, HoursRecap::forMonth('2026-09'));
+
+        // Rekap jam terlihat di Generate; Sekretaris/Bendahara melihat semua asisten.
+        $this->actingAs($this->asisten)->get(route('asisten.generate.index', ['month' => '2026-10']))
+            ->assertInertia(fn (Assert $page) => $page->has('recap', 1)->missing('honor'));
+        $this->actingAs(User::factory()->asisten(Position::SekretarisBendahara)->create())->get(route('asisten.generate.index', ['month' => '2026-10', 'scope' => 'all']))
+            ->assertInertia(fn (Assert $page) => $page->has('recap', 2));
     }
 
     public function test_generate_queues_an_export_and_builds_a_zip_of_daily_word_files()

@@ -53,7 +53,7 @@ export function ClassDetailLayout({
             <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
                 <Link
                     href="/asisten/class"
-                    className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary-700 hover:underline"
+                    className="inline-flex min-h-6 w-fit items-center gap-1.5 text-sm font-medium text-primary-700 hover:underline"
                 >
                     <ArrowLeft className="size-4" aria-hidden /> Semua kelas
                 </Link>
@@ -100,7 +100,8 @@ export function ClassDetailLayout({
                 {klass.isLocked && (
                     <p className="flex flex-wrap items-center gap-2 text-sm">
                         <StatusBadge status="locked" /> Praktikan baru tidak
-                        dapat bergabung; anggota lama tidak terpengaruh.
+                        dapat bergabung (dikunci manual atau kuota penuh);
+                        anggota lama tidak terpengaruh.
                     </p>
                 )}
                 {children}

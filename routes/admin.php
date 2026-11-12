@@ -38,7 +38,6 @@ Route::put('rooms/{room}/layout', [RoomController::class, 'saveLayout'])->name('
 Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
 Route::get('system-settings', [SystemSettingController::class, 'index'])->name('system-settings.index');
 Route::put('system-settings', [SystemSettingController::class, 'update'])->name('system-settings.update');
-Route::post('honor-rates', [SystemSettingController::class, 'storeRate'])->name('honor-rates.store');
 
 // FR-ADM-08: pengumuman.
 Route::resource('announcements', AnnouncementController::class)->only(['index', 'store', 'update', 'destroy']);

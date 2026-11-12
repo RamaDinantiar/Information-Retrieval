@@ -77,7 +77,7 @@ class DashboardTest extends TestCase
 
         $this->assertNotContains('to-verify', $keys(User::factory()->asisten()->make()));
         $this->assertContains('to-verify', $keys(User::factory()->asisten(Position::SekretarisBendahara)->make()));
-        $this->assertContains('honor', $keys(User::factory()->asisten(Position::SekretarisBendahara)->make()));
+        $this->assertNotContains('honor', $keys(User::factory()->asisten(Position::SekretarisBendahara)->make()));
     }
 
     public function test_week_uses_the_assistants_real_classes_and_flags_the_running_one()

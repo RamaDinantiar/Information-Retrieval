@@ -12,7 +12,7 @@ import {
     User,
 } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import SeatController from '@/actions/App/Http/Controllers/Praktikan/SeatController';
 import InputError from '@/components/input-error';
 import { displayLabel, SeatLegend, SeatMap } from '@/components/seats/seat-map';
@@ -24,6 +24,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { formatSchedule } from '@/lib/days';
 import { edit as editProfile } from '@/routes/profile';
 import type { SeatClassSummary, SeatMapPayload } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Props = {
     class: SeatClassSummary;
@@ -87,6 +88,9 @@ export default function SeatContractForm({
     map,
     capacity,
 }: Props) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const form = useForm<{ seat_id: number | null; agreement: boolean }>({
         seat_id: null,
         agreement: false,
@@ -116,7 +120,10 @@ export default function SeatContractForm({
     return (
         <>
             <Head title="Formulir Kontrak Tempat Duduk" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <section className="flex flex-col gap-4 border bg-card p-5 md:flex-row md:items-start md:justify-between">
                     <div className="max-w-2xl space-y-2">
                         <span

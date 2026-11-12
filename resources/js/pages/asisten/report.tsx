@@ -47,6 +47,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { formatRelative, todayWib } from '@/lib/datetime';
 import { cn } from '@/lib/utils';
 import type { PendingShift, ReportRow, ReportStatus } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Props = {
     filters: {
@@ -807,7 +808,7 @@ function ReportFormDialog({
                                 <strong>Catatan:</strong> laporan yang dikirim
                                 diteruskan ke Sekretaris/Bendahara untuk
                                 diverifikasi; hanya laporan terverifikasi yang
-                                masuk rekap honor.
+                                masuk rekap jam.
                             </span>
                         </p>
                         <DialogFooter>
@@ -911,6 +912,9 @@ function dayStatus(reports: ReportRow[]): ReportStatus {
 
 /** Asisten › Report — Figma "Report" (Lab Monitoring Report). */
 export default function AsistenReport(props: Props) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const { filters, days, isReviewer } = props;
     const semester = usePage().props.activeSemester;
     const [formOpen, setFormOpen] = useState(false);
@@ -972,7 +976,10 @@ export default function AsistenReport(props: Props) {
     return (
         <>
             <Head title="Lab Monitoring Report" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div className="space-y-1">
                         <h1 className="text-h1 font-bold text-primary-900">

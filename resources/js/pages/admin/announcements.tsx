@@ -9,6 +9,8 @@ import { PageHeader } from '@/components/page-header';
 import { Pagination } from '@/components/pagination';
 import { Button } from '@/components/ui/button';
 import type { AnnouncementRow, Paginated } from '@/types';
+import { useRef } from 'react';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 /** Admin › Pengumuman (FR-ADM-08). */
 export default function AdminAnnouncements({
@@ -18,10 +20,16 @@ export default function AdminAnnouncements({
     announcements: Paginated<AnnouncementRow>;
     classOptions: { id: number; label: string }[];
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     return (
         <>
             <Head title="Pengumuman" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Pengumuman"
                     description="Pengumuman global dengan target peran dan masa tayang, atau untuk satu kelas. Yang dipin tampil paling atas di dashboard."

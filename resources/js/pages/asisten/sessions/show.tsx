@@ -8,7 +8,7 @@ import {
     Square,
     Users,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import SessionController from '@/actions/App/Http/Controllers/Asisten/SessionController';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
@@ -33,6 +33,7 @@ import {
 } from '@/lib/datetime';
 import { cn } from '@/lib/utils';
 import type { AttendanceStatus, MeetingRow } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 const OPTIONS: { value: AttendanceStatus; label: string; active: string }[] = [
     {
@@ -82,6 +83,9 @@ export default function SessionShow({
     };
     students: Student[];
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const [statuses, setStatuses] = useState<
         Record<number, AttendanceStatus | null>
     >(
@@ -95,10 +99,13 @@ export default function SessionShow({
     return (
         <>
             <Head title={`Sesi ${klass.course} · ${klass.name}`} />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <Link
                     href={SessionController.index.url()}
-                    className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary-700 hover:underline"
+                    className="inline-flex min-h-6 w-fit items-center gap-1.5 text-sm font-medium text-primary-700 hover:underline"
                 >
                     <ArrowLeft className="size-4" aria-hidden /> Semua sesi
                 </Link>

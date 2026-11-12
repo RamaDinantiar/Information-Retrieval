@@ -11,7 +11,6 @@ import {
     ListFilter,
     Loader2,
     Search,
-    ShieldCheck,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import GenerateController from '@/actions/App/Http/Controllers/Asisten/GenerateController';
@@ -24,7 +23,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { formatRelative } from '@/lib/datetime';
 import { formatFileSize } from '@/lib/files';
 import { cn } from '@/lib/utils';
-import type { ExportRow, HonorRow } from '@/types';
+import type { ExportRow, HoursRecapRow } from '@/types';
 
 type Props = {
     filters: { month: string; scope: 'mine' | 'all' };
@@ -43,7 +42,7 @@ type Props = {
         materials: string[];
     }[];
     exports: ExportRow[];
-    honor: { recaps: HonorRow[]; canApprove: boolean };
+    recap: HoursRecapRow[];
 };
 
 const MONTHS = [
@@ -79,15 +78,10 @@ const FORMATS = [
         value: 'excel',
         label: 'Excel',
         icon: FileSpreadsheet,
-        description: 'Tabel data rekapitulasi & estimasi honor asisten.',
+        description: 'Rekap jam dan SKS mengawas per asisten dan mata kuliah.',
     },
 ] as const;
 
-const rupiah = new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-});
 const longDate = (iso: string) =>
     new Date(`${iso}T00:00:00`).toLocaleDateString('id-ID', {
         weekday: 'long',
@@ -155,7 +149,7 @@ export default function AsistenGenerate({
     stats,
     files,
     exports,
-    honor,
+    recap,
 }: Props) {
     const semester = usePage().props.activeSemester;
     const [year, month] = filters.month.split('-').map(Number);
@@ -186,7 +180,6 @@ export default function AsistenGenerate({
             ),
         [files, search],
     );
-    const draftHonor = honor.recaps.some((r) => r.status === 'draft');
 
     const go = (next: Partial<Props['filters']>) =>
         router.get(
@@ -675,102 +668,94 @@ export default function AsistenGenerate({
                     </section>
 
                     <section
-                        aria-labelledby="honor-title"
+                        aria-labelledby="recap-title"
                         className="grid content-start gap-3"
                     >
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                            <h2 id="honor-title" className="text-h3 font-bold">
-                                Rekap Honor {MONTHS[month - 1]} {year}
-                            </h2>
-                            {honor.canApprove && draftHonor && (
-                                <Button
-                                    size="sm"
-                                    onClick={() =>
-                                        router.post(
-                                            GenerateController.approveHonor.url(),
-                                            { month: filters.month },
-                                            { preserveScroll: true },
-                                        )
-                                    }
-                                >
-                                    <ShieldCheck /> Setujui Rekap
-                                </Button>
-                            )}
-                        </div>
+                        <h2 id="recap-title" className="text-h3 font-bold">
+                            Rekap Jam Mengawas {MONTHS[month - 1]} {year}
+                        </h2>
                         <p className="-mt-2 text-xs text-muted-foreground">
-                            Total jam dari laporan terverifikasi × tarif per
-                            jam. Berstatus Draft sampai disetujui
-                            Sekretaris/Bendahara.
+                            Dihitung dari laporan terverifikasi: jumlah shift
+                            dan jam per asisten, dirinci per mata kuliah beserta
+                            SKS-nya.
                         </p>
-                        {honor.recaps.length === 0 ? (
+                        {recap.length === 0 ? (
                             <p className="border bg-card p-4 text-sm text-muted-foreground">
                                 Belum ada jam terverifikasi pada bulan ini.
                             </p>
                         ) : (
-                            <div className="overflow-x-auto border bg-card">
-                                <table className="w-full min-w-[36rem] text-sm">
-                                    <thead className="bg-primary-50 text-left font-mono text-xs">
-                                        <tr>
-                                            <th className="px-4 py-2.5">
-                                                Asisten
-                                            </th>
-                                            <th className="px-3 py-2.5 text-right">
-                                                Shift
-                                            </th>
-                                            <th className="px-3 py-2.5 text-right">
-                                                Jam
-                                            </th>
-                                            <th className="px-3 py-2.5 text-right">
-                                                Estimasi Honor
-                                            </th>
-                                            <th className="px-3 py-2.5">
-                                                Status
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {honor.recaps.map((r) => (
-                                            <tr key={r.id} className="border-t">
-                                                <td className="px-4 py-2.5">
-                                                    {r.name}
-                                                    <span className="block font-mono text-[11px] text-muted-foreground">
-                                                        {r.nim}
-                                                    </span>
-                                                </td>
-                                                <td className="px-3 py-2.5 text-right font-mono">
-                                                    {r.shifts}
-                                                </td>
-                                                <td className="px-3 py-2.5 text-right font-mono">
+                            <ul className="grid gap-3">
+                                {recap.map((r) => (
+                                    <li
+                                        key={r.userId}
+                                        className="overflow-x-auto border bg-card"
+                                    >
+                                        <div className="flex flex-wrap items-baseline justify-between gap-2 bg-primary-50 px-4 py-2.5">
+                                            <p className="font-bold">
+                                                {r.name}
+                                                <span className="ml-2 font-mono text-[11px] font-normal text-muted-foreground">
+                                                    {r.nim}
+                                                </span>
+                                            </p>
+                                            <p className="font-mono text-xs">
+                                                {r.shifts} shift ·{' '}
+                                                <strong>
                                                     {r.hours.toLocaleString(
                                                         'id-ID',
-                                                    )}
-                                                </td>
-                                                <td className="px-3 py-2.5 text-right font-mono">
-                                                    {rupiah.format(r.amount)}
-                                                    <span className="block text-[11px] text-muted-foreground">
-                                                        @{' '}
-                                                        {rupiah.format(r.rate)}
-                                                        /jam
-                                                    </span>
-                                                </td>
-                                                <td className="px-3 py-2.5">
-                                                    <Badge
-                                                        variant={
-                                                            r.status === 'final'
-                                                                ? 'success'
-                                                                : 'warning'
-                                                        }
+                                                    )}{' '}
+                                                    jam
+                                                </strong>
+                                            </p>
+                                        </div>
+                                        <table className="w-full min-w-[28rem] text-sm">
+                                            <thead className="text-left font-mono text-xs text-muted-foreground">
+                                                <tr>
+                                                    <th className="px-4 py-2">
+                                                        Mata Kuliah
+                                                    </th>
+                                                    <th className="px-3 py-2 text-right">
+                                                        SKS
+                                                    </th>
+                                                    <th className="px-3 py-2 text-right">
+                                                        Shift
+                                                    </th>
+                                                    <th className="px-3 py-2 text-right">
+                                                        Jam
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {r.courses.map((c) => (
+                                                    <tr
+                                                        key={c.name}
+                                                        className="border-t"
                                                     >
-                                                        {r.status === 'final'
-                                                            ? 'Final'
-                                                            : 'Draft'}
-                                                    </Badge>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                        <td className="px-4 py-2">
+                                                            {c.name}
+                                                            {c.code && (
+                                                                <span className="block font-mono text-[11px] text-muted-foreground">
+                                                                    {c.code}
+                                                                </span>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-3 py-2 text-right font-mono">
+                                                            {c.credits ?? '—'}
+                                                        </td>
+                                                        <td className="px-3 py-2 text-right font-mono">
+                                                            {c.shifts}
+                                                        </td>
+                                                        <td className="px-3 py-2 text-right font-mono">
+                                                            {c.hours.toLocaleString(
+                                                                'id-ID',
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </li>
+                                ))}
+                            </ul>
                         )}
                     </section>
                 </div>

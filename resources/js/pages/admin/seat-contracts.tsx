@@ -1,7 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { Armchair, ArrowRightLeft, Trash2 } from 'lucide-react';
 import type { FormEvent } from 'react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import SeatContractController from '@/actions/App/Http/Controllers/Admin/SeatContractController';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
@@ -31,6 +31,7 @@ import type {
     SeatMapPayload,
     SeatOccupant,
 } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Selected = SeatClassSummary & { contracted: number; members: number };
 type ClassOption = {
@@ -211,6 +212,9 @@ export default function AdminSeatContracts({
     selected: Selected | null;
     map: SeatMapPayload | null;
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const [target, setTarget] = useState<{
         cell: SeatCell;
         occupant: SeatOccupant;
@@ -219,7 +223,10 @@ export default function AdminSeatContracts({
     return (
         <>
             <Head title="Kontrak Kursi" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Kontrak Kursi"
                     description="Lihat dan koreksi kontrak tempat duduk seluruh kelas. Klik kursi terisi untuk memindahkan atau membatalkan kontrak."

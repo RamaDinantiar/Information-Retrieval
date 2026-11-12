@@ -76,7 +76,7 @@ laporan, avatar, poster program, dan hasil ekspor.
 | `shift_swaps`                   | Pengajuan tukar shift, status, catatan                                             | Kedaluwarsa 24 jam sebelum shift           |
 | `supervision_reports`           | Laporan mengawas: kegiatan, materi, catatan, status, verifikator, `editable_until` | Dapat diubah sampai H+1 pukul 23.59        |
 | `supervision_report_assistants` | Tim jaga per laporan, `position` (1 = penanggung jawab)                            | Pivot bertipe `SupervisionReportAssistant` |
-| `honor_rates`, `honor_recaps`   | Tarif per jam & rekap honor bulanan                                                | Disetujui Sekretaris/Bendahara             |
+| ~~`honor_rates`, `honor_recaps`~~ | Tidak dipakai lagi sejak revisi Kepala Lab (12 Nov 2026): sistem tidak menghitung honor | Tabel masih ada di database, boleh dihapus |
 | `exports`                       | Permintaan rekap (ZIP/Excel), progres, file hasil                                  | Kedaluwarsa 24 jam, dihapus setelah 7 hari |
 
 ### Ruang & kursi

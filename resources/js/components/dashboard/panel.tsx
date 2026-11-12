@@ -32,7 +32,7 @@ export function DashboardPanel({
                     <Link
                         href={action.href}
                         prefetch
-                        className="shrink-0 text-sm font-medium text-primary-700 underline decoration-primary-200 underline-offset-4 hover:decoration-current"
+                        className="inline-flex min-h-6 shrink-0 items-center text-sm font-medium text-primary-700 underline decoration-primary-200 underline-offset-4 hover:decoration-current"
                     >
                         {action.label}
                     </Link>

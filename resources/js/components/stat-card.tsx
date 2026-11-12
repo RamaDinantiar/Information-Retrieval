@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { CountUp } from '@/components/count-up';
 import { cn } from '@/lib/utils';
 
 /**
@@ -22,14 +23,18 @@ export function StatCard({
     return (
         <div
             className={cn(
-                'flex flex-col gap-2 rounded-lg border bg-card p-4',
+                'flex flex-col gap-2.5 rounded-lg border bg-card p-5',
                 className,
             )}
         >
             <p className="text-xs text-muted-foreground">{label}</p>
             <p className="flex items-baseline gap-1">
                 <span className="text-[2.5rem] leading-none font-bold">
-                    {value}
+                    {typeof value === 'number' ? (
+                        <CountUp value={value} />
+                    ) : (
+                        value
+                    )}
                 </span>
                 {suffix && (
                     <span className="text-sm text-muted-foreground">

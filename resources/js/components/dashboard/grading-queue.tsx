@@ -64,6 +64,7 @@ export function GradingQueue({
                                 className="mt-2 h-1.5 bg-primary-50"
                             >
                                 <div
+                                    data-grow
                                     className={
                                         done
                                             ? 'h-full bg-success'

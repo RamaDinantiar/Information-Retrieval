@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { CountUp } from '@/components/count-up';
 import { StatusBadge } from '@/components/status-badge';
 import { Badge } from '@/components/ui/badge';
 import type { AdminDashboard } from '@/types';
@@ -21,9 +22,9 @@ export function ComplianceCard({
 
     return (
         <Link
-            href="/admin/report"
+            href="/asisten/report"
             prefetch
-            className="flex min-h-36 flex-col gap-1 border bg-card p-5 transition-shadow hover:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+            className="flex min-h-36 flex-col gap-1 border bg-card p-5 transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
         >
             <span className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-sm font-bold text-primary-700">
@@ -40,7 +41,7 @@ export function ComplianceCard({
                 )}
             </span>
             <span className="mt-auto text-[3rem] leading-none font-bold text-primary">
-                {percent}%
+                <CountUp value={percent} suffix="%" />
             </span>
             <span className="text-sm">
                 {compliance.onTime} dari {compliance.expected} shift dilaporkan

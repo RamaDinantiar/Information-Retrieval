@@ -3,7 +3,6 @@
 namespace App\Support\Dashboard;
 
 use App\Models\Enrollment;
-use App\Models\HonorRecap;
 use App\Models\LabClass;
 use App\Models\ProgramRegistration;
 use App\Models\Shift;
@@ -115,10 +114,6 @@ class AsistenDashboardData
 
         if ($user->canVerifyReports()) {
             $alerts[] = ['key' => 'to-verify', 'label' => 'laporan ngawas menunggu verifikasi', 'count' => SupervisionReport::where('status', 'submitted')->where('user_id', '!=', $user->id)->count(), 'href' => '/asisten/report?tab=verify', 'tone' => 'warning'];
-        }
-
-        if ($user->canApproveHonor()) {
-            $alerts[] = ['key' => 'honor', 'label' => 'rekap honor menunggu persetujuan', 'count' => HonorRecap::where('status', 'draft')->distinct()->count('month'), 'href' => '/asisten/generate?scope=all', 'tone' => 'warning'];
         }
 
         return $alerts;

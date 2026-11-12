@@ -9,7 +9,7 @@
 | [Tugas & Pengumpulan](tasks.md)                        | Pre-Test, Post-Test, Laporan; editor soal; nomor tanda terima          | Asisten, Praktikan |
 | [Penilaian](grading.md)                                | Tabel nilai batch, Split-Screen Grade, publikasi, nilai akhir berbobot | Asisten, Praktikan |
 | [Tempat Duduk](seats.md)                               | Editor denah, kontrak kursi per kelas, koreksi Admin                   | Semua              |
-| [Laporan Mengawas & Rekap](reports.md)                 | Laporan shift, verifikasi, Generate Word/Excel, rekap honor            | Asisten, Admin     |
+| [Laporan Mengawas & Rekap](reports.md)                 | Laporan shift, verifikasi, Generate Word/Excel, rekap jam & SKS mengawas            | Asisten, Admin     |
 | [Notifikasi, Pengumuman & Pencarian](notifications.md) | Lonceng, email, pengumuman terjadwal, Ctrl K                           | Semua              |
 | [Administrasi](administration.md)                      | Semester, master data, pengguna, audit log, pengaturan sistem          | Admin              |
 | [Program](programs.md)                                 | Workshop, Quick Tutor, Rekrutmen, Maintenance (ditutup sementara)      | Semua              |

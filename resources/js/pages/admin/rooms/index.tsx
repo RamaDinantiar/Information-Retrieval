@@ -1,7 +1,7 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import { LayoutGrid, Pencil, Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import RoomController from '@/actions/App/Http/Controllers/Admin/RoomController';
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog';
 import { EmptyState } from '@/components/empty-state';
@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import type { RoomRow } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 function RoomFormDialog({
     room,
@@ -122,10 +123,16 @@ export default function RoomsIndex({
     rooms: RoomRow[];
     errors?: { room?: string };
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     return (
         <>
             <Head title="Ruang & Denah" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Ruang & Denah"
                     description="Ruang lab yang dipakai kelas praktikum beserta denah kursinya (kursi, meja asisten, lorong)."

@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Bell, CheckCheck, Info } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import NotificationController from '@/actions/App/Http/Controllers/NotificationController';
 import { AnnouncementCard } from '@/components/announcements/announcement-card';
 import { EmptyState } from '@/components/empty-state';
@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { formatRelative } from '@/lib/datetime';
 import { cn } from '@/lib/utils';
 import type { AnnouncementRow, NotificationItem, Paginated } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 /** Pusat notifikasi + pengumuman yang sedang tayang (semua peran). */
 export default function Notifications({
@@ -20,6 +21,9 @@ export default function Notifications({
     feed: Paginated<NotificationItem>;
     announcements: AnnouncementRow[];
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const [tab, setTab] = useState<'notifications' | 'announcements'>(
         'notifications',
     );
@@ -28,7 +32,10 @@ export default function Notifications({
     return (
         <>
             <Head title="Notifikasi" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Notifikasi & Pengumuman"
                     description="Pembaruan tugas, nilai, jadwal, dan pengumuman laboratorium."

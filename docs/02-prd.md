@@ -40,7 +40,7 @@ IR Lab Management System adalah aplikasi web internal (Laravel + React) yang men
 | ------------------------------------------------------------------ | -------------------------------------------------------- | ------------------------------------- |
 | Apakah Asisten boleh membuat Mata Kuliah/Kelas sendiri?            | Boleh, tetapi **wajib disetujui Admin**.                 | Bagian 2, US-A01, FR-AS-02, FR-ADM-03 |
 | Apakah ada peran yang menyetujui laporan mengawas sebelum direkap? | Ya, oleh **Sekretaris dan Bendahara** (jabatan Asisten). | Bagian 2, FR-AR-05, FR-AGN-03         |
-| Apakah honor asisten dihitung dari laporan mengawas?               | Ya, **masuk MVP**.                                       | FR-AGN-03, FR-ADM-10                  |
+| Apakah honor asisten dihitung dari laporan mengawas?               | **Tidak** (revisi Kepala Lab, 12 Nov 2026): yang dihitung jam dan SKS mengawas per mata kuliah. | FR-AGN-03 |
 | Apakah nilai dikirim ke SIAKAD?                                    | **Tidak**; nilai hanya disimpan di arsip lab.            | Bagian 9                              |
 | Perkiraan jumlah pengguna aktif per semester?                      | **± 200 pengguna**.                                      | NFR 8.3                               |
 | Apakah pelamar Rekrutmen wajib memiliki akun Praktikan?            | **Wajib** memiliki akun Praktikan.                       | FR-APR-03                             |
@@ -95,7 +95,7 @@ Baseline bertanda estimasi perlu divalidasi lewat wawancara singkat dengan 3–5
 
 ## 2. User Personas & Role-Based Access Control
 
-Sistem memakai tiga peran tetap. Asisten dapat diberi jabatan tambahan **Sekretaris/Bendahara** (satu jabatan, diatur Admin) yang membuka hak verifikasi laporan ngawas dan persetujuan rekap honor; jabatan bukan peran baru. Satu akun hanya memiliki satu peran aktif; seorang Asisten yang juga mengambil praktikum lain dibuatkan peran Asisten dengan akses "mode Praktikan" (lihat Bagian 9 untuk multi-role penuh).
+Sistem memakai tiga peran tetap. Asisten dapat diberi jabatan tambahan **Sekretaris/Bendahara** (satu jabatan, diatur Admin) yang membuka hak verifikasi laporan ngawas dan melihat rekap jam seluruh asisten; jabatan bukan peran baru. Satu akun hanya memiliki satu peran aktif; seorang Asisten yang juga mengambil praktikum lain dibuatkan peran Asisten dengan akses "mode Praktikan" (lihat Bagian 9 untuk multi-role penuh).
 
 | Persona                                           | Profil                                                | Tujuan utama                                                       | Frustrasi saat ini                                                     | Perangkat dominan |
 | ------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------- | ----------------- |
@@ -120,7 +120,7 @@ Keterangan: **C** = Create, **R** = Read, **U** = Update, **D** = Delete/Arsip, 
 | Seats / kontrak tempat duduk                            | C, R denah kelas yang diikuti | R (Ampu)                                                       | CRUD, ubah kontrak              |
 | Denah ruang lab                                         | R                             | R                                                              | CRUD                            |
 | Laporan mengawas                                        | —                             | CRU (Own); Sekretaris/Bendahara: verifikasi semua              | R semua, verifikasi, buka kunci |
-| Generate rekap                                          | —                             | Own; Sekretaris/Bendahara: semua asisten & setujui rekap honor | Semua asisten                   |
+| Generate rekap                                          | —                             | Own; Sekretaris/Bendahara: rekap semua asisten | Semua asisten                   |
 | Tukar shift                                             | —                             | Ajukan & setujui (Own)                                         | R, override                     |
 | Program (Workshop, Quick Tutor, Rekrutmen, Maintenance) | R, daftar                     | CRUD                                                           | CRUD                            |
 | Pengumuman                                              | R                             | C (Ampu)                                                       | CRUD (global)                   |
@@ -405,7 +405,7 @@ Empty state: jika belum punya kelas, Dashboard menampilkan panduan 3 langkah (mi
 
 1. **Action Bar**: "Sesi Kelas", "Buat Tugas", "Buka Penilaian"; kartu "Tulis Laporan Ngawas" di bawahnya.
    1a. **Sesi Berlangsung:** sesi yang sedang berjalan beserta jumlah hadir, tugas yang terbuka, dan pintasan presensi/membuat test; diperbarui otomatis tiap 30 detik.
-2. **Kartu metrik:** submission menunggu penilaian (kuning, klik → Grade terfilter), tugas mendekati tenggat, laporan ngawas belum diisi (merah), permintaan tukar shift masuk. Untuk Sekretaris/Bendahara: laporan menunggu verifikasi dan rekap honor menunggu persetujuan.
+2. **Kartu metrik:** submission menunggu penilaian (kuning, klik → Grade terfilter), tugas mendekati tenggat, laporan ngawas belum diisi (merah), permintaan tukar shift masuk. Untuk Sekretaris/Bendahara: laporan menunggu verifikasi.
 3. **Shift berikutnya:** ruang, kelas, jam, countdown.
 4. **Antrian penilaian per kelas:** progress bar dinilai ÷ terkumpul.
 5. **Agenda minggu ini:** shift ngawas dan sesi kelas yang diampu.
@@ -460,7 +460,7 @@ Sesi kelas (FR-AD-01): pertemuan **dimulai dan diakhiri otomatis** sesuai jam ke
 
 - FR-AGN-01: Input: bulan, format (ZIP Word per hari, Word satu hari, atau Excel), cakupan (laporan saya; Sekretaris/Bendahara & Admin: semua asisten).
 - FR-AGN-02: Proses via Laravel Queue (job `GenerateMonthlyReport`, batas 300 detik): **PhpWord** mengisi template `laporan-mengawas.docx` menjadi satu `.docx` per hari → di-zip (`ZipArchive`) → disimpan di storage privat. Word satu hari diunduh langsung tanpa antrean.
-- FR-AGN-03: Excel via **OpenSpout** dengan sheet Ringkasan (total shift, total jam, tarif per jam, dan estimasi honor = total jam × tarif per asisten) dan sheet Detail. Jam dihitung dari laporan yang sudah Diverifikasi. Rekap honor berstatus Final setelah disetujui Sekretaris/Bendahara (atau Admin); sebelum itu berlabel Draft.
+- FR-AGN-03: Excel via **OpenSpout** dengan sheet Ringkasan (total shift dan total jam per asisten), sheet Per Mata Kuliah (jam, shift, dan SKS per asisten per mata kuliah), dan sheet Detail. Jam dihitung dari laporan yang sudah Diverifikasi. Tidak ada tarif atau nominal honor.
 - FR-AGN-04: Riwayat ekspor dengan tautan unduh bertanda tangan (signed URL) berlaku 24 jam; file dihapus otomatis setelah 7 hari.
 
 **Program (FR-APR)** ⏸ _ditutup sementara; aktif kembali dengan `LAB_PROGRAMS_ENABLED=true`_
@@ -487,7 +487,7 @@ Sesi kelas (FR-AD-01): pertemuan **dimulai dan diakhiri otomatis** sesuai jam ke
 - FR-ADM-07 **Pengguna:** CRUD, import CSV/Excel (dengan template), ubah peran, tetapkan jabatan Sekretaris/Bendahara, nonaktifkan, reset password. Admin aktif terakhir dilindungi (US-D04-5).
 - FR-ADM-08 **Pengumuman global** dengan target peran dan masa tayang.
 - FR-ADM-09 **Audit log:** filter per pengguna, aksi, modul, tanggal.
-- FR-ADM-10 **Pengaturan sistem:** durasi idle, batas ukuran file, registrasi mandiri (buka/tutup) & domain email, tarif honor asisten per jam (dengan riwayat perubahan tarif). Kop & logo berita acara diubah langsung di file template Word.
+- FR-ADM-10 **Pengaturan sistem:** durasi idle, batas ukuran file, registrasi mandiri (buka/tutup) & domain email. Kop & logo berita acara diubah langsung di file template Word.
 - FR-ADM-11 Admin memiliki akses ke semua menu Asisten untuk seluruh kelas (super-set).
 
 ### 5.6 Fitur lintas modul
@@ -529,8 +529,6 @@ Database MySQL 8 (InnoDB, `utf8mb4_unicode_ci`). Semua tabel memakai `id` BIGINT
 | `shift_swaps`                   | shift_id, from_user_id, to_user_id, reason, status, responded_at                                                                                                                                                                                   | —                                                                                       |
 | `supervision_reports`           | semester_id, shift_id, user_id, class_id, room_id, date, start_time, end_time, activity, material, notes, status ENUM(draft, submitted, verified, returned), submitted_at, verified_by, verified_at, return_note, editable_until                   | Laporan ngawas (kolom lama `present_count`, `lab_condition` nullable, tidak diisi lagi) |
 | `supervision_report_assistants` | supervision_report_id, user_id, position                                                                                                                                                                                                           | Tim jaga; position 1 = penanggung jawab                                                 |
-| `honor_rates`                   | rate_per_hour, effective_from, set_by                                                                                                                                                                                                              | Riwayat tarif                                                                           |
-| `honor_recaps`                  | month, user_id, total_shifts, total_hours, rate_per_hour, amount, status ENUM(draft, final), approved_by, approved_at                                                                                                                              | Disetujui Sekretaris/Bendahara                                                          |
 | `programs`                      | type ENUM(workshop, quick_tutor, recruitment, maintenance), title, description, poster_file_id, quota, status, opens_at, closes_at                                                                                                                 | —                                                                                       |
 | `program_stages`                | program_id, order, name, start_at, end_at                                                                                                                                                                                                          | Timeline rekrutmen                                                                      |
 | `program_form_fields`           | program_id, label, type, required, rules_json                                                                                                                                                                                                      | Form builder                                                                            |
@@ -579,7 +577,6 @@ Aplikasi memakai **route Inertia** per peran, bukan REST API `/api/v1`. Beberapa
 | GET/POST | `/asisten/report` · `/asisten/reports/{report}`                                            | Asisten, Admin              | Laporan ngawas                                              |
 | POST     | `/asisten/reports/{report}/verify` · `/return` · `/unlock`                                 | Sekretaris/Bendahara, Admin | Verifikasi, kembalikan, buka kunci                          |
 | GET/POST | `/asisten/generate` · `/asisten/generate/daily` · `/asisten/exports/{export}`              | Asisten, Admin              | Generate rekap & unduh                                      |
-| POST     | `/asisten/honor-recaps/approve`                                                            | Sekretaris/Bendahara, Admin | Setujui rekap honor                                         |
 | GET/POST | `/asisten/schedule` · `/asisten/shifts/{shift}/swap-candidates`                            | Asisten, Admin              | Jadwal & tukar shift                                        |
 | GET      | `/files/{file}` (signed)                                                                   | Sesuai kepemilikan          | Unduh file, URL bertanda tangan 15 menit                    |
 | CRUD     | `/admin/semesters` · `/admin/courses` · `/admin/classes` · `/admin/rooms` · `/admin/users` | Admin                       | Master data                                                 |
@@ -680,7 +677,7 @@ Target di bawah menjadi Definition of Done untuk setiap rilis dan diuji di lingk
 - Konten rich text disimpan sebagai JSON TipTap dan dirender sebagai elemen React (tanpa `innerHTML`) sehingga aman dari XSS. Header keamanan: CSP (`frame-ancestors`, `base-uri`, `form-action`, `object-src`), `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, HSTS. ⏳ CSP penuh untuk `script-src` belum diterapkan.
 - Otorisasi di setiap endpoint via Policy; uji otomatis untuk IDOR (mis. praktikan A mengakses submission praktikan B → 403).
 - Rate limiting: login, reset password (OTP), gabung token, upload tugas, kontrak kursi, pencarian, unduh laporan.
-- Audit log append-only untuk aksi sensitif (nilai, kontrak kursi, peran/jabatan, semester, persetujuan kelas, verifikasi laporan, tarif dan rekap honor, laporan yang dibuka kuncinya, reset password, pemulihan Admin). Nilai rahasia (token kelas, password) tidak dicatat.
+- Audit log append-only untuk aksi sensitif (nilai, kontrak kursi, peran/jabatan, semester, persetujuan kelas, verifikasi laporan, laporan yang dibuka kuncinya, reset password, pemulihan Admin). Nilai rahasia (token kelas, password) tidak dicatat.
 - Data pribadi (NIM, email) hanya ditampilkan ke peran yang berhak; mengikuti prinsip UU Pelindungan Data Pribadi (UU No. 27/2022).
 - Rotasi `APP_KEY` dan kredensial dikelola via `.env` di server (`chmod 600`), tidak masuk repositori; template produksi `.env.production.example`. Di produksi, perintah database destruktif diblokir dan seeder demo ditolak.
 
@@ -741,7 +738,6 @@ Fitur berikut sengaja tidak masuk MVP agar rilis pertama fokus pada alur akademi
 | Membuka kembali modul Program                                                        | Workshop, Quick Tutor, Rekrutmen, Maintenance   | Sudah dibangun; menunggu keputusan lab (`LAB_PROGRAMS_ENABLED`)                                      |
 | Pemindaian antivirus ClamAV                                                          | Keamanan file unggahan                          | Infrastruktur server; kolom `scan_status` sudah siap                                                 |
 | Import jadwal kelas dari Excel, kartu kursi PDF, salin template tugas antar semester | Persiapan semester lebih cepat                  | Prioritas lebih rendah dari alur inti                                                                |
-| Slip honor dan persetujuan pembayaran                                                | Transparansi insentif                           | Perhitungan honor sudah masuk MVP (FR-AGN-03); slip & pembayaran menyusul                            |
 | Forum diskusi/Q&A per kelas                                                          | Tanya jawab terdokumentasi                      | Moderasi tambahan                                                                                    |
 | PWA offline & dark mode                                                              | Kenyamanan                                      | Bukan kebutuhan inti                                                                                 |
 | Aplikasi mobile native                                                               | Pengalaman mobile penuh                         | Web responsive sudah mencukupi                                                                       |
@@ -751,7 +747,7 @@ Fitur berikut sengaja tidak masuk MVP agar rilis pertama fokus pada alur akademi
 | Versi      | Tanggal       | Isi                                                                                                                                                                                                      |
 | ---------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0.1.0      | 4 Okt 2026    | Fondasi: Auth, RBAC + jabatan, master data Admin, kelas & token, persetujuan, enrollment, penyimpanan file aman, pertemuan, sesi, presensi                                                               |
-| 0.2.0      | 5 Okt 2026    | Task & submission, Grade (batch + Split-Screen), Seats, Schedule & tukar shift, Laporan Ngawas, Generate + honor, notifikasi, pengumuman, audit log, Program, pencarian, registrasi mandiri              |
+| 0.2.0      | 5 Okt 2026    | Task & submission, Grade (batch + Split-Screen), Seats, Schedule & tukar shift, Laporan Ngawas, Generate + rekap jam, notifikasi, pengumuman, audit log, Program, pencarian, registrasi mandiri              |
 | 0.3.0      | 6 Okt 2026    | Penyesuaian Figma, Pre/Post-Test Sesi Berjalan, Akhiri Sesi, satu ruang lab                                                                                                                              |
 | Unreleased | 7–21 Okt 2026 | Topik pertemuan (tanpa modul), reset password OTP, panel Sesi Berlangsung, warna mata kuliah, profil (telepon & foto), header keamanan, Admin produksi & pemulihan darurat, PHPStan 0 error, dokumentasi |
 

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
-use App\Models\HonorRate;
 use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,7 +12,7 @@ use Inertia\Response;
 
 /**
  * Admin › Pengaturan Sistem (FR-ADM-10): durasi idle, batas ukuran file,
- * tarif honor per jam (dengan riwayat). Kop laporan mengawas ada di template Word
+ * Kop laporan mengawas ada di template Word
  * (resources/templates/laporan-mengawas.docx).
  */
 class SystemSettingController extends Controller
@@ -22,15 +21,6 @@ class SystemSettingController extends Controller
     {
         return Inertia::render('admin/system-settings', [
             'settings' => Setting::current(),
-            'currentRate' => HonorRate::rateOn(now()->toDateString()),
-            'rates' => HonorRate::with('setter:id,name')->orderByDesc('effective_from')->orderByDesc('id')->limit(20)->get()
-                ->map(fn (HonorRate $r) => [
-                    'id' => $r->id,
-                    'rate' => $r->rate_per_hour,
-                    'effectiveFrom' => $r->effective_from->toDateString(),
-                    'setBy' => $r->setter?->name,
-                    'createdAt' => $r->created_at->toIso8601String(),
-                ]),
         ]);
     }
 
@@ -55,20 +45,6 @@ class SystemSettingController extends Controller
         Setting::put($validated, $request->user()->id);
         AuditLog::record('settings.updated', null, array_intersect_key($before, $validated), $validated);
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Pengaturan sistem disimpan.']);
-
-        return back();
-    }
-
-    public function storeRate(Request $request): RedirectResponse
-    {
-        $validated = $request->validate([
-            'rate_per_hour' => ['required', 'integer', 'min:1000', 'max:1000000'],
-            'effective_from' => ['required', 'date'],
-        ], [], ['rate_per_hour' => 'tarif per jam', 'effective_from' => 'tanggal berlaku']);
-
-        $rate = HonorRate::create([...$validated, 'set_by' => $request->user()->id]);
-        AuditLog::record('honor.rate_set', $rate, null, $validated);
-        Inertia::flash('toast', ['type' => 'success', 'message' => 'Tarif honor baru disimpan. Rekap Draft akan memakai tarif ini saat dihitung ulang.']);
 
         return back();
     }

@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { CalendarRange, FlaskConical, Megaphone, Upload } from 'lucide-react';
+import { useRef } from 'react';
 import { ActivePrograms } from '@/components/dashboard/active-programs';
 import { ApprovalQueue } from '@/components/dashboard/approval-queue';
 import { AuditLogFeed } from '@/components/dashboard/audit-log-feed';
@@ -8,6 +9,7 @@ import { GradingQueue } from '@/components/dashboard/grading-queue';
 import { MetricCard } from '@/components/dashboard/metric-card';
 import { SemesterCard } from '@/components/dashboard/semester-card';
 import { DashboardGreeting } from '@/components/dashboard-greeting';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 import { StatCard } from '@/components/stat-card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,11 +25,16 @@ export default function AdminDashboard({
     dashboard: AdminDashboardData;
 }) {
     const { counts } = dashboard;
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
 
     return (
         <>
             <Head title="Dashboard" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                     <div className="space-y-3">
                         {dashboard.isSample && (
@@ -63,7 +70,7 @@ export default function AdminDashboard({
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                     <SemesterCard semester={dashboard.semester} />
                     <MetricCard
                         value={dashboard.approvals.length}
@@ -77,7 +84,7 @@ export default function AdminDashboard({
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
                     <StatCard
                         label="Praktikan aktif"
                         value={counts.praktikan}
@@ -90,15 +97,15 @@ export default function AdminDashboard({
                     <StatCard label="Mata kuliah" value={counts.courses} />
                 </div>
 
-                <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-                    <div className="grid min-w-0 grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
+                    <div className="grid min-w-0 grid-cols-1 gap-5">
                         <ApprovalQueue items={dashboard.approvals} />
                         <AuditLogFeed items={dashboard.auditLogs} />
                     </div>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-1">
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-1">
                         <GradingQueue
                             items={dashboard.gradingQueue}
-                            gradeHref="/admin/grade"
+                            gradeHref="/asisten/grade"
                         />
                         <ActivePrograms items={dashboard.activePrograms} />
                     </div>

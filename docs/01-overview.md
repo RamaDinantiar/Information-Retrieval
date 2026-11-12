@@ -46,13 +46,13 @@ Sebelum sistem ini ada:
 | **Asisten Lab** | Mahasiswa senior, mengampu 2–4 kelas, 2–6 shift per minggu  | Menilai cepat, laporan tidak makan waktu, jadwal jelas           |
 | **Admin**       | Koordinator/Kepala Lab                                      | Data rapi per semester, kontrol penuh, audit mudah               |
 
-Asisten dapat diberi jabatan **Sekretaris/Bendahara** untuk memverifikasi laporan mengawas dan menyetujui
-rekap honor. Lihat [05 · Peran & hak akses](05-roles-permissions.md).
+Asisten dapat diberi jabatan **Sekretaris/Bendahara** untuk memverifikasi laporan mengawas dan melihat
+rekap jam seluruh asisten. Lihat [05 · Peran & hak akses](05-roles-permissions.md).
 
 ## Ruang lingkup
 
 **Termasuk:** login & pemulihan akun, dashboard tiga peran, kelas & enrollment, jadwal & sesi, presensi,
-tugas & pengumpulan, penilaian, kontrak kursi, laporan mengawas, rekap bulanan & honor, tukar shift,
+tugas & pengumpulan, penilaian, kontrak kursi, laporan mengawas, rekap bulanan & rekap jam mengawas, tukar shift,
 notifikasi, pengumuman, audit log, pengaturan sistem.
 
 **Ditutup sementara:** modul Program (Workshop, Quick Tutor, Rekrutmen, Maintenance). Kode & data tetap ada

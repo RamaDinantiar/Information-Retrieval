@@ -2,10 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Actions\Honor\ComputeHonorRecaps;
 use App\Actions\Shift\GenerateClassShifts;
-use App\Models\HonorRate;
-use App\Models\HonorRecap;
 use App\Models\Meeting;
 use App\Models\Room;
 use App\Models\Semester;
@@ -17,7 +14,7 @@ use Carbon\CarbonImmutable;
 
 /**
  * Shift (dari jadwal kelas + jaga lab), laporan ngawas berbagai status,
- * tukar shift, tarif & rekap honor — agar Schedule/Report/Generate terisi.
+ * tukar shift — agar Schedule/Report/Generate terisi.
  */
 class OperationsSeeder extends DemoSeeder
 {
@@ -28,7 +25,7 @@ class OperationsSeeder extends DemoSeeder
         'Proyektor sempat mati 10 menit; materi dilanjutkan melalui layar PC asisten. Praktikan menyelesaikan latihan tepat waktu.',
     ];
 
-    public function run(GenerateClassShifts $generate, ComputeHonorRecaps $honor): void
+    public function run(GenerateClassShifts $generate): void
     {
         $semester = Semester::current();
         $admin = User::where('email', 'admin@irlab.test')->first();
@@ -36,9 +33,6 @@ class OperationsSeeder extends DemoSeeder
         $michael = User::where('email', 'michael@irlab.test')->first();
         $yozika = User::where('email', 'yozika@irlab.test')->first();
         $today = CarbonImmutable::today();
-
-        HonorRate::create(['rate_per_hour' => 22500, 'effective_from' => $semester->start_date, 'set_by' => $admin->id]);
-        HonorRate::create(['rate_per_hour' => 25000, 'effective_from' => $today->startOfMonth()->toDateString(), 'set_by' => $admin->id]);
 
         $generate($semester);
 
@@ -106,11 +100,5 @@ class OperationsSeeder extends DemoSeeder
         if ($past) {
             ShiftSwap::create(['shift_id' => $past->id, 'from_user_id' => $michael->id, 'to_user_id' => $dimas->id, 'reason' => 'Izin sakit.', 'status' => 'approved', 'responded_at' => $past->date->subDays(2)]);
         }
-
-        // Rekap honor: bulan lalu Final (disetujui Sekretaris/Bendahara), bulan ini Draft.
-        $previous = $today->subMonth()->format('Y-m');
-        $honor($previous);
-        HonorRecap::where('month', $previous)->update(['status' => 'final', 'approved_by' => $yozika->id, 'approved_at' => $today->startOfMonth()->addDays(1)]);
-        $honor($today->format('Y-m'));
     }
 }

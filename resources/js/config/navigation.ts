@@ -169,7 +169,7 @@ export const roleLabels: Record<Role, string> = {
     admin: 'Admin',
 };
 
-/** Divisi Asisten. Sekretaris/Bendahara: verifikasi laporan ngawas + honor. */
+/** Divisi Asisten. Sekretaris/Bendahara: verifikasi laporan ngawas + rekap jam. */
 export const positionLabels: Record<Position, string> = {
     none: 'Asisten Umum',
     sekretaris_bendahara: 'Sekretaris/Bendahara',

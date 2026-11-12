@@ -1,5 +1,6 @@
 import { Head, usePoll } from '@inertiajs/react';
 import { FlaskConical } from 'lucide-react';
+import { useRef } from 'react';
 import { JoinClassDialog } from '@/components/classes/join-class-dialog';
 import { AnnouncementList } from '@/components/dashboard/announcement-list';
 import { CourseProgressList } from '@/components/dashboard/course-progress';
@@ -12,6 +13,7 @@ import { RecentFeedback } from '@/components/dashboard/recent-feedback';
 import { UpcomingTasks } from '@/components/dashboard/upcoming-tasks';
 import { WeekSchedule } from '@/components/dashboard/week-schedule';
 import { DashboardGreeting } from '@/components/dashboard-greeting';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 import { Badge } from '@/components/ui/badge';
 import type {
     PraktikanDashboard as PraktikanDashboardData,
@@ -29,13 +31,19 @@ export default function PraktikanDashboard({
     dashboard: PraktikanDashboardData;
     liveSessions: PraktikanLiveSession[];
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     // Test yang baru dibuka asisten & sesi yang baru mulai muncul tanpa reload.
     usePoll(20_000, { only: ['liveSessions'] });
 
     return (
         <>
             <Head title="Dashboard" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 {/* FR-PD-1: kartu sapaan + "Gabung Kelas" (selalu terlihat). */}
                 <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                     <div className="space-y-3">
@@ -61,7 +69,7 @@ export default function PraktikanDashboard({
 
                 {dashboard.hasClasses ? (
                     <>
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                             <NextClassCard nextClass={dashboard.nextClass} />
                             <MetricCard
                                 value={dashboard.pendingTasks}
@@ -75,13 +83,13 @@ export default function PraktikanDashboard({
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+                        <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
                             <WeekSchedule
                                 weekStart={dashboard.week.start}
                                 today={dashboard.week.today}
                                 events={dashboard.week.events}
                             />
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-1">
+                            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-1">
                                 <UpcomingTasks
                                     tasks={dashboard.upcomingTasks}
                                 />
@@ -92,7 +100,7 @@ export default function PraktikanDashboard({
                         </div>
 
                         {/* Selebar halaman agar tidak menyisakan ruang kosong di bawah kolom kanan. */}
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                             <RecentFeedback items={dashboard.recentFeedback} />
                             <AnnouncementList items={dashboard.announcements} />
                         </div>
@@ -100,7 +108,7 @@ export default function PraktikanDashboard({
                 ) : (
                     <>
                         <GettingStarted />
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                             <AnnouncementList items={dashboard.announcements} />
                             <OpenProgramCard program={dashboard.openProgram} />
                         </div>

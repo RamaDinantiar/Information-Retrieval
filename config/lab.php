@@ -19,6 +19,9 @@ return [
         'attachment_max' => 20 * 1024,
         'attachment_count' => 5,
 
+        // Jumlah berkas per pengumpulan (beberapa PDF, atau satu ZIP).
+        'submission_count' => 5,
+
         // NFR-F04: masa berlaku signed URL unduhan.
         'url_minutes' => 15,
 

@@ -13,6 +13,7 @@ use App\Models\Task;
 use App\Models\TaskTarget;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Support\Pdf;
@@ -36,6 +37,8 @@ class TaskManagementTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Tanggal contoh di bawah (Okt 2026) harus masih "akan datang".
+        Carbon::setTestNow('2026-10-01 09:00');
         Storage::fake('lab');
 
         $this->asisten = User::factory()->asisten()->create();
@@ -69,6 +72,31 @@ class TaskManagementTest extends TestCase
             ],
             ...$overrides,
         ];
+    }
+
+    public function test_publishing_with_a_deadline_that_has_passed_is_rejected_but_a_draft_is_allowed()
+    {
+        $past = ['targets' => [['class_id' => $this->classA->id, 'open_at' => '2026-09-30 08:00', 'due_at' => '2026-10-01 08:00']]];
+
+        $this->post(route('asisten.tasks.store'), $this->payload($past))
+            ->assertSessionHasErrors('targets.0.due_at');
+        $this->assertSame(0, Task::count());
+
+        $this->post(route('asisten.tasks.store'), $this->payload([...$past, 'intent' => 'draft']))
+            ->assertSessionHasNoErrors();
+        $this->assertSame('draft', Task::sole()->status);
+    }
+
+    public function test_resaving_an_already_published_class_with_a_past_deadline_is_still_allowed()
+    {
+        $this->post(route('asisten.tasks.store'), $this->payload())->assertSessionHasNoErrors();
+        $task = Task::sole();
+
+        Carbon::setTestNow('2026-10-20 09:00');
+
+        $this->put(route('asisten.tasks.update', $task), $this->payload(['title' => 'Judul baru']))
+            ->assertSessionHasNoErrors();
+        $this->assertSame('Judul baru', $task->fresh()->title);
     }
 
     public function test_a_task_is_published_to_several_classes_with_different_deadlines()

@@ -75,8 +75,7 @@ export function ClassCard({
                             status={
                                 PENDING_STATUS[
                                     klass.approvalStatus as
-                                        | 'pending'
-                                        | 'rejected'
+                                        'pending' | 'rejected'
                                 ]
                             }
                         />
@@ -120,22 +119,22 @@ export function ClassCard({
                 </p>
             </div>
 
-            <dl className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex gap-3">
                     <Clock
                         className="mt-0.5 size-6 shrink-0 text-primary-500"
                         aria-hidden
                     />
                     <div>
-                        <dt className="font-bold">Jadwal:</dt>
-                        <dd>
+                        <p className="font-bold">Jadwal:</p>
+                        <p>
                             {formatSchedule(
                                 klass.dayOfWeek,
                                 klass.startTime,
                                 klass.endTime,
                             )}{' '}
                             WIB
-                        </dd>
+                        </p>
                     </div>
                 </div>
                 <div className="flex gap-3">
@@ -144,11 +143,11 @@ export function ClassCard({
                         aria-hidden
                     />
                     <div>
-                        <dt className="font-bold">Dosen:</dt>
-                        <dd>{klass.lecturer ?? 'Belum diisi'}</dd>
+                        <p className="font-bold">Dosen:</p>
+                        <p>{klass.lecturer ?? 'Belum diisi'}</p>
                     </div>
                 </div>
-            </dl>
+            </div>
 
             <div className="grid gap-2">
                 <p className="text-sm">Asisten Jaga:</p>
@@ -252,6 +251,7 @@ export function ClassCard({
                     className="h-1.5 bg-primary-100"
                 >
                     <div
+                        data-grow
                         className="h-full bg-primary-700"
                         style={{ width: `${filled}%` }}
                     />

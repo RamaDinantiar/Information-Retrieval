@@ -5,6 +5,8 @@ import { GettingStarted } from '@/components/dashboard/getting-started';
 import { PageHeader } from '@/components/page-header';
 import { Badge } from '@/components/ui/badge';
 import { formatSchedule } from '@/lib/days';
+import { useRef } from 'react';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type EnrolledClass = {
     id: number;
@@ -27,10 +29,16 @@ export default function PraktikanClassIndex({
     semester: { id: number; name: string } | null;
     classes: EnrolledClass[];
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     return (
         <>
             <Head title="Class" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Class"
                     description={

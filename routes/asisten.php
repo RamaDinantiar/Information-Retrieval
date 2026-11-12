@@ -104,12 +104,11 @@ Route::post('reports/{report}/verify', [ReportController::class, 'verify'])->nam
 Route::post('reports/{report}/return', [ReportController::class, 'return'])->name('reports.return');
 Route::post('reports/{report}/unlock', [ReportController::class, 'unlock'])->name('reports.unlock');
 
-// FR-AGN: Generate rekap bulanan + honor (US-A04).
+// FR-AGN: Generate rekap bulanan + rekap jam mengawas (US-A04).
 Route::get('generate', [GenerateController::class, 'index'])->name('generate.index');
 Route::get('generate/daily', [GenerateController::class, 'daily'])->middleware('throttle:30,1')->name('generate.daily');
 Route::post('exports', [GenerateController::class, 'store'])->middleware('throttle:10,1')->name('exports.store');
 Route::get('exports/{export}', [GenerateController::class, 'show'])->name('exports.show');
-Route::post('honor-recaps/approve', [GenerateController::class, 'approveHonor'])->name('honor-recaps.approve');
 
 // FR-APR: Program (Workshop, Quick Tutor, Rekrutmen, Maintenance).
 Route::redirect('program', '/asisten/program/workshop');

@@ -47,7 +47,7 @@ const STATUSES = {
     scheduled: { label: 'Terjadwal', tone: 'secondary', icon: Clock },
     open: { label: 'Terbuka', tone: 'success', icon: CheckCircle2 },
     closed: { label: 'Ditutup', tone: 'outline', icon: Lock },
-    locked: { label: 'Terkunci', tone: 'outline', icon: Lock },
+    locked: { label: 'Pendaftaran Ditutup', tone: 'outline', icon: Lock },
     report_submitted: { label: 'Diajukan', tone: 'warning', icon: Send },
     verified: { label: 'Diverifikasi', tone: 'success', icon: CheckCircle2 },
     returned: { label: 'Dikembalikan', tone: 'destructive', icon: Undo2 },

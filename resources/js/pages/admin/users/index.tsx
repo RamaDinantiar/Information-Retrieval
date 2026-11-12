@@ -30,6 +30,7 @@ import { UserFormDialog } from '@/components/users/user-form-dialog';
 import { UserRowActions } from '@/components/users/user-row-actions';
 import { positionLabels, roleLabels } from '@/config/navigation';
 import type { Paginated, UserRow } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Filters = { search: string; role: string; status: string };
 
@@ -73,6 +74,9 @@ export default function UsersIndex({
     filters: Filters;
     counts: Record<'praktikan' | 'asisten' | 'admin', number>;
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const [search, setSearch] = useState(filters.search);
     const first = useRef(true);
 
@@ -106,7 +110,10 @@ export default function UsersIndex({
         <>
             <Head title="Pengguna" />
             <CredentialsDialog />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Pengguna"
                     description={`${counts.praktikan} praktikan · ${counts.asisten} asisten · ${counts.admin} admin. Akun dibuat Admin (tanpa registrasi mandiri); setiap akun baru wajib mengganti password sementara.`}

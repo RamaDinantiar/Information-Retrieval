@@ -4,7 +4,7 @@ namespace App\Enums;
 
 /**
  * Divisi Asisten (PRD Bagian 2): Asisten Umum, atau Sekretaris/Bendahara yang
- * juga memverifikasi laporan ngawas dan menyetujui rekap honor. Bukan peran baru;
+ * juga memverifikasi laporan ngawas dan melihat rekap jam seluruh asisten. Bukan peran baru;
  * keduanya tetap menjalankan tugas asisten (mengawas, mengajar kelas).
  */
 enum Position: string

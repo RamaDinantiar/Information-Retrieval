@@ -117,8 +117,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->isAdmin() || $this->position === Position::SekretarisBendahara;
     }
 
-    /** FR-AGN-03: Sekretaris/Bendahara menyetujui rekap honor (Admin juga boleh). */
-    public function canApproveHonor(): bool
+    /** FR-AGN-03: Sekretaris/Bendahara melihat rekap jam seluruh asisten (Admin juga boleh). */
+    public function canViewAllRecaps(): bool
     {
         return $this->isAdmin() || $this->position === Position::SekretarisBendahara;
     }

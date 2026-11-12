@@ -5,7 +5,7 @@ import {
     GraduationCap,
     MessageSquareText,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import GradeController from '@/actions/App/Http/Controllers/Praktikan/GradeController';
 import { EmptyState } from '@/components/empty-state';
 import { Markdown } from '@/components/markdown';
@@ -30,6 +30,7 @@ import {
 import { formatDate, formatRelative } from '@/lib/datetime';
 import { formatSchedule } from '@/lib/days';
 import { cn } from '@/lib/utils';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Cell = {
     taskTitle: string;
@@ -123,6 +124,9 @@ export default function PraktikanGrades({
     courses: Course[];
     detail: Detail | null;
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const [open, setOpen] = useState<NonNullable<Cell> | null>(null);
 
     const rowAverage = (row: Detail['rows'][number]) => {
@@ -153,7 +157,10 @@ export default function PraktikanGrades({
     return (
         <>
             <Head title="Penilaian (Grade)" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <div className="space-y-1 border-b border-primary-200 pb-5">
                     <h1 className="text-h1 font-bold text-primary-900">
                         Penilaian (Grade)

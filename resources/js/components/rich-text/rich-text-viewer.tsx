@@ -19,6 +19,8 @@ export function RichTextViewer({
             immediatelyRender: false,
             editorProps: {
                 attributes: {
+                    role: 'document',
+                    'aria-label': 'Uraian soal',
                     class: cn('rich-content outline-none', className),
                 },
             },

@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import AppLogo from '@/components/app-logo';
+import { useAuthMotion } from '@/hooks/use-auth-motion';
 import type { AuthLayoutProps } from '@/types';
 
 /**
@@ -11,14 +13,24 @@ export default function AuthPortalLayout({
     title,
     description,
 }: AuthLayoutProps) {
+    const root = useRef<HTMLDivElement>(null);
+    useAuthMotion(root);
+
     return (
         // Inline style: url di CSS akan dimuat dari server Vite saat dev (404).
         <div
+            ref={root}
             className="flex min-h-svh items-center justify-center bg-primary-50 bg-cover bg-center p-4 md:p-8"
             style={{ backgroundImage: "url('/images/login-bg.jpg')" }}
         >
-            <div className="grid w-full max-w-[1097px] overflow-hidden bg-white shadow-[0_24px_64px_rgb(9_47_56/0.18)] md:min-h-[640px] md:grid-cols-2">
-                <aside className="hidden flex-col bg-linear-to-br from-primary-800 to-primary p-10 text-white md:flex">
+            <div
+                data-auth-card
+                className="grid w-full max-w-[1097px] overflow-hidden bg-white shadow-[0_24px_64px_rgb(9_47_56/0.18)] md:min-h-[640px] md:grid-cols-2"
+            >
+                <aside
+                    data-auth-left
+                    className="hidden flex-col bg-linear-to-br from-primary-800 to-primary p-10 text-white md:flex"
+                >
                     <div className="flex items-center gap-3">
                         <AppLogo />
                     </div>
@@ -46,7 +58,7 @@ export default function AuthPortalLayout({
                         <AppLogo />
                     </div>
                     <div className="flex flex-1 flex-col justify-center px-6 py-8 sm:px-10 md:py-12">
-                        <div className="mb-8 space-y-3">
+                        <div data-auth-head className="mb-8 space-y-3">
                             <h1 className="text-[2rem] leading-tight font-medium sm:text-display">
                                 {title}
                             </h1>
@@ -56,7 +68,7 @@ export default function AuthPortalLayout({
                                 </p>
                             )}
                         </div>
-                        {children}
+                        <div data-auth-body>{children}</div>
                     </div>
                 </main>
             </div>

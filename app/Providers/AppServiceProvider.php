@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Setting;
+use App\Support\LiveVersion;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -45,6 +46,12 @@ class AppServiceProvider extends ServiceProvider
         QueryBuilder::macro('whereDateBetween', function (string $column, array $range) {
             /** @var QueryBuilder $this */
             return $this->whereDate($column, '>=', $range[0])->whereDate($column, '<=', $range[1]);
+        });
+
+        // Pembaruan langsung: perubahan data apa pun menaikkan token yang dipantau
+        // browser (lihat LiveVersion). Cache/sesi/antrean tidak lewat model, jadi tak ikut.
+        Event::listen(['eloquent.saved: *', 'eloquent.deleted: *'], function (): void {
+            LiveVersion::bump();
         });
 
         // Catat apakah sesi dibuat dengan Remember Me. Frontend memakainya untuk

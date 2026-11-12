@@ -9,6 +9,7 @@ use App\Models\LabClass;
 use App\Models\Task;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
@@ -126,6 +127,11 @@ class TaskRequest extends FormRequest
                 ->taughtBy($this->user())
                 ->pluck('id')->all();
 
+            // Kelas yang sudah diterbitkan sebelumnya dikecualikan (menyimpan ulang tugas lama).
+            $alreadyPublished = $task instanceof Task
+                ? $task->targets()->whereNotNull('published_at')->pluck('class_id')->flip()->all()
+                : [];
+
             foreach ($targets as $index => $target) {
                 if (! in_array((int) $target['class_id'], $allowed, true)) {
                     $validator->errors()->add("targets.{$index}.class_id", 'Kelas tidak termasuk mata kuliah ini atau tidak Anda ampu.');
@@ -141,6 +147,12 @@ class TaskRequest extends FormRequest
 
                 if ($publishing && ! $opensWithSession && (empty($target['open_at']) || empty($target['due_at']))) {
                     $validator->errors()->add("targets.{$index}.due_at", 'Isi waktu buka dan tenggat untuk setiap kelas.');
+                }
+
+                // Cegah salah input: tugas yang baru diterbitkan tidak boleh sudah lewat tenggat.
+                if ($publishing && ! empty($target['due_at']) && ! isset($alreadyPublished[(int) $target['class_id']])
+                    && Carbon::parse($target['due_at'])->isPast()) {
+                    $validator->errors()->add("targets.{$index}.due_at", 'Tenggat sudah lewat. Atur tenggat ke waktu yang akan datang agar praktikan bisa mengerjakan.');
                 }
 
                 if (! empty($target['open_at']) && ! empty($target['due_at']) && strtotime($target['due_at']) <= strtotime($target['open_at'])) {

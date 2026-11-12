@@ -19,6 +19,8 @@ import {
 } from '@/components/ui/table';
 import { formatDateRange } from '@/lib/datetime';
 import type { SemesterRow } from '@/types';
+import { useRef } from 'react';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 const STATUS: Record<SemesterRow['status'], Status> = {
     active: 'semester_active',
@@ -72,12 +74,18 @@ export default function SemestersIndex({
     semesters: SemesterRow[];
     purgeAfterYears: number;
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const current = semesters.find((semester) => semester.status === 'active');
 
     return (
         <>
             <Head title="Semester" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Semester"
                     description="Data operasional (kelas, tugas, nilai) terpisah per semester. Hanya satu semester yang dapat aktif; semester sebelumnya otomatis diarsipkan."

@@ -27,6 +27,8 @@ import type {
     SelectOption,
     SemesterOption,
 } from '@/types';
+import { useRef } from 'react';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Props = {
     semesters: SemesterOption[];
@@ -48,6 +50,9 @@ export default function ClassesIndex({
     pending,
     options,
 }: Props) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const now = useNow();
     const editable = semester?.editable ?? false;
 
@@ -80,7 +85,7 @@ export default function ClassesIndex({
     return (
         <>
             <Head title="Kelas & Jadwal" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Kelas & Jadwal"
                     description="Kelas praktikum per mata kuliah: jadwal, ruang, kuota, asisten pengampu, dan token gabung. Jadwal yang bentrok di ruang yang sama ditolak otomatis."
@@ -217,21 +222,23 @@ export default function ClassesIndex({
                                                         <span className="block font-bold">
                                                             {klass.course?.name}
                                                         </span>
-                                                        <span className="text-sm">
+                                                        <span className="block text-sm">
                                                             {klass.name}
                                                         </span>
-                                                        {klass.approvalStatus ===
-                                                            'rejected' && (
-                                                            <StatusBadge
-                                                                status="rejected"
-                                                                className="mt-1"
-                                                            />
-                                                        )}
-                                                        {klass.isLocked && (
-                                                            <StatusBadge
-                                                                status="locked"
-                                                                className="mt-1"
-                                                            />
+                                                        {(klass.approvalStatus ===
+                                                            'rejected' ||
+                                                            klass.isLocked) && (
+                                                            <span className="mt-1.5 flex flex-wrap gap-1">
+                                                                {klass.approvalStatus ===
+                                                                    'rejected' && (
+                                                                    <StatusBadge status="rejected" />
+                                                                )}
+                                                                {klass.isLocked && (
+                                                                    <span title="Praktikan baru tidak bisa bergabung ke kelas ini (dikunci manual atau kuota penuh). Anggota lama tidak terpengaruh.">
+                                                                        <StatusBadge status="locked" />
+                                                                    </span>
+                                                                )}
+                                                            </span>
                                                         )}
                                                     </TableCell>
                                                     <TableCell className="font-mono text-sm">

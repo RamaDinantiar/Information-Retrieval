@@ -238,7 +238,7 @@ class GradeController extends Controller
     private function rows(TaskTarget $target): array
     {
         $submissions = Submission::where('task_target_id', $target->id)->where('is_current', true)
-            ->with(['file', 'grade.grader'])->get()->keyBy('user_id');
+            ->with(['file', 'files', 'grade.grader'])->get()->keyBy('user_id');
 
         /** @var Collection<int, Enrollment> $members */
         $members = $target->labClass->enrollments()->with('user:id,nim,name')->get()
@@ -260,6 +260,7 @@ class GradeController extends Controller
                     'version' => $submission->version,
                     'textAnswer' => $submission->text_answer,
                     'file' => $submission->file?->toClient(inline: true),
+                    'files' => $submission->files->map(fn ($f) => $f->toClient(inline: true))->values(),
                 ] : null,
                 'grade' => $grade ? [
                     'score' => $grade->score !== null ? (float) $grade->score : null,

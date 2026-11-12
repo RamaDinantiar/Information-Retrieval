@@ -6,9 +6,11 @@ import {
     Download,
     FileText,
     Info,
+    Lock,
     Paperclip,
+    Undo2,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import TaskController from '@/actions/App/Http/Controllers/Praktikan/TaskController';
 import InputError from '@/components/input-error';
 import { Markdown } from '@/components/markdown';
@@ -38,11 +40,14 @@ import { TASK_TYPE_LABEL } from '@/lib/task';
 import { cn } from '@/lib/utils';
 import type { FileLink, StudentTask } from '@/types';
 import type { JSONContent } from '@tiptap/react';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type TaskDetail = StudentTask & {
     body: JSONContent | null;
     attachments: FileLink[];
     maxScore: number;
+    canUnsubmit: boolean;
+    maxFiles: number;
     allowLate: boolean;
     latePenalty: number | null;
     latePenaltyUnit: 'hour' | 'day' | null;
@@ -68,7 +73,7 @@ type Version = {
     lateLabel: string | null;
     receiptNumber: string | null;
     textAnswer: string | null;
-    file: FileLink | null;
+    files: FileLink[];
     sha256: string | null;
 };
 
@@ -82,25 +87,34 @@ const timestamp = new Intl.DateTimeFormat('id-ID', {
 export default function PraktikanTaskShow({
     task,
     history,
+    draft,
 }: {
     task: TaskDetail;
     history: Version[];
+    draft: {
+        textAnswer: string | null;
+        files: { id: number; name: string; size: number; url: string }[];
+    } | null;
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const now = useNow(30_000);
     const [confirming, setConfirming] = useState(false);
+    const [unsending, setUnsending] = useState(false);
     const [dropzoneKey, setDropzoneKey] = useState(0);
     const typeLabel = TASK_TYPE_LABEL[task.type];
     const current = history.find((version) => version.isCurrent);
     const pastDue = task.dueAt !== null && new Date(task.dueAt).getTime() < now;
-    const canSubmit = task.state === 'open' && !(current && pastDue);
+    const canSubmit = task.state === 'open' && !current;
 
     return (
         <>
             <Head title={task.title} />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <Link
                     href={TaskController.index.url()}
-                    className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary-700 hover:underline"
+                    className="inline-flex min-h-6 w-fit items-center gap-1.5 text-sm font-medium text-primary-700 hover:underline"
                 >
                     <ArrowLeft className="size-4" aria-hidden /> Semua tugas
                 </Link>
@@ -190,7 +204,8 @@ export default function PraktikanTaskShow({
                     latePenalty={task.latePenalty}
                     latePenaltyUnit={task.latePenaltyUnit}
                     maxScore={task.maxScore}
-                    accepting={canSubmit}
+                    // Tetap "berlangsung" walau sudah mengumpulkan; berakhir hanya saat tugas ditutup.
+                    accepting={task.state === 'open'}
                     submittedAt={current?.submittedAt ?? null}
                 />
 
@@ -209,7 +224,9 @@ export default function PraktikanTaskShow({
                         <RichTextViewer content={task.body} />
                     ) : (
                         <p className="text-sm text-muted-foreground">
-                            Tidak ada instruksi tambahan.
+                            {task.state === 'scheduled'
+                                ? 'Instruksi dan lampiran akan tampil saat tugas dibuka.'
+                                : 'Tidak ada instruksi tambahan.'}
                         </p>
                     )}
                     {task.attachments.length > 0 && (
@@ -226,7 +243,11 @@ export default function PraktikanTaskShow({
                                             variant="outline"
                                             asChild
                                         >
-                                            <a href={file.url} download>
+                                            <a
+                                                href={file.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
                                                 <Download /> {file.name}{' '}
                                                 <span className="font-mono text-xs">
                                                     ({formatFileSize(file.size)}
@@ -248,11 +269,9 @@ export default function PraktikanTaskShow({
                     <div className="grid gap-1 border-b border-input pb-4">
                         <p className="font-medium">Berkas Jawaban</p>
                         <h2 id="answer-title" className="text-h2 font-bold">
-                            {!canSubmit
+                            {current || !canSubmit
                                 ? `Jawaban ${typeLabel}`
-                                : current
-                                  ? `Ganti Jawaban ${typeLabel}`
-                                  : `Unggah Berkas ${typeLabel}`}
+                                : `Unggah Berkas ${typeLabel}`}
                         </h2>
                     </div>
                     {current && (
@@ -284,7 +303,91 @@ export default function PraktikanTaskShow({
                             )}
                         </p>
                     )}
-                    {!canSubmit ? (
+                    {current && task.state === 'open' ? (
+                        <div className="grid gap-3 border border-primary-200 bg-primary-50/50 p-4">
+                            <p className="flex items-center gap-2 text-sm font-bold">
+                                <Lock className="size-4" aria-hidden /> Jawaban
+                                sudah dikumpulkan dan dikunci
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                                {task.canUnsubmit
+                                    ? 'Untuk menambah atau mengganti berkas/jawaban, batalkan dulu pengumpulan ini (Unsend), lalu kumpulkan ulang.'
+                                    : 'Pengumpulan ini sudah dinilai asisten sehingga tidak dapat dibatalkan.'}
+                            </p>
+                            {task.canUnsubmit && (
+                                <Form
+                                    {...TaskController.unsubmit.form(task.id)}
+                                    options={{ preserveScroll: true }}
+                                    onSuccess={() => setUnsending(false)}
+                                >
+                                    {({ processing, errors, submit }) => (
+                                        <>
+                                            <InputError
+                                                message={errors.submission}
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                className="w-full sm:w-fit"
+                                                onClick={() =>
+                                                    setUnsending(true)
+                                                }
+                                            >
+                                                <Undo2 /> Batalkan Pengumpulan
+                                                (Unsend)
+                                            </Button>
+                                            <Dialog
+                                                open={unsending}
+                                                onOpenChange={setUnsending}
+                                            >
+                                                <DialogContent className="sm:max-w-md">
+                                                    <DialogHeader>
+                                                        <DialogTitle>
+                                                            Batalkan
+                                                            pengumpulan?
+                                                        </DialogTitle>
+                                                        <DialogDescription>
+                                                            Jawaban Anda akan
+                                                            ditarik dan Anda
+                                                            harus mengumpulkan
+                                                            ulang sebelum
+                                                            tenggat.
+                                                        </DialogDescription>
+                                                    </DialogHeader>
+                                                    <DialogFooter>
+                                                        <DialogClose asChild>
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                            >
+                                                                Tidak
+                                                            </Button>
+                                                        </DialogClose>
+                                                        <Button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                submit()
+                                                            }
+                                                            disabled={
+                                                                processing
+                                                            }
+                                                        >
+                                                            {processing ? (
+                                                                <Spinner />
+                                                            ) : (
+                                                                <Undo2 />
+                                                            )}{' '}
+                                                            Ya, Batalkan
+                                                        </Button>
+                                                    </DialogFooter>
+                                                </DialogContent>
+                                            </Dialog>
+                                        </>
+                                    )}
+                                </Form>
+                            )}
+                        </div>
+                    ) : !canSubmit ? (
                         <p className="text-sm text-muted-foreground">
                             {task.state === 'scheduled'
                                 ? 'Tugas belum dibuka.'
@@ -323,6 +426,8 @@ export default function PraktikanTaskShow({
                                             <AnswerDropzone
                                                 key={dropzoneKey}
                                                 formats={task.allowedFormats}
+                                                draftFiles={draft?.files ?? []}
+                                                maxFiles={task.maxFiles}
                                                 limits={task.limits}
                                                 invalid={!!errors.file}
                                             />
@@ -362,7 +467,7 @@ export default function PraktikanTaskShow({
                                                 rows={8}
                                                 maxLength={20000}
                                                 defaultValue={
-                                                    current?.textAnswer ?? ''
+                                                    draft?.textAnswer ?? ''
                                                 }
                                                 className="font-mono text-sm"
                                                 placeholder={
@@ -399,9 +504,8 @@ export default function PraktikanTaskShow({
                                                     Kumpulkan sekarang?
                                                 </DialogTitle>
                                                 <DialogDescription>
-                                                    {current
-                                                        ? `Jawaban ini menggantikan versi ${current.version}. Versi lama tetap tersimpan di riwayat, tetapi hanya versi terbaru yang dinilai.`
-                                                        : 'Waktu pengumpulan dicatat dengan jam server.'}
+                                                    Waktu pengumpulan dicatat
+                                                    dengan jam server.
                                                 </DialogDescription>
                                             </DialogHeader>
                                             <DialogFooter>
@@ -483,19 +587,22 @@ export default function PraktikanTaskShow({
                                             WIB · {version.receiptNumber}
                                         </span>
                                     </div>
-                                    {version.file && (
+                                    {version.files.map((file) => (
                                         <a
-                                            href={version.file.url}
+                                            key={file.id}
+                                            href={file.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
                                             className="inline-flex w-fit items-center gap-1 text-sm text-primary-700 underline"
                                         >
                                             <FileText
                                                 className="size-4"
                                                 aria-hidden
                                             />{' '}
-                                            {version.file.name} (
-                                            {formatFileSize(version.file.size)})
+                                            {file.name} (
+                                            {formatFileSize(file.size)})
                                         </a>
-                                    )}
+                                    ))}
                                     {version.textAnswer && (
                                         <Markdown className="border-l-2 border-primary-200 pl-3 text-sm">
                                             {version.textAnswer}

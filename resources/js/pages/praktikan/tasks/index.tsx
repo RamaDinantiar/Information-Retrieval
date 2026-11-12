@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { AlarmClock, ClipboardList } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import TaskController from '@/actions/App/Http/Controllers/Praktikan/TaskController';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
@@ -19,6 +19,7 @@ import { formatCountdown, formatRelative } from '@/lib/datetime';
 import { TASK_TYPE_LABEL } from '@/lib/task';
 import { cn } from '@/lib/utils';
 import type { StudentTask, TaskType } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 const ALL = 'all';
 const DAY_MS = 86_400_000;
@@ -31,6 +32,9 @@ export default function PraktikanTasks({
     type: TaskType | null;
     tasks: StudentTask[];
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const now = useNow();
     const [klass, setKlass] = useState(ALL);
     const [status, setStatus] = useState(ALL);
@@ -52,7 +56,7 @@ export default function PraktikanTasks({
     return (
         <>
             <Head title={`Task · ${title}`} />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title={`Task · ${title}`}
                     description="Tugas dari kelas yang Anda ikuti. Kumpulkan sebelum tenggat; Anda dapat mengganti jawaban selama tenggat belum lewat."
@@ -161,6 +165,9 @@ export default function PraktikanTasks({
                                                     'not_submitted' && (
                                                     <StatusBadge status="closed" />
                                                 )}
+                                            {task.state === 'scheduled' && (
+                                                <StatusBadge status="scheduled" />
+                                            )}
                                             <StatusBadge
                                                 status={task.status}
                                                 label={

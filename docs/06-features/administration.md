@@ -35,7 +35,7 @@
 ![Audit log](../images/admin-audit.jpg)
 
 Mencatat aksi sensitif dengan pelaku, objek, data **sebelum & sesudah**, dan IP: nilai, kontrak kursi,
-peran/jabatan, semester, persetujuan, verifikasi laporan, tarif & rekap honor, reset password,
+peran/jabatan, semester, persetujuan, verifikasi laporan, reset password,
 pembukaan kunci laporan, dan lain-lain. Dapat difilter berdasarkan modul, pelaku, dan rentang tanggal.
 
 ## Pengaturan sistem
@@ -48,7 +48,6 @@ pembukaan kunci laporan, dan lain-lain. Dapat difilter berdasarkan modul, pelaku
 | Batas unggah PDF / ZIP / gambar | 10 / 20 / 5 MB                 |
 | Registrasi mandiri praktikan    | Dibuka                         |
 | Domain email registrasi         | `itpln.ac.id`                  |
-| Tarif honor per jam             | Berlaku mulai tanggal tertentu |
 
 ## Kode terkait
 

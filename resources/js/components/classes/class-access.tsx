@@ -82,8 +82,8 @@ export function ClassAccess({
                                 >
                                     {klass.isLocked ? <LockOpen /> : <Lock />}
                                     {klass.isLocked
-                                        ? 'Buka Kunci'
-                                        : 'Kunci Kelas'}
+                                        ? 'Buka Pendaftaran'
+                                        : 'Tutup Pendaftaran'}
                                 </Button>
                             </>
                         )}

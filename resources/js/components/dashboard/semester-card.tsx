@@ -37,6 +37,7 @@ export function SemesterCard({
                             className="h-1.5 flex-1 bg-white/25"
                         >
                             <span
+                                data-grow
                                 className="block h-full bg-white"
                                 style={{
                                     width: `${(semester.week / semester.totalWeeks) * 100}%`,

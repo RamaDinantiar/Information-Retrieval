@@ -1,5 +1,6 @@
 import { Head, Link, usePoll } from '@inertiajs/react';
 import { ClipboardPlus, FlaskConical, Play, SquarePen } from 'lucide-react';
+import { useRef } from 'react';
 import { ActivityFeed } from '@/components/dashboard/activity-feed';
 import { AlertLinks } from '@/components/dashboard/alert-links';
 import { GradingQueue } from '@/components/dashboard/grading-queue';
@@ -9,6 +10,7 @@ import { MetricCard } from '@/components/dashboard/metric-card';
 import { NextShiftCard } from '@/components/dashboard/next-shift-card';
 import { WeekSchedule } from '@/components/dashboard/week-schedule';
 import { DashboardGreeting } from '@/components/dashboard-greeting';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type {
@@ -27,13 +29,19 @@ export default function AsistenDashboard({
     dashboard: AsistenDashboardData;
     liveSessions: AsistenLiveSession[];
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     // Sesi mulai otomatis & jumlah pengumpulan test ikut terbarui tanpa reload.
     usePoll(30_000, { only: ['liveSessions'] });
 
     return (
         <>
             <Head title="Dashboard" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                     <div className="space-y-3">
                         {dashboard.isSample && (
@@ -78,7 +86,7 @@ export default function AsistenDashboard({
                     />
                 ))}
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                     <HighlightCard
                         title="Tulis Laporan Ngawas"
                         description="Segera isi riwayat kelas setelah kelas selesai."
@@ -104,7 +112,7 @@ export default function AsistenDashboard({
 
                 <AlertLinks alerts={dashboard.alerts} />
 
-                <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+                <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
                     <WeekSchedule
                         weekStart={dashboard.week.start}
                         today={dashboard.week.today}

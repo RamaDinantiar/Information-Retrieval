@@ -25,6 +25,7 @@ Route::post('enrollments', [EnrollmentController::class, 'store'])->name('enroll
 Route::get('task/{type?}', [TaskController::class, 'index'])->where('type', 'laporan|post-test|pre-test')->name('tasks.index');
 Route::get('tasks/{target}', [TaskController::class, 'show'])->name('tasks.show');
 Route::post('tasks/{target}/submissions', [TaskController::class, 'submit'])->middleware('throttle:20,1')->name('tasks.submit');
+Route::delete('tasks/{target}/submissions/current', [TaskController::class, 'unsubmit'])->middleware('throttle:20,1')->name('tasks.unsubmit');
 
 // FR-PG: nilai & feedback (read-only).
 Route::get('grade', [GradeController::class, 'index'])->name('grades.index');

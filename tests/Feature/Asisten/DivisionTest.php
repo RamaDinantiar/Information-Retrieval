@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 /**
  * Divisi Asisten: Asisten Umum, atau Sekretaris/Bendahara (satu jabatan) yang
- * memverifikasi laporan ngawas sekaligus menyetujui rekap honor.
+ * memverifikasi laporan ngawas sekaligus melihat rekap jam seluruh asisten.
  */
 class DivisionTest extends TestCase
 {
@@ -22,11 +22,11 @@ class DivisionTest extends TestCase
 
         $this->assertSame('Asisten Umum', $umum->position->label());
         $this->assertFalse($umum->canVerifyReports());
-        $this->assertFalse($umum->canApproveHonor());
+        $this->assertFalse($umum->canViewAllRecaps());
 
         $this->assertSame('Sekretaris/Bendahara', $sekben->position->label());
         $this->assertTrue($sekben->canVerifyReports());
-        $this->assertTrue($sekben->canApproveHonor());
+        $this->assertTrue($sekben->canViewAllRecaps());
     }
 
     public function test_old_positions_are_rejected()

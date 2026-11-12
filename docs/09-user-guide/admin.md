@@ -50,6 +50,6 @@ diberi waktu kedaluwarsa.
 ![Audit log](../images/admin-audit.jpg)
 
 - **Audit Log**: telusuri siapa mengubah apa, kapan, dan dari IP mana. Data sebelum & sesudah tersedia.
-- **Pengaturan Sistem**: batas idle, batas ukuran unggahan, registrasi mandiri & domain email, tarif honor.
+- **Pengaturan Sistem**: batas idle, batas ukuran unggahan, registrasi mandiri & domain email.
 
 ![Pengaturan sistem](../images/admin-settings.jpg)

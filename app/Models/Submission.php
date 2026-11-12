@@ -6,10 +6,12 @@ use App\Contracts\HasFiles;
 use App\Enums\Role;
 use Carbon\CarbonImmutable;
 use Database\Factories\SubmissionFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -30,6 +32,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read TaskTarget $target
  * @property-read User $user
  * @property-read StoredFile|null $file
+ * @property-read Collection<int, StoredFile> $files
  */
 class Submission extends Model implements HasFiles
 {
@@ -69,6 +72,16 @@ class Submission extends Model implements HasFiles
     public function file(): MorphOne
     {
         return $this->morphOne(StoredFile::class, 'owner')->where('purpose', 'submission');
+    }
+
+    /**
+     * Semua berkas jawaban (beberapa PDF, atau satu ZIP).
+     *
+     * @return MorphMany<StoredFile, $this>
+     */
+    public function files(): MorphMany
+    {
+        return $this->morphMany(StoredFile::class, 'owner')->where('purpose', 'submission')->orderBy('id');
     }
 
     /**

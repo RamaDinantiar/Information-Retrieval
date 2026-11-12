@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * Berita acara mengawas (US-A03, FR-AR). Draft → Diajukan → Diverifikasi
- * atau Dikembalikan. Hanya yang Diverifikasi masuk rekap & honor.
+ * atau Dikembalikan. Hanya yang Diverifikasi masuk rekap jam.
  *
  * @property int $id
  * @property int $semester_id
@@ -139,7 +139,7 @@ class SupervisionReport extends Model implements HasFiles
 
     public function fileVisibleTo(User $user): bool
     {
-        return $user->canVerifyReports() || $user->canApproveHonor()
+        return $user->canVerifyReports() || $user->canViewAllRecaps()
             || $this->user_id === $user->id
             || $this->assistants()->whereKey($user->id)->exists();
     }

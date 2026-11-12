@@ -10,6 +10,7 @@ import {
     ZoomIn,
     ZoomOut,
 } from 'lucide-react';
+import { router } from '@inertiajs/react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
@@ -345,7 +346,22 @@ export function PdfViewer({
             </DocumentToolbar>
 
             {error ? (
-                <p className="p-6 text-sm text-danger">{error}</p>
+                <div className="grid justify-items-start gap-3 p-6">
+                    <p className="text-sm text-danger">{error}</p>
+                    <p className="text-sm text-muted-foreground">
+                        Tautan berkas berlaku 15 menit dan berubah bila
+                        praktikan membatalkan/mengumpulkan ulang. Muat ulang
+                        untuk mendapat tautan terbaru.
+                    </p>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.reload()}
+                    >
+                        <RotateCw /> Muat ulang
+                    </Button>
+                </div>
             ) : !pdf ? (
                 <p className="flex items-center gap-2 p-6 text-sm text-muted-foreground">
                     <Spinner /> Memuat PDF…
@@ -353,6 +369,9 @@ export function PdfViewer({
             ) : (
                 <div
                     ref={scroller}
+                    tabIndex={0}
+                    role="region"
+                    aria-label="Dokumen yang dinilai"
                     className={cn(
                         'flex-1 space-y-6 overflow-auto px-8 py-10',
                         fullscreen && 'bg-[#cde7ee]',

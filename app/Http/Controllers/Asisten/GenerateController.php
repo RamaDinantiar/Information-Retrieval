@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Asisten;
 
-use App\Actions\Honor\ComputeHonorRecaps;
 use App\Http\Controllers\Controller;
 use App\Jobs\GenerateMonthlyReport;
 use App\Models\Export;
-use App\Models\HonorRecap;
 use App\Models\Shift;
 use App\Models\SupervisionReport;
 use App\Support\Reports\DailyActivityReport;
+use App\Support\Reports\HoursRecap;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -20,16 +19,16 @@ use Inertia\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
- * Asisten › Generate — rekap laporan mengawas dalam Word (ZIP per hari / satu hari) & Excel (US-A04, FR-AGN-01…04) + honor.
+ * Asisten › Generate — rekap laporan mengawas dalam Word (ZIP per hari / satu hari) & Excel (US-A04, FR-AGN-01…04) dan rekap jam.
  */
 class GenerateController extends Controller
 {
-    public function index(Request $request, ComputeHonorRecaps $recaps): Response
+    public function index(Request $request): Response
     {
         $user = $request->user();
         $month = preg_match('/^\d{4}-\d{2}$/', (string) $request->query('month')) ? $request->query('month') : now()->format('Y-m');
         $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
-        $allScope = $user->canApproveHonor();
+        $allScope = $user->canViewAllRecaps();
         $scope = $allScope && $request->query('scope') === 'all' ? 'all' : 'mine';
 
         $inMonth = fn ($q) => $q->whereDateBetween('date', [$start->toDateString(), $start->endOfMonth()->toDateString()]);
@@ -55,25 +54,8 @@ class GenerateController extends Controller
                 'materials' => $items->pluck('material')->filter()->unique()->values(),
             ])->values(),
             'exports' => Export::where('user_id', $user->id)->with('file')->latest()->limit(10)->get()->map(fn (Export $e) => $this->exportRow($e)),
-            'honor' => $allScope ? [
-                'recaps' => $recaps($month)->map(fn (HonorRecap $r) => [
-                    'id' => $r->id,
-                    'name' => $r->user->name,
-                    'nim' => $r->user->nim,
-                    'shifts' => $r->total_shifts,
-                    'hours' => (float) $r->total_hours,
-                    'rate' => $r->rate_per_hour,
-                    'amount' => $r->amount,
-                    'status' => $r->status,
-                ])->values(),
-                'canApprove' => true,
-            ] : [
-                'recaps' => HonorRecap::where('month', $month)->where('user_id', $user->id)->get()->map(fn (HonorRecap $r) => [
-                    'id' => $r->id, 'name' => $user->name, 'nim' => $user->nim, 'shifts' => $r->total_shifts,
-                    'hours' => (float) $r->total_hours, 'rate' => $r->rate_per_hour, 'amount' => $r->amount, 'status' => $r->status,
-                ])->values(),
-                'canApprove' => false,
-            ],
+            // Jam & SKS mengawas per mata kuliah (tanpa hitungan honor).
+            'recap' => HoursRecap::forMonth($month, $allScope && $scope === 'all' ? null : $user->id),
         ]);
     }
 
@@ -86,7 +68,7 @@ class GenerateController extends Controller
             'scope' => ['required', Rule::in(['mine', 'all'])],
         ]);
 
-        abort_if($validated['scope'] === 'all' && ! $request->user()->canApproveHonor(), 403);
+        abort_if($validated['scope'] === 'all' && ! $request->user()->canViewAllRecaps(), 403);
 
         $export = Export::create([
             'user_id' => $request->user()->id,
@@ -112,7 +94,7 @@ class GenerateController extends Controller
         ], [], ['date' => 'tanggal']);
         $scope = $validated['scope'] ?? 'mine';
 
-        abort_if($scope === 'all' && ! $request->user()->canApproveHonor(), 403);
+        abort_if($scope === 'all' && ! $request->user()->canViewAllRecaps(), 403);
 
         $date = CarbonImmutable::parse($validated['date']);
         $reports = GenerateMonthlyReport::reports($request->user()->id, $date->format('Y-m'), $scope, $date->toDateString());
@@ -139,15 +121,6 @@ class GenerateController extends Controller
         abort_unless($export->user_id === $request->user()->id, 403);
 
         return response()->json($this->exportRow($export->load('file')));
-    }
-
-    public function approveHonor(Request $request, ComputeHonorRecaps $recaps): RedirectResponse
-    {
-        $validated = $request->validate(['month' => ['required', 'date_format:Y-m']]);
-        $count = $recaps->approve($request->user(), $validated['month']);
-        Inertia::flash('toast', ['type' => 'success', 'message' => "{$count} rekap honor disetujui dan berstatus Final."]);
-
-        return back();
     }
 
     /**

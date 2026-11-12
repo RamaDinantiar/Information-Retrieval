@@ -132,7 +132,7 @@ Menjalankan tugas otomatis. Tanpa cron, **sesi kelas tidak mulai/berhenti sendir
       pribadi agar audit log jelas. Saat pergantian pengurus, Admin baru menonaktifkan yang lama.
 - [ ] Admin › Semester: buat & aktifkan semester berjalan
 - [ ] Admin › Ruang & Denah: periksa ruang "Lab IR" dan denah kursinya
-- [ ] Admin › Pengaturan Sistem: tentukan apakah pendaftaran mandiri dibuka, domain email kampus, tarif honor
+- [ ] Admin › Pengaturan Sistem: tentukan apakah pendaftaran mandiri dibuka, domain email kampus
 - [ ] Admin › Kelas & Jadwal: isi **Nama dosen** tiap kelas (tampil di laporan kegiatan harian Word)
 - [ ] Template laporan mengawas ada di `resources/templates/laporan-mengawas.docx`
       (ikut di repo; kop & logo diubah langsung di file Word, penanda `${...}` jangan dihapus)

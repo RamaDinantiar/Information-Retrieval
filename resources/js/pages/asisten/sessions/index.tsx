@@ -6,6 +6,8 @@ import { PageHeader } from '@/components/page-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/datetime';
+import { useRef } from 'react';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Session = {
     id: number;
@@ -28,10 +30,16 @@ type Session = {
 
 /** FR-AD-01: pilih sesi hari ini / mendatang untuk dimulai. */
 export default function SessionsIndex({ sessions }: { sessions: Session[] }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     return (
         <>
             <Head title="Sesi Kelas" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Sesi Kelas"
                     description="Sesi mulai & selesai otomatis sesuai jam kelas. Buka sesi untuk mengisi presensi dan mengunduh rekapnya."

@@ -12,7 +12,7 @@ import {
     X,
 } from 'lucide-react';
 import type { FormEvent } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import ScheduleController from '@/actions/App/Http/Controllers/Asisten/ScheduleController';
 import ShiftController from '@/actions/App/Http/Controllers/Asisten/ShiftController';
 import ShiftSwapController from '@/actions/App/Http/Controllers/Asisten/ShiftSwapController';
@@ -51,6 +51,7 @@ import type {
 } from '@/types';
 import { TimeField } from '@/components/pickers/time-field';
 import { DateField } from '@/components/pickers/date-field';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Props = {
     week: { start: string; today: number; events: ScheduleEvent[] };
@@ -528,6 +529,9 @@ export default function AsistenSchedule({
     history,
     manage,
 }: Props) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const [tab, setTab] = useState<'mine' | 'all'>('mine');
     const weekOffset = Math.round(
         (new Date(`${week.start}T00:00:00`).getTime() -
@@ -576,7 +580,10 @@ export default function AsistenSchedule({
     return (
         <>
             <Head title="Schedule" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div className="space-y-1">
                         <h1 className="text-h1 font-bold text-primary-900">

@@ -1,6 +1,6 @@
 import { Head, router } from '@inertiajs/react';
 import { Armchair, Mail, Phone } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import SeatController from '@/actions/App/Http/Controllers/Asisten/SeatController';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
@@ -12,6 +12,7 @@ import {
 import { SeatMap } from '@/components/seats/seat-map';
 import { useInitials } from '@/hooks/use-initials';
 import type { SeatClassSummary, SeatMapPayload, SeatOccupant } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Selected = SeatClassSummary & { contracted: number; members: number };
 
@@ -25,13 +26,19 @@ export default function AsistenSeats({
     selected: Selected | null;
     map: SeatMapPayload | null;
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const [focus, setFocus] = useState<SeatOccupant | null>(null);
     const getInitials = useInitials();
 
     return (
         <>
             <Head title="Seat Mapping" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Seat Mapping"
                     description="Pusat pemetaan kontrak tempat duduk mahasiswa di Laboratorium Information Retrieval."

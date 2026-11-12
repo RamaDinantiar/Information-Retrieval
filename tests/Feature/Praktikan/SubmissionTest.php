@@ -3,6 +3,7 @@
 namespace Tests\Feature\Praktikan;
 
 use App\Models\Enrollment;
+use App\Models\Grade;
 use App\Models\LabClass;
 use App\Models\StoredFile;
 use App\Models\Submission;
@@ -51,11 +52,32 @@ class SubmissionTest extends TestCase
         $scheduled = TaskTarget::factory()->create(['class_id' => $this->target->class_id, 'task_id' => Task::factory()->create(['course_id' => $this->target->task->course_id, 'semester_id' => $this->target->task->semester_id]), 'open_at' => now()->addDay()]);
 
         $this->get(route('praktikan.tasks.index'))
-            ->assertInertia(fn (Assert $page) => $page->has('tasks', 1)->where('tasks.0.id', $this->target->id)->where('tasks.0.status', 'not_submitted'));
+            ->assertInertia(fn (Assert $page) => $page->has('tasks', 2)->where('tasks.0.id', $this->target->id)->where('tasks.0.status', 'not_submitted')
+                ->where('tasks.1.id', $scheduled->id)->where('tasks.1.state', 'scheduled'));
 
-        foreach ([$other, $draft, $scheduled] as $hidden) {
+        foreach ([$other, $draft] as $hidden) {
             $this->get(route('praktikan.tasks.show', $hidden))->assertNotFound();
         }
+    }
+
+    public function test_a_scheduled_task_can_be_opened_from_the_notification_but_hides_content_and_rejects_submission()
+    {
+        $scheduled = TaskTarget::factory()->create([
+            'class_id' => $this->target->class_id,
+            'task_id' => Task::factory()->create([
+                'course_id' => $this->target->task->course_id, 'semester_id' => $this->target->task->semester_id,
+                'body_json' => ['type' => 'doc', 'content' => []], 'allowed_formats' => ['pdf'],
+            ]),
+            'open_at' => now()->addMinutes(10), 'due_at' => now()->addMinutes(30),
+        ]);
+
+        $this->get(route('praktikan.tasks.show', $scheduled))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->where('task.state', 'scheduled')->where('task.body', null)->where('task.attachments', []));
+
+        $this->post(route('praktikan.tasks.submit', $scheduled), ['file' => Pdf::upload('jawaban.pdf')])
+            ->assertSessionHasErrors();
+        $this->assertSame(0, Submission::count());
     }
 
     public function test_a_pdf_submission_gets_a_receipt_with_server_time()
@@ -105,15 +127,98 @@ class SubmissionTest extends TestCase
         $this->submit(['text_answer' => 'Jawaban'])->assertSessionHasNoErrors();
     }
 
-    public function test_resubmitting_before_the_deadline_keeps_history()
+    public function test_a_second_submission_is_rejected_until_the_first_is_unsent()
     {
-        $this->submit(['file' => Pdf::upload('v1.pdf')]);
-        $this->submit(['file' => Pdf::upload('v2.pdf')]);
+        $this->submit(['file' => Pdf::upload('v1.pdf')])->assertSessionHasNoErrors();
+        $this->submit(['file' => Pdf::upload('v2.pdf')])->assertSessionHasErrors('submission');
+        $this->assertSame(1, Submission::count());
+        $this->assertSame('v1.pdf', Submission::sole()->file->original_name);
 
-        $this->assertSame(2, Submission::count());
-        $current = Submission::where('is_current', true)->sole();
+        $this->get(route('praktikan.tasks.show', $this->target))
+            ->assertInertia(fn (Assert $page) => $page->where('task.canUnsubmit', true));
+
+        $this->delete(route('praktikan.tasks.unsubmit', $this->target))->assertSessionHasNoErrors();
+        $this->assertSame(0, Submission::count());
+        $this->assertSame(1, Submission::withTrashed()->where('is_current', false)->count());
+
+        $this->submit(['file' => Pdf::upload('v2.pdf')])->assertSessionHasNoErrors();
+        $current = Submission::sole();
         $this->assertSame(2, $current->version);
         $this->assertSame('v2.pdf', $current->file->original_name);
+    }
+
+    public function test_after_unsend_the_file_and_text_stay_as_a_draft_that_can_be_resubmitted()
+    {
+        $this->submit(['file' => Pdf::upload('v1.pdf'), 'text_answer' => 'jawaban awal'])->assertSessionHasNoErrors();
+        $this->delete(route('praktikan.tasks.unsubmit', $this->target));
+
+        $this->get(route('praktikan.tasks.show', $this->target))
+            ->assertInertia(fn (Assert $page) => $page->where('draft.textAnswer', 'jawaban awal')->where('draft.files.0.name', 'v1.pdf'));
+
+        // Kirim ulang tanpa berkas baru, berkas lama ikut (keep_draft_file).
+        $draftFileId = Submission::onlyTrashed()->latest('id')->first()->file->id;
+        $this->submit(['keep_draft_files' => [$draftFileId], 'text_answer' => 'jawaban revisi'])->assertSessionHasNoErrors();
+        $current = Submission::sole();
+        $this->assertSame('v1.pdf', $current->file->original_name);
+        $this->assertSame('jawaban revisi', $current->text_answer);
+        $this->get(route('praktikan.tasks.show', $this->target))->assertInertia(fn (Assert $page) => $page->where('draft', null));
+    }
+
+    public function test_a_removed_draft_file_is_not_reattached()
+    {
+        $this->target->task->update(['text_answer' => 'required']);
+        $this->submit(['file' => Pdf::upload('v1.pdf'), 'text_answer' => 'awal']);
+        $this->delete(route('praktikan.tasks.unsubmit', $this->target));
+
+        $this->submit(['text_answer' => 'hanya teks'])->assertSessionHasNoErrors();
+        $this->assertNull(Submission::sole()->file);
+    }
+
+    public function test_several_pdfs_can_be_submitted_together_up_to_the_limit()
+    {
+        $this->submit(['files' => [Pdf::upload('a.pdf'), Pdf::upload('b.pdf'), Pdf::upload('c.pdf')]])->assertSessionHasNoErrors();
+
+        $submission = Submission::sole();
+        $this->assertSame(['a.pdf', 'b.pdf', 'c.pdf'], $submission->files->pluck('original_name')->all());
+
+        $this->get(route('praktikan.tasks.show', $this->target))
+            ->assertInertia(fn (Assert $page) => $page->has('history.0.files', 3));
+
+        $this->delete(route('praktikan.tasks.unsubmit', $this->target));
+        $this->submit(['files' => array_map(fn ($i) => Pdf::upload("f{$i}.pdf"), range(1, 6))])->assertSessionHasErrors('file');
+        $this->assertSame(0, Submission::count());
+    }
+
+    public function test_a_draft_keeps_every_file_and_each_can_be_dropped_on_resubmit()
+    {
+        $this->submit(['files' => [Pdf::upload('a.pdf'), Pdf::upload('b.pdf')]]);
+        $ids = Submission::sole()->files->pluck('id', 'original_name');
+        $this->delete(route('praktikan.tasks.unsubmit', $this->target));
+
+        $this->get(route('praktikan.tasks.show', $this->target))
+            ->assertInertia(fn (Assert $page) => $page->has('draft.files', 2));
+
+        $this->submit(['keep_draft_files' => [$ids['b.pdf']], 'files' => [Pdf::upload('c.pdf')]])->assertSessionHasNoErrors();
+        $this->assertEqualsCanonicalizing(['b.pdf', 'c.pdf'], Submission::sole()->files->pluck('original_name')->all());
+    }
+
+    public function test_a_graded_or_closed_submission_cannot_be_unsent()
+    {
+        $this->submit(['file' => Pdf::upload()]);
+        $submission = Submission::sole();
+
+        $this->delete(route('praktikan.tasks.unsubmit', $this->target))->assertSessionHasNoErrors();
+        $this->submit(['file' => Pdf::upload()]);
+        $submission = Submission::sole();
+
+        Grade::factory()->create(['submission_id' => $submission->id]);
+        $this->delete(route('praktikan.tasks.unsubmit', $this->target))->assertSessionHasErrors('submission');
+        $this->assertSame(1, Submission::count());
+
+        $submission->grade()->delete();
+        $this->target->update(['due_at' => now()->subMinute()]);
+        $this->delete(route('praktikan.tasks.unsubmit', $this->target))->assertSessionHasErrors('submission');
+        $this->assertSame(1, Submission::count());
     }
 
     public function test_late_submissions_are_labelled_when_allowed()
@@ -134,16 +239,6 @@ class SubmissionTest extends TestCase
 
         $this->submit(['file' => Pdf::upload()])->assertSessionHasErrors('submission');
         $this->assertSame(0, Submission::count());
-    }
-
-    public function test_submissions_cannot_be_replaced_after_the_deadline()
-    {
-        $this->target->task->update(['allow_late' => true]);
-        $this->submit(['file' => Pdf::upload()]);
-        $this->target->update(['due_at' => now()->subMinute()]);
-
-        $this->submit(['file' => Pdf::upload()])->assertSessionHasErrors('submission');
-        $this->assertSame(1, Submission::count());
     }
 
     public function test_submitted_files_are_private_to_the_student_and_class_assistants()

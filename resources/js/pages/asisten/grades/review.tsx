@@ -91,6 +91,7 @@ export default function GradeReview({
     const [feedback, setFeedback] = useState(current?.grade?.feedback ?? '');
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
+    const [fileId, setFileId] = useState<number | null>(null);
     const container = useRef<HTMLDivElement>(null);
     const getInitials = useInitials();
     const dirty =
@@ -213,7 +214,11 @@ export default function GradeReview({
         window.addEventListener('pointerup', up);
     };
 
-    const file = current?.submission?.file;
+    const files = current?.submission?.files ?? [];
+    const file =
+        files.find((f) => f.id === fileId) ??
+        files[0] ??
+        current?.submission?.file;
     const downloadUrl = file?.url.replace('inline=1', '');
     const typeLabel = TASK_TYPE_LABEL[target.type];
     const numeric = score.trim() === '' ? null : Number(score);
@@ -229,11 +234,42 @@ export default function GradeReview({
             Belum ada submission.
         </p>
     ) : file?.mime === 'application/pdf' ? (
-        <PdfViewer
-            url={file.url}
-            fileName={file.name}
-            downloadUrl={downloadUrl}
-        />
+        <div className="flex h-full flex-col">
+            {files.length > 1 && (
+                <div
+                    role="tablist"
+                    aria-label="Berkas jawaban"
+                    className="flex flex-wrap gap-1 border-b bg-white px-3 py-2"
+                >
+                    {files.map((f, i) => (
+                        <button
+                            key={f.id}
+                            type="button"
+                            role="tab"
+                            aria-selected={f.id === file.id}
+                            onClick={() => setFileId(f.id)}
+                            className={cn(
+                                'max-w-56 truncate border px-3 py-1 text-xs font-medium',
+                                f.id === file.id
+                                    ? 'border-primary-700 bg-primary-700 text-white'
+                                    : 'bg-white hover:bg-primary-50',
+                            )}
+                            title={f.name}
+                        >
+                            {i + 1}. {f.name}
+                        </button>
+                    ))}
+                </div>
+            )}
+            <div className="min-h-0 flex-1">
+                <PdfViewer
+                    key={file.id}
+                    url={file.url}
+                    fileName={file.name}
+                    downloadUrl={downloadUrl}
+                />
+            </div>
+        </div>
     ) : file?.mime === 'application/zip' && zipEntries ? (
         <div className="flex h-full flex-col">
             <DocumentToolbar fileName={file.name}>
@@ -253,7 +289,12 @@ export default function GradeReview({
     ) : (
         <div className="flex h-full flex-col bg-[#cde7ee]">
             <DocumentToolbar fileName={file?.name ?? 'Jawaban teks'} />
-            <div className="flex-1 overflow-auto px-8 py-10">
+            <div
+                tabIndex={0}
+                role="region"
+                aria-label="Jawaban teks"
+                className="flex-1 overflow-auto px-8 py-10"
+            >
                 <article className="mx-auto max-w-3xl bg-white p-8 shadow-md">
                     {current.submission.textAnswer ? (
                         <Markdown>{current.submission.textAnswer}</Markdown>
@@ -271,6 +312,7 @@ export default function GradeReview({
         <>
             <Head title={`Tinjauan · ${target.title}`} />
             <div className="flex h-[calc(100svh-4rem)] flex-col">
+                <h1 className="sr-only">Tinjauan · {target.title}</h1>
                 <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b bg-white px-4 py-3 md:px-6">
                     <div className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-2">
                         <Link

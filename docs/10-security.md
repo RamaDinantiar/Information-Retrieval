@@ -54,7 +54,7 @@ Detail di [05 · Peran & hak akses](05-roles-permissions.md).
 
 Aksi sensitif dicatat di `audit_logs` beserta pelaku, objek, data **sebelum & sesudah**, dan IP: nilai,
 kontrak kursi, peran/jabatan, semester, persetujuan kelas/mata kuliah, verifikasi & pembukaan kunci laporan,
-tarif & rekap honor, reset password, pemulihan Admin. Data rahasia seperti token kelas dan password **tidak**
+reset password, pemulihan Admin. Data rahasia seperti token kelas dan password **tidak**
 ikut dicatat.
 
 ## Rahasia & lingkungan

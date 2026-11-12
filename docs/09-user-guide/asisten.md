@@ -81,4 +81,4 @@ catatan.
 1. Menu **Generate**: pilih bulan, tahun, dan format (**ZIP Word per hari**, **Word satu hari**, atau
    **Excel**).
 2. ZIP/Excel diproses di latar belakang. Unduh dari daftar berkas setelah statusnya _Selesai_ (berlaku 24 jam).
-3. **Sekretaris/Bendahara** dapat merekap semua asisten dan **menyetujui rekap honor**.
+3. **Sekretaris/Bendahara** dapat merekap semua asisten dan melihat rekap jam & SKS mengawas semua asisten.

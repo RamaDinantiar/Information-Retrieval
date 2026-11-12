@@ -23,6 +23,8 @@ import { formatRelative } from '@/lib/datetime';
 import { courseColorOptions, scheduleColors } from '@/lib/schedule-colors';
 import { cn } from '@/lib/utils';
 import type { AssistantOption, CourseRow, SemesterOption } from '@/types';
+import { useRef } from 'react';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Props = {
     semesters: SemesterOption[];
@@ -74,6 +76,9 @@ export default function CoursesIndex({
     pending,
     assistants,
 }: Props) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const now = useNow();
     const editable = semester?.editable ?? false;
     const usedColors = new Set(courses.map((c) => c.color));
@@ -109,7 +114,10 @@ export default function CoursesIndex({
     return (
         <>
             <Head title="Mata Kuliah" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title="Mata Kuliah"
                     description="Kode, SKS, bobot nilai (Pre-test · Post-test · Laporan = 100%), dan asisten pengampu per semester."

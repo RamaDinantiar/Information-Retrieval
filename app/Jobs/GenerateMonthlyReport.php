@@ -2,13 +2,12 @@
 
 namespace App\Jobs;
 
-use App\Actions\Honor\ComputeHonorRecaps;
 use App\Events\ExportFinished;
 use App\Models\Export;
-use App\Models\HonorRecap;
 use App\Models\SupervisionReport;
 use App\Support\Files\FileStore;
 use App\Support\Reports\DailyActivityReport;
+use App\Support\Reports\HoursRecap;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,7 +21,7 @@ use ZipArchive;
  * FR-AGN-02/03: rekap laporan mengawas (hanya yang Diverifikasi), memakai
  * template Word resmi lab (lihat DailyActivityReport).
  *  - zip   : satu file Word per hari dalam ZIP (satu bulan)
- *  - excel : sheet Ringkasan (jam × tarif = estimasi honor) + Detail (satu bulan)
+ *  - excel : sheet Ringkasan (jam per asisten) + Per Mata Kuliah (jam & SKS) + Detail (satu bulan)
  * Single DOC (satu tanggal) langsung diunduh tanpa antrean: GenerateController::daily().
  */
 class GenerateMonthlyReport implements ShouldQueue
@@ -33,7 +32,7 @@ class GenerateMonthlyReport implements ShouldQueue
 
     public function __construct(public Export $export) {}
 
-    public function handle(FileStore $files, ComputeHonorRecaps $recaps): void
+    public function handle(FileStore $files): void
     {
         $export = $this->export;
         $export->update(['status' => 'processing', 'progress' => 5]);
@@ -57,7 +56,7 @@ class GenerateMonthlyReport implements ShouldQueue
         try {
             [$name, $mime] = match ($export->type) {
                 'zip' => $this->zip($tmp, $days, $export, $label),
-                default => $this->excel($tmp, $reports, $recaps($month), $export->params_json['scope'] ?? 'mine', $export->user_id, $label),
+                default => $this->excel($tmp, $reports, HoursRecap::forMonth($month, ($export->params_json['scope'] ?? 'mine') === 'all' ? null : $export->user_id), $label),
             };
 
             $file = $files->storeGenerated($tmp, $name, $mime, 'export', $export);
@@ -123,21 +122,27 @@ class GenerateMonthlyReport implements ShouldQueue
 
     /**
      * @param  Collection<int, SupervisionReport>  $reports
-     * @param  \Illuminate\Support\Collection<int, HonorRecap>  $recaps
+     * @param  list<array<string, mixed>>  $recap
      * @return array{0: string, 1: string}
      */
-    private function excel(string $tmp, Collection $reports, $recaps, string $scope, int $userId, string $label): array
+    private function excel(string $tmp, Collection $reports, $recap, string $label): array
     {
         $writer = new Writer;
         $writer->openToFile($tmp);
         $writer->getCurrentSheet()->setName('Ringkasan');
-        $writer->addRow(Row::fromValues(['NIM', 'Nama Asisten', 'Total Shift', 'Total Jam', 'Tarif per Jam (Rp)', 'Estimasi Honor (Rp)', 'Status']));
+        $writer->addRow(Row::fromValues(['NIM', 'Nama Asisten', 'Total Shift', 'Total Jam']));
 
-        foreach ($recaps->when($scope !== 'all', fn ($c) => $c->where('user_id', $userId)) as $recap) {
-            $writer->addRow(Row::fromValues([
-                $recap->user->nim, $recap->user->name, $recap->total_shifts, (float) $recap->total_hours,
-                $recap->rate_per_hour, $recap->amount, $recap->status === 'final' ? 'Final' : 'Draft',
-            ]));
+        foreach ($recap as $row) {
+            $writer->addRow(Row::fromValues([$row['nim'], $row['name'], $row['shifts'], $row['hours']]));
+        }
+
+        $writer->addNewSheetAndMakeItCurrent()->setName('Per Mata Kuliah');
+        $writer->addRow(Row::fromValues(['NIM', 'Nama Asisten', 'Kode', 'Mata Kuliah', 'SKS', 'Shift', 'Jam']));
+
+        foreach ($recap as $row) {
+            foreach ($row['courses'] as $course) {
+                $writer->addRow(Row::fromValues([$row['nim'], $row['name'], $course['code'], $course['name'], $course['credits'], $course['shifts'], $course['hours']]));
+            }
         }
 
         $writer->addNewSheetAndMakeItCurrent()->setName('Detail');

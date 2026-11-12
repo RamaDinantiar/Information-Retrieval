@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { CalendarDays, List } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { WeekSchedule } from '@/components/dashboard/week-schedule';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
@@ -11,6 +11,8 @@ import { formatSchedule } from '@/lib/days';
 import { scheduleColors } from '@/lib/schedule-colors';
 import { cn } from '@/lib/utils';
 import type { AllClassRow, AsistenDashboard, ScheduleColor } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
+import { useViewMotion } from '@/hooks/use-view-motion';
 
 type ScheduleClass = {
     id: number;
@@ -43,12 +45,17 @@ export default function PraktikanSchedule({
     classes: ScheduleClass[];
     allClasses: AllClassRow[];
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const [current, setView] = useState<'mine' | 'all'>('mine');
+    const view = useRef<HTMLDivElement>(null);
+    useViewMotion(view, current);
 
     return (
         <>
             <Head title="Schedule" />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Schedule"
                     description={
@@ -84,101 +91,112 @@ export default function PraktikanSchedule({
                     }
                 />
 
-                {current === 'all' ? (
-                    allClasses.length === 0 ? (
+                <div
+                    data-motion-group
+                    ref={view}
+                    className="flex flex-col gap-7"
+                >
+                    {current === 'all' ? (
+                        allClasses.length === 0 ? (
+                            <EmptyState
+                                icon={CalendarDays}
+                                title="Belum ada jadwal"
+                                description="Belum ada kelas aktif di lab pada semester ini."
+                            />
+                        ) : (
+                            <ClassesByDay rows={allClasses} />
+                        )
+                    ) : classes.length === 0 ? (
                         <EmptyState
                             icon={CalendarDays}
-                            title="Belum ada jadwal"
-                            description="Belum ada kelas aktif di lab pada semester ini."
+                            title="Belum ada kelas"
+                            description="Gabung kelas dengan kode dari asisten untuk melihat jadwal."
                         />
                     ) : (
-                        <ClassesByDay rows={allClasses} />
-                    )
-                ) : classes.length === 0 ? (
-                    <EmptyState
-                        icon={CalendarDays}
-                        title="Belum ada kelas"
-                        description="Gabung kelas dengan kode dari asisten untuk melihat jadwal."
-                    />
-                ) : (
-                    <>
-                        <WeekSchedule
-                            weekStart={week.start}
-                            today={week.today}
-                            events={week.events}
-                        />
-                        <h2 className="text-h3 font-bold text-primary-700">
-                            Pertemuan
-                        </h2>
-                        <div className="grid gap-6">
-                            {classes.map((klass) => (
-                                <section
-                                    key={klass.id}
-                                    aria-labelledby={`class-${klass.id}`}
-                                    className={cn(
-                                        'border-l-4 bg-card',
-                                        scheduleColors[klass.color].accent,
-                                    )}
-                                >
-                                    <header className="border-b px-5 py-4">
-                                        <h2
-                                            id={`class-${klass.id}`}
-                                            className="text-h3 font-bold text-primary-700"
-                                        >
-                                            {klass.course} · {klass.name}
-                                        </h2>
-                                        <p className="font-mono text-sm">
-                                            {formatSchedule(
-                                                klass.dayOfWeek,
-                                                klass.startTime,
-                                                klass.endTime,
-                                            )}{' '}
-                                            · {klass.room}
-                                        </p>
-                                    </header>
-                                    {klass.meetings.length === 0 ? (
-                                        <p className="px-5 py-4 text-sm text-muted-foreground">
-                                            Asisten belum menyusun pertemuan.
-                                        </p>
-                                    ) : (
-                                        <ol className="divide-y divide-primary-50">
-                                            {klass.meetings.map((meeting) => (
-                                                <li
-                                                    key={meeting.id}
-                                                    className="px-5 py-3"
-                                                >
-                                                    <div>
-                                                        <p className="font-bold">
-                                                            <span className="font-mono">
-                                                                P
-                                                                {String(
-                                                                    meeting.number,
-                                                                ).padStart(
-                                                                    2,
-                                                                    '0',
-                                                                )}
-                                                            </span>{' '}
-                                                            ·{' '}
-                                                            {meeting.topic ??
-                                                                'Materi belum ditentukan'}
-                                                        </p>
-                                                        <p className="text-sm text-muted-foreground">
-                                                            {formatDate(
-                                                                meeting.date,
-                                                            )}{' '}
-                                                            ·{' '}
-                                                            {meeting.assistant}
-                                                        </p>
-                                                    </div>
-                                                </li>
-                                            ))}
-                                        </ol>
-                                    )}
-                                </section>
-                            ))}
-                        </div>
-                    </>
-                )}
+                        <>
+                            <WeekSchedule
+                                weekStart={week.start}
+                                today={week.today}
+                                events={week.events}
+                            />
+                            <h2 className="text-h3 font-bold text-primary-700">
+                                Pertemuan
+                            </h2>
+                            <div className="grid gap-6">
+                                {classes.map((klass) => (
+                                    <section
+                                        key={klass.id}
+                                        aria-labelledby={`class-${klass.id}`}
+                                        className={cn(
+                                            'border-l-4 bg-card',
+                                            scheduleColors[klass.color].accent,
+                                        )}
+                                    >
+                                        <header className="border-b px-5 py-4">
+                                            <h2
+                                                id={`class-${klass.id}`}
+                                                className="text-h3 font-bold text-primary-700"
+                                            >
+                                                {klass.course} · {klass.name}
+                                            </h2>
+                                            <p className="font-mono text-sm">
+                                                {formatSchedule(
+                                                    klass.dayOfWeek,
+                                                    klass.startTime,
+                                                    klass.endTime,
+                                                )}{' '}
+                                                · {klass.room}
+                                            </p>
+                                        </header>
+                                        {klass.meetings.length === 0 ? (
+                                            <p className="px-5 py-4 text-sm text-muted-foreground">
+                                                Asisten belum menyusun
+                                                pertemuan.
+                                            </p>
+                                        ) : (
+                                            <ol className="divide-y divide-primary-50">
+                                                {klass.meetings.map(
+                                                    (meeting) => (
+                                                        <li
+                                                            key={meeting.id}
+                                                            className="px-5 py-3"
+                                                        >
+                                                            <div>
+                                                                <p className="font-bold">
+                                                                    <span className="font-mono">
+                                                                        P
+                                                                        {String(
+                                                                            meeting.number,
+                                                                        ).padStart(
+                                                                            2,
+                                                                            '0',
+                                                                        )}
+                                                                    </span>{' '}
+                                                                    ·{' '}
+                                                                    {meeting.topic ??
+                                                                        'Materi belum ditentukan'}
+                                                                </p>
+                                                                <p className="text-sm text-muted-foreground">
+                                                                    {formatDate(
+                                                                        meeting.date,
+                                                                    )}{' '}
+                                                                    ·{' '}
+                                                                    {
+                                                                        meeting.assistant
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                        </li>
+                                                    ),
+                                                )}
+                                            </ol>
+                                        )}
+                                    </section>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
         </>
     );

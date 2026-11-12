@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { AppWindow, CalendarDays, MapPin, Users } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import ProgramController from '@/actions/App/Http/Controllers/Praktikan/ProgramController';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
@@ -9,6 +9,7 @@ import { formatRelative } from '@/lib/datetime';
 import { cn } from '@/lib/utils';
 import { PROGRAM_STATUS, REGISTRATION_STATUS } from '@/types';
 import type { ProgramCard, ProgramTypeInfo, RegistrationStatus } from '@/types';
+import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Mine = {
     id: number;
@@ -48,12 +49,18 @@ export default function PraktikanPrograms({
     programs: ProgramCard[];
     mine: Mine[];
 }) {
+    const root = useRef<HTMLDivElement>(null);
+    useDashboardMotion(root);
+
     const [tab, setTab] = useState<'catalog' | 'mine'>('catalog');
 
     return (
         <>
             <Head title={type ? type.label : 'Program'} />
-            <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+            <div
+                ref={root}
+                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
+            >
                 <PageHeader
                     title={type ? type.label : 'Program Lab'}
                     description="Workshop, Quick Tutor, dan Rekrutmen Asisten yang dibuka Laboratorium Information Retrieval."

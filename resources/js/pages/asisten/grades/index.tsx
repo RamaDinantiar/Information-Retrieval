@@ -43,6 +43,7 @@ export type GradeRow = {
         version: number;
         textAnswer: string | null;
         file: FileLink | null;
+        files: FileLink[];
     } | null;
     grade: {
         score: number | null;
@@ -333,6 +334,7 @@ export default function GradesIndex({
                                     className="h-1.5 bg-primary-200"
                                 >
                                     <div
+                                        data-grow
                                         className="h-full bg-primary-700"
                                         style={{ width: `${percent}%` }}
                                     />
