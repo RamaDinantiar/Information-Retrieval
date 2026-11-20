@@ -32,6 +32,7 @@ import { TimeField } from '@/components/pickers/time-field';
 import { SelectField } from '@/components/select-field';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogContent,
@@ -46,7 +47,12 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { formatRelative, todayWib } from '@/lib/datetime';
 import { cn } from '@/lib/utils';
-import type { PendingShift, ReportRow, ReportStatus } from '@/types';
+import type {
+    ExecutionStatus,
+    PendingShift,
+    ReportRow,
+    ReportStatus,
+} from '@/types';
 import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 
 type Props = {
@@ -64,6 +70,14 @@ type Props = {
     isReviewer: boolean;
     pendingShifts: PendingShift[];
     classOptions: { id: number; course: string; code: string; name: string }[];
+    /** Kelas lab lain yang ditugaskan ke asisten ini (FR-RJN-03). */
+    outsideClassOptions: {
+        id: number;
+        course: string;
+        name: string;
+        originLab: string;
+        credits: number;
+    }[];
     /** Kunci "classId|YYYY-MM-DD" → materi pertemuan kelas pada tanggal itu. */
     meetingMaterials: Record<string, { number: number; material: string }>;
     assistantOptions: { id: number; name: string }[];
@@ -77,6 +91,20 @@ const STATUS: Record<
     submitted: { label: 'Diajukan', variant: 'warning' },
     verified: { label: 'Diverifikasi', variant: 'success' },
     returned: { label: 'Dikembalikan', variant: 'destructive' },
+};
+
+const EXECUTION: Record<
+    ExecutionStatus,
+    {
+        label: string;
+        variant: 'success' | 'warning' | 'destructive' | 'muted' | 'secondary';
+    }
+> = {
+    held: { label: 'Terlaksana', variant: 'success' },
+    cancelled: { label: 'Ditiadakan', variant: 'destructive' },
+    replacement: { label: 'Pengganti', variant: 'secondary' },
+    additional: { label: 'Tambahan', variant: 'warning' },
+    exam: { label: 'Ujian (UTS/UAS)', variant: 'muted' },
 };
 
 const longDate = (iso: string) =>
@@ -100,6 +128,14 @@ type FormData = {
     start_time: string;
     end_time: string;
     class_id: string;
+    outside_class_id: string;
+    execution_status: ExecutionStatus;
+    exam_type: '' | 'uts' | 'uas';
+    original_date: string;
+    original_start_time: string;
+    replacement_note: string;
+    held_outside_lab: boolean;
+    outside_location: string;
     activity: string;
     material: string;
     notes: string;
@@ -137,6 +173,16 @@ function ReportFormDialog({
                   start_time: report.start,
                   end_time: report.end,
                   class_id: report.classId ? String(report.classId) : '',
+                  outside_class_id: report.outsideClassId
+                      ? String(report.outsideClassId)
+                      : '',
+                  execution_status: report.executionStatus,
+                  exam_type: report.examType ?? '',
+                  original_date: report.originalDate ?? '',
+                  original_start_time: report.originalStart ?? '',
+                  replacement_note: report.replacementNote ?? '',
+                  held_outside_lab: report.heldOutsideLab,
+                  outside_location: report.outsideLocation ?? '',
                   activity: report.activity,
                   material: report.material ?? '',
                   notes: report.notes,
@@ -150,6 +196,14 @@ function ReportFormDialog({
                   start_time: first?.start ?? '',
                   end_time: first?.end ?? '',
                   class_id: first?.classId ? String(first.classId) : '',
+                  outside_class_id: '',
+                  execution_status: 'held',
+                  exam_type: '',
+                  original_date: '',
+                  original_start_time: '',
+                  replacement_note: '',
+                  held_outside_lab: false,
+                  outside_location: '',
                   activity: first?.title ?? '',
                   material: '',
                   notes: '',
@@ -159,6 +213,12 @@ function ReportFormDialog({
               },
     );
 
+    // Kelas Lab IR atau kelas di luar Lab IR (tepat salah satu, FR-RJN-03).
+    const [classSource, setClassSource] = useState<'lab' | 'outside'>(
+        report?.outsideClassId ? 'outside' : 'lab',
+    );
+    const status = form.data.execution_status;
+    const photoRequired = status !== 'cancelled';
     const selectedClass = props.classOptions.find(
         (c) => String(c.id) === form.data.class_id,
     );
@@ -214,6 +274,12 @@ function ReportFormDialog({
             : ReportController.store.url();
         form.transform((data) => ({
             ...data,
+            // Hanya salah satu kelas yang dikirim.
+            class_id: classSource === 'lab' ? data.class_id : '',
+            outside_class_id:
+                classSource === 'outside' ? data.outside_class_id : '',
+            held_outside_lab:
+                classSource === 'lab' ? data.held_outside_lab : false,
             assistant_ids: data.assistant_ids.filter(Boolean),
             submit,
         }));
@@ -295,6 +361,231 @@ function ReportFormDialog({
                                     />
                                 </div>
                             )}
+                            <fieldset className="grid gap-4 border bg-muted/40 p-4">
+                                <legend className="px-1 text-sm font-bold">
+                                    Status Pelaksanaan Kelas
+                                </legend>
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="r-status">
+                                            Status pelaksanaan{' '}
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
+                                        </Label>
+                                        <SelectField
+                                            id="r-status"
+                                            value={status}
+                                            onValueChange={(v) =>
+                                                form.setData(
+                                                    'execution_status',
+                                                    v as ExecutionStatus,
+                                                )
+                                            }
+                                            aria-invalid={
+                                                !!form.errors.execution_status
+                                            }
+                                            options={(
+                                                Object.keys(
+                                                    EXECUTION,
+                                                ) as ExecutionStatus[]
+                                            ).map((key) => ({
+                                                value: key,
+                                                label: EXECUTION[key].label,
+                                            }))}
+                                        />
+                                        <InputError
+                                            message={
+                                                form.errors.execution_status
+                                            }
+                                        />
+                                        {status === 'cancelled' && (
+                                            <p className="text-xs text-muted-foreground">
+                                                Kelas ditiadakan tidak
+                                                menghasilkan jam rekap. Foto
+                                                opsional; tulis alasannya di
+                                                deskripsi.
+                                            </p>
+                                        )}
+                                    </div>
+                                    {status === 'exam' && (
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="r-exam">
+                                                Jenis ujian{' '}
+                                                <span className="text-destructive">
+                                                    *
+                                                </span>
+                                            </Label>
+                                            <SelectField
+                                                id="r-exam"
+                                                value={form.data.exam_type}
+                                                onValueChange={(v) =>
+                                                    form.setData(
+                                                        'exam_type',
+                                                        v as 'uts' | 'uas',
+                                                    )
+                                                }
+                                                placeholder="Pilih UTS / UAS…"
+                                                aria-invalid={
+                                                    !!form.errors.exam_type
+                                                }
+                                                options={[
+                                                    {
+                                                        value: 'uts',
+                                                        label: 'UTS',
+                                                    },
+                                                    {
+                                                        value: 'uas',
+                                                        label: 'UAS',
+                                                    },
+                                                ]}
+                                            />
+                                            <InputError
+                                                message={form.errors.exam_type}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                                {status === 'replacement' && (
+                                    <div className="grid gap-4 md:grid-cols-2">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="r-original-date">
+                                                Tanggal kelas asli{' '}
+                                                <span className="text-destructive">
+                                                    *
+                                                </span>
+                                            </Label>
+                                            <DateField
+                                                id="r-original-date"
+                                                value={form.data.original_date}
+                                                onChange={(v) =>
+                                                    form.setData(
+                                                        'original_date',
+                                                        v,
+                                                    )
+                                                }
+                                                invalid={
+                                                    !!form.errors.original_date
+                                                }
+                                            />
+                                            <InputError
+                                                message={
+                                                    form.errors.original_date
+                                                }
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <span className="text-sm font-medium">
+                                                Jam kelas asli (opsional)
+                                            </span>
+                                            <TimeField
+                                                label="Jam mulai asli"
+                                                value={
+                                                    form.data
+                                                        .original_start_time
+                                                }
+                                                onChange={(v) =>
+                                                    form.setData(
+                                                        'original_start_time',
+                                                        v,
+                                                    )
+                                                }
+                                                invalid={
+                                                    !!form.errors
+                                                        .original_start_time
+                                                }
+                                            />
+                                            <InputError
+                                                message={
+                                                    form.errors
+                                                        .original_start_time
+                                                }
+                                            />
+                                        </div>
+                                        <div className="grid gap-2 md:col-span-2">
+                                            <Label htmlFor="r-replacement-note">
+                                                Keterangan tambahan (opsional)
+                                            </Label>
+                                            <Input
+                                                id="r-replacement-note"
+                                                maxLength={255}
+                                                value={
+                                                    form.data.replacement_note
+                                                }
+                                                onChange={(e) =>
+                                                    form.setData(
+                                                        'replacement_note',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                placeholder="Mis. Menjadi dimulai jam 15.30"
+                                            />
+                                            <InputError
+                                                message={
+                                                    form.errors.replacement_note
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                                {classSource === 'lab' && (
+                                    <div className="grid gap-2">
+                                        <label
+                                            htmlFor="r-outside-lab"
+                                            className="flex items-center gap-2 text-sm"
+                                        >
+                                            <Checkbox
+                                                id="r-outside-lab"
+                                                checked={
+                                                    form.data.held_outside_lab
+                                                }
+                                                onCheckedChange={(v) =>
+                                                    form.setData(
+                                                        'held_outside_lab',
+                                                        v === true,
+                                                    )
+                                                }
+                                            />
+                                            Dilaksanakan di luar ruang Lab IR
+                                        </label>
+                                        {form.data.held_outside_lab && (
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="r-outside-location">
+                                                    Lokasi pelaksanaan{' '}
+                                                    <span className="text-destructive">
+                                                        *
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    id="r-outside-location"
+                                                    maxLength={150}
+                                                    value={
+                                                        form.data
+                                                            .outside_location
+                                                    }
+                                                    onChange={(e) =>
+                                                        form.setData(
+                                                            'outside_location',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    aria-invalid={
+                                                        !!form.errors
+                                                            .outside_location
+                                                    }
+                                                    placeholder="Mis. Ruang 4.2 Gedung B"
+                                                />
+                                                <InputError
+                                                    message={
+                                                        form.errors
+                                                            .outside_location
+                                                    }
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </fieldset>
                             <div className="grid gap-5 md:grid-cols-2">
                                 <div className="grid content-start gap-4">
                                     <div className="grid gap-2">
@@ -445,88 +736,183 @@ function ReportFormDialog({
                                 </div>
 
                                 <div className="grid content-start gap-4">
-                                    <div className="grid gap-2">
-                                        <span className="flex items-center justify-between text-sm font-medium">
-                                            Kode MK
-                                            <span className="inline-flex items-center gap-1 border border-primary-300 bg-primary-50 px-2 py-0.5 text-[10px] text-primary-800">
-                                                ● Terisi Otomatis
-                                            </span>
-                                        </span>
-                                        <div className="flex h-10 items-center justify-between border bg-muted px-3 font-mono text-sm text-muted-foreground">
-                                            {selectedClass?.code ?? 'Otomatis'}{' '}
-                                            <Lock
-                                                className="size-3.5"
-                                                aria-hidden
+                                    {(props.outsideClassOptions.length > 0 ||
+                                        classSource === 'outside') && (
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="r-source">
+                                                Jenis kelas
+                                            </Label>
+                                            <SelectField
+                                                id="r-source"
+                                                value={classSource}
+                                                onValueChange={(v) => {
+                                                    setClassSource(
+                                                        v as 'lab' | 'outside',
+                                                    );
+                                                    form.setData(
+                                                        'held_outside_lab',
+                                                        false,
+                                                    );
+                                                }}
+                                                options={[
+                                                    {
+                                                        value: 'lab',
+                                                        label: 'Kelas Lab IR',
+                                                    },
+                                                    {
+                                                        value: 'outside',
+                                                        label: 'Kelas di luar Lab IR (lab lain)',
+                                                    },
+                                                ]}
                                             />
                                         </div>
-                                    </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="r-course">
-                                            Mata Kuliah{' '}
-                                            <span className="text-destructive">
-                                                *
-                                            </span>
-                                        </Label>
-                                        <SelectField
-                                            id="r-course"
-                                            value={course}
-                                            onValueChange={(v) => {
-                                                setCourse(v);
-                                                form.setData('class_id', '');
-                                            }}
-                                            placeholder="Pilih mata kuliah…"
-                                            options={courses.map(([name]) => ({
-                                                value: name,
-                                                label: name,
-                                            }))}
-                                        />
-                                    </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="r-class">
-                                            Kelas{' '}
-                                            <span className="text-destructive">
-                                                *
-                                            </span>
-                                        </Label>
-                                        <SelectField
-                                            id="r-class"
-                                            value={form.data.class_id}
-                                            onValueChange={(v) => {
-                                                const cls =
-                                                    props.classOptions.find(
-                                                        (c) =>
-                                                            String(c.id) === v,
-                                                    );
-                                                form.setData((d) => ({
-                                                    ...d,
-                                                    class_id: v,
-                                                    activity: cls
-                                                        ? `${cls.course} · ${cls.name}`
-                                                        : d.activity,
-                                                }));
-                                            }}
-                                            placeholder={
-                                                course
-                                                    ? 'Pilih kelas…'
-                                                    : 'Pilih mata kuliah dulu'
-                                            }
-                                            disabled={!course}
-                                            aria-invalid={
-                                                !!form.errors.class_id
-                                            }
-                                            options={props.classOptions
-                                                .filter(
-                                                    (c) => c.course === course,
-                                                )
-                                                .map((c) => ({
-                                                    value: c.id,
-                                                    label: c.name,
-                                                }))}
-                                        />
-                                        <InputError
-                                            message={form.errors.class_id}
-                                        />
-                                    </div>
+                                    )}
+                                    {classSource === 'outside' ? (
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="r-outside-class">
+                                                Kelas di luar Lab IR{' '}
+                                                <span className="text-destructive">
+                                                    *
+                                                </span>
+                                            </Label>
+                                            <SelectField
+                                                id="r-outside-class"
+                                                value={
+                                                    form.data.outside_class_id
+                                                }
+                                                onValueChange={(v) => {
+                                                    const c =
+                                                        props.outsideClassOptions.find(
+                                                            (o) =>
+                                                                String(o.id) ===
+                                                                v,
+                                                        );
+                                                    form.setData((d) => ({
+                                                        ...d,
+                                                        outside_class_id: v,
+                                                        activity: c
+                                                            ? `${c.course} · ${c.name}`
+                                                            : d.activity,
+                                                    }));
+                                                }}
+                                                placeholder="Pilih kelas…"
+                                                aria-invalid={
+                                                    !!form.errors
+                                                        .outside_class_id
+                                                }
+                                                options={props.outsideClassOptions.map(
+                                                    (c) => ({
+                                                        value: c.id,
+                                                        label: `${c.course} (${c.name}) · ${c.originLab} · ${c.credits} SKS`,
+                                                    }),
+                                                )}
+                                            />
+                                            <InputError
+                                                message={
+                                                    form.errors
+                                                        .outside_class_id ??
+                                                    form.errors.class_id
+                                                }
+                                            />
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="grid gap-2">
+                                                <span className="flex items-center justify-between text-sm font-medium">
+                                                    Kode MK
+                                                    <span className="inline-flex items-center gap-1 border border-primary-300 bg-primary-50 px-2 py-0.5 text-[10px] text-primary-800">
+                                                        ● Terisi Otomatis
+                                                    </span>
+                                                </span>
+                                                <div className="flex h-10 items-center justify-between border bg-muted px-3 font-mono text-sm text-muted-foreground">
+                                                    {selectedClass?.code ??
+                                                        'Otomatis'}{' '}
+                                                    <Lock
+                                                        className="size-3.5"
+                                                        aria-hidden
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="r-course">
+                                                    Mata Kuliah{' '}
+                                                    <span className="text-destructive">
+                                                        *
+                                                    </span>
+                                                </Label>
+                                                <SelectField
+                                                    id="r-course"
+                                                    value={course}
+                                                    onValueChange={(v) => {
+                                                        setCourse(v);
+                                                        form.setData(
+                                                            'class_id',
+                                                            '',
+                                                        );
+                                                    }}
+                                                    placeholder="Pilih mata kuliah…"
+                                                    options={courses.map(
+                                                        ([name]) => ({
+                                                            value: name,
+                                                            label: name,
+                                                        }),
+                                                    )}
+                                                />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="r-class">
+                                                    Kelas{' '}
+                                                    <span className="text-destructive">
+                                                        *
+                                                    </span>
+                                                </Label>
+                                                <SelectField
+                                                    id="r-class"
+                                                    value={form.data.class_id}
+                                                    onValueChange={(v) => {
+                                                        const cls =
+                                                            props.classOptions.find(
+                                                                (c) =>
+                                                                    String(
+                                                                        c.id,
+                                                                    ) === v,
+                                                            );
+                                                        form.setData((d) => ({
+                                                            ...d,
+                                                            class_id: v,
+                                                            activity: cls
+                                                                ? `${cls.course} · ${cls.name}`
+                                                                : d.activity,
+                                                        }));
+                                                    }}
+                                                    placeholder={
+                                                        course
+                                                            ? 'Pilih kelas…'
+                                                            : 'Pilih mata kuliah dulu'
+                                                    }
+                                                    disabled={!course}
+                                                    aria-invalid={
+                                                        !!form.errors.class_id
+                                                    }
+                                                    options={props.classOptions
+                                                        .filter(
+                                                            (c) =>
+                                                                c.course ===
+                                                                course,
+                                                        )
+                                                        .map((c) => ({
+                                                            value: c.id,
+                                                            label: c.name,
+                                                        }))}
+                                                />
+                                                <InputError
+                                                    message={
+                                                        form.errors.class_id
+                                                    }
+                                                />
+                                            </div>
+                                        </>
+                                    )}
                                     <div className="grid gap-2">
                                         <Label htmlFor="r-activity">
                                             Kelas / Kegiatan{' '}
@@ -627,12 +1013,15 @@ function ReportFormDialog({
                                 <span className="flex justify-between text-sm font-medium">
                                     <span>
                                         Upload Foto Dokumentasi{' '}
-                                        <span className="text-destructive">
-                                            *
-                                        </span>
+                                        {photoRequired && (
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
+                                        )}
                                     </span>
                                     <span className="text-[11px] font-normal text-muted-foreground">
-                                        Wajib · JPG/PNG maks. 5 MB
+                                        {photoRequired ? 'Wajib' : 'Opsional'} ·
+                                        JPG/PNG maks. 5 MB
                                     </span>
                                 </span>
                                 <button
@@ -771,6 +1160,9 @@ function ReportFormDialog({
                                     {form.data.activity}
                                     {form.data.material &&
                                         ` · ${form.data.material}`}
+                                    <span className="block text-xs text-muted-foreground">
+                                        Status: {EXECUTION[status].label}
+                                    </span>
                                 </span>
                             </p>
                             <p className="flex gap-3">
@@ -1236,6 +1628,59 @@ export default function AsistenReport(props: Props) {
                                                                     <td className="px-3 py-3">
                                                                         {r.course ??
                                                                             r.activity}
+                                                                        {(r.executionStatus !==
+                                                                            'held' ||
+                                                                            r.heldOutsideLab ||
+                                                                            r.outsideClassId) && (
+                                                                            <span className="mt-1 flex flex-wrap gap-1">
+                                                                                {r.executionStatus !==
+                                                                                    'held' && (
+                                                                                    <Badge
+                                                                                        variant={
+                                                                                            EXECUTION[
+                                                                                                r
+                                                                                                    .executionStatus
+                                                                                            ]
+                                                                                                .variant
+                                                                                        }
+                                                                                    >
+                                                                                        {
+                                                                                            EXECUTION[
+                                                                                                r
+                                                                                                    .executionStatus
+                                                                                            ]
+                                                                                                .label
+                                                                                        }
+                                                                                        {r.executionStatus ===
+                                                                                            'exam' &&
+                                                                                            r.examType &&
+                                                                                            ` ${r.examType.toUpperCase()}`}
+                                                                                    </Badge>
+                                                                                )}
+                                                                                {(r.heldOutsideLab ||
+                                                                                    r.outsideClassId) && (
+                                                                                    <Badge variant="warning">
+                                                                                        Di
+                                                                                        luar
+                                                                                        Lab
+                                                                                        IR
+                                                                                        {r.outsideLocation &&
+                                                                                            `: ${r.outsideLocation}`}
+                                                                                    </Badge>
+                                                                                )}
+                                                                            </span>
+                                                                        )}
+                                                                        {r.executionStatus ===
+                                                                            'replacement' &&
+                                                                            r.originalDate && (
+                                                                                <span className="mt-1 block text-[11px] text-muted-foreground">
+                                                                                    Pengganti
+                                                                                    dari{' '}
+                                                                                    {longDate(
+                                                                                        r.originalDate,
+                                                                                    )}
+                                                                                </span>
+                                                                            )}
                                                                         {r.className && (
                                                                             <Badge
                                                                                 variant="secondary"

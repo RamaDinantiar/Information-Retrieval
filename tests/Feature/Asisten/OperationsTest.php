@@ -112,13 +112,13 @@ class OperationsTest extends TestCase
 
     public function test_reports_lock_after_h_plus_one_and_admins_can_unlock()
     {
-        $this->actingAs($this->asisten)->post(route('asisten.reports.store'), $this->payload(['date' => '2026-10-03']));
+        $this->actingAs($this->asisten)->post(route('asisten.reports.store'), $this->payload(['date' => '2026-09-28']));
         $report = SupervisionReport::sole();
 
-        $this->post(route('asisten.reports.update', $report), $this->payload(['date' => '2026-10-03', 'notes' => 'Diubah setelah terkunci.']))->assertSessionHasErrors('report');
+        $this->post(route('asisten.reports.update', $report), $this->payload(['date' => '2026-09-28', 'notes' => 'Diubah setelah terkunci.']))->assertSessionHasErrors('report');
 
         $this->actingAs(User::factory()->admin()->create())->post(route('asisten.reports.unlock', $report))->assertSessionHasNoErrors();
-        $this->actingAs($this->asisten)->post(route('asisten.reports.update', $report), $this->payload(['date' => '2026-10-03', 'notes' => 'Diubah setelah dibuka kuncinya.']))->assertSessionHasNoErrors();
+        $this->actingAs($this->asisten)->post(route('asisten.reports.update', $report), $this->payload(['date' => '2026-09-28', 'notes' => 'Diubah setelah dibuka kuncinya.']))->assertSessionHasNoErrors();
     }
 
     public function test_the_secretary_verifies_or_returns_submitted_reports()

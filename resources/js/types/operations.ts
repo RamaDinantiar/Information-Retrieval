@@ -55,6 +55,14 @@ export type AllClassRow = {
 
 export type ReportStatus = 'draft' | 'submitted' | 'verified' | 'returned';
 
+/** Status pelaksanaan kelas (FR-RJN-01). */
+export type ExecutionStatus =
+    | 'held'
+    | 'cancelled'
+    | 'replacement'
+    | 'additional'
+    | 'exam';
+
 export type ReportRow = {
     id: number;
     shiftNumber: number;
@@ -63,9 +71,17 @@ export type ReportRow = {
     start: string;
     end: string;
     classId: number | null;
+    outsideClassId: number | null;
     code: string | null;
     course: string | null;
     className: string | null;
+    executionStatus: ExecutionStatus;
+    examType: 'uts' | 'uas' | null;
+    originalDate: string | null;
+    originalStart: string | null;
+    replacementNote: string | null;
+    heldOutsideLab: boolean;
+    outsideLocation: string | null;
     room: string | null;
     activity: string;
     material: string | null;

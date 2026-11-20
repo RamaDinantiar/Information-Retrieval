@@ -84,7 +84,7 @@ class GenerateMonthlyReport implements ShouldQueue
         return SupervisionReport::where('status', 'verified')
             ->whereDateBetween('date', $range)
             ->when($scope !== 'all', fn ($q) => $q->where(fn ($w) => $w->where('user_id', $userId)->orWhereHas('assistants', fn ($a) => $a->whereKey($userId))))
-            ->with(['labClass.course', 'room', 'assistants', 'user', 'verifier', 'photos'])
+            ->with(['labClass.course', 'outsideClass', 'room', 'assistants', 'user', 'verifier', 'photos'])
             ->orderBy('date')->orderBy('start_time')
             ->get();
     }

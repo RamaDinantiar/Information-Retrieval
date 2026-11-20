@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Asisten;
 use App\Actions\Report\ReviewSupervisionReport;
 use App\Actions\Report\SaveSupervisionReport;
 use App\Enums\ApprovalStatus;
+use App\Enums\ExecutionStatus;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\LabClass;
 use App\Models\Meeting;
+use App\Models\OutsideClass;
 use App\Models\Semester;
 use App\Models\Shift;
 use App\Models\SupervisionReport;
@@ -51,7 +53,7 @@ class ReportController extends Controller
         $reports = $scoped()
             ->when($tab !== 'verify' && $date, fn ($q) => $q->whereDate('date', $date))
             ->when($tab !== 'verify' && ! $date, fn ($q) => $q->whereDateBetween('date', [$start->toDateString(), $start->endOfMonth()->toDateString()]))
-            ->with(['labClass.course', 'room', 'assistants:id,name', 'user:id,name', 'verifier:id,name', 'photos'])
+            ->with(['labClass.course', 'outsideClass', 'room', 'assistants:id,name', 'user:id,name', 'verifier:id,name', 'photos'])
             ->orderByDesc('date')->orderBy('start_time')
             ->get();
 
@@ -68,9 +70,17 @@ class ReportController extends Controller
                     'start' => substr($r->start_time, 0, 5),
                     'end' => substr($r->end_time, 0, 5),
                     'classId' => $r->class_id,
+                    'outsideClassId' => $r->outside_class_id,
                     'code' => $r->labClass?->course->code,
-                    'course' => $r->labClass?->course->name,
-                    'className' => $r->labClass?->name,
+                    'course' => $r->labClass?->course->name ?? $r->outsideClass?->course_name,
+                    'className' => $r->labClass->name ?? $r->outsideClass?->class_name,
+                    'executionStatus' => $r->execution_status->value,
+                    'examType' => $r->exam_type,
+                    'originalDate' => $r->original_date?->toDateString(),
+                    'originalStart' => $r->original_start_time ? substr($r->original_start_time, 0, 5) : null,
+                    'replacementNote' => $r->replacement_note,
+                    'heldOutsideLab' => $r->held_outside_lab,
+                    'outsideLocation' => $r->outside_location,
                     'room' => $r->room?->name,
                     'activity' => $r->activity,
                     'material' => $r->material,
@@ -145,6 +155,13 @@ class ReportController extends Controller
                 ? LabClass::forSemester($semester)->where('approval_status', ApprovalStatus::Approved)->with('course')->orderBy('course_id')->orderBy('name')->get()
                     ->map(fn (LabClass $c) => ['id' => $c->id, 'course' => $c->course->name, 'code' => $c->course->code, 'name' => $c->name])->values()
                 : [],
+            // Kelas di luar Lab IR yang ditugaskan ke asisten ini (Admin: semua) pada semester aktif.
+            'outsideClassOptions' => $semester
+                ? OutsideClass::where('semester_id', $semester->id)
+                    ->when(! $user->isAdmin(), fn ($q) => $q->whereHas('assistants', fn ($a) => $a->whereKey($user->id)))
+                    ->orderBy('course_name')->orderBy('class_name')->get()
+                    ->map(fn (OutsideClass $c) => ['id' => $c->id, 'course' => $c->course_name, 'name' => $c->class_name, 'originLab' => $c->origin_lab, 'credits' => $c->credits])->values()
+                : [],
             'assistantOptions' => User::where('role', 'asisten')->where('is_active', true)->orderBy('name')->get(['id', 'name']),
         ]);
     }
@@ -203,29 +220,38 @@ class ReportController extends Controller
     }
 
     /**
-     * @return array{shift_id: int|null, date: string, start_time: string, end_time: string, class_id: int, activity: string, material: string, notes: string, assistant_ids: list<int>, submit: bool}
+     * @return array{shift_id: int|null, date: string, start_time: string, end_time: string, class_id: int|null, outside_class_id: int|null, execution_status: string, exam_type: string|null, original_date: string|null, original_start_time: string|null, replacement_note: string|null, held_outside_lab: bool, outside_location: string|null, activity: string, material: string, notes: string, assistant_ids: list<int>, submit: bool}
      */
     private function validated(Request $request): array
     {
-        // Foto wajib; saat mengubah laporan yang sudah berfoto boleh tidak diganti.
+        // Foto wajib (kecuali kelas Ditiadakan); saat mengubah laporan yang sudah berfoto boleh tidak diganti.
         $report = $request->route('report');
         $hasPhoto = $report instanceof SupervisionReport && $report->photos()->exists();
+        $cancelled = $request->input('execution_status') === ExecutionStatus::Cancelled->value;
 
         $validated = $request->validate([
             'shift_id' => ['nullable', 'integer', 'exists:shifts,id'],
             'date' => ['required', 'date'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-            'class_id' => ['required', 'integer', 'exists:classes,id'],
+            'class_id' => ['nullable', 'required_without:outside_class_id', 'integer', 'exists:classes,id'],
+            'outside_class_id' => ['nullable', 'integer', 'exists:outside_classes,id'],
+            'execution_status' => ['nullable', Rule::enum(ExecutionStatus::class)],
+            'exam_type' => ['nullable', Rule::in(['uts', 'uas'])],
+            'original_date' => ['nullable', 'date'],
+            'original_start_time' => ['nullable', 'date_format:H:i'],
+            'replacement_note' => ['nullable', 'string', 'max:255'],
+            'held_outside_lab' => ['boolean'],
+            'outside_location' => ['nullable', 'string', 'max:150'],
             'activity' => ['required', 'string', 'max:150'],
             'material' => ['required', 'string', 'max:150'],
             'notes' => ['required', 'string', 'min:10', 'max:3000'],
             'assistant_ids' => ['required', 'array', 'min:1', 'max:4'],
             'assistant_ids.*' => ['integer', Rule::exists('users', 'id')->where('role', 'asisten')],
-            'photo' => [$hasPhoto ? 'nullable' : 'required', 'file'],
+            'photo' => [$hasPhoto || $cancelled ? 'nullable' : 'required', 'file'],
             'submit' => ['boolean'],
         ], [], [
-            'start_time' => 'jam mulai', 'end_time' => 'jam selesai', 'class_id' => 'kelas', 'activity' => 'kelas/kegiatan',
+            'start_time' => 'jam mulai', 'end_time' => 'jam selesai', 'class_id' => 'kelas', 'outside_class_id' => 'kelas di luar Lab IR', 'original_date' => 'tanggal kelas asli', 'exam_type' => 'jenis ujian', 'outside_location' => 'lokasi', 'activity' => 'kelas/kegiatan',
             'material' => 'materi', 'notes' => 'deskripsi kegiatan', 'assistant_ids' => 'tim asisten jaga', 'photo' => 'foto dokumentasi',
         ]);
 
@@ -238,7 +264,15 @@ class ReportController extends Controller
             'date' => $request->string('date')->toString(),
             'start_time' => $request->string('start_time')->toString(),
             'end_time' => $request->string('end_time')->toString(),
-            'class_id' => $request->integer('class_id'),
+            'class_id' => $request->filled('class_id') ? $request->integer('class_id') : null,
+            'outside_class_id' => $request->filled('outside_class_id') ? $request->integer('outside_class_id') : null,
+            'execution_status' => $request->string('execution_status', ExecutionStatus::Held->value)->toString() ?: ExecutionStatus::Held->value,
+            'exam_type' => $request->filled('exam_type') ? $request->string('exam_type')->toString() : null,
+            'original_date' => $request->filled('original_date') ? $request->string('original_date')->toString() : null,
+            'original_start_time' => $request->filled('original_start_time') ? $request->string('original_start_time')->toString() : null,
+            'replacement_note' => $request->filled('replacement_note') ? $request->string('replacement_note')->toString() : null,
+            'held_outside_lab' => $request->boolean('held_outside_lab'),
+            'outside_location' => $request->filled('outside_location') ? $request->string('outside_location')->toString() : null,
             'activity' => $request->string('activity')->toString(),
             'material' => $request->string('material')->toString(),
             'notes' => $request->string('notes')->toString(),

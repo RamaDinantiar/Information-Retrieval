@@ -2,6 +2,7 @@
 
 namespace App\Support\Reports;
 
+use App\Enums\ExecutionStatus;
 use App\Models\SupervisionReport;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
@@ -42,25 +43,47 @@ class DailyActivityReport
         foreach ($reports as $index => $report) {
             $n = $index + 1;
             $class = $report->labClass;
-            $course = $class ? $class->course->name : $report->activity;
+            $outside = $report->outsideClass;
+            $course = $class ? $class->course->name : ($outside->course_name ?? $report->activity);
+            $className = $class->name ?? $outside->class_name ?? '-';
 
             $doc->setValues([
                 "no#{$n}" => (string) $n,
                 "kode_mk#{$n}" => $class?->course->code ?? '-',
                 "mata_kuliah#{$n}" => $course,
-                "kelas#{$n}" => $class->name ?? '-',
+                "kelas#{$n}" => $className,
                 "asisten#{$n}" => $report->assistants->values()->map(fn ($user, $i) => ($i + 1).'. '.$user->name)->join("\n"),
                 "dosen#{$n}" => $class?->lecturer ?: '-',
                 "materi#{$n}" => $report->material ?: '-',
-                "deskripsi#{$n}" => $report->notes,
+                "deskripsi#{$n}" => self::statusPrefix($report).$report->notes,
             ]);
 
             $time = substr($report->start_time, 0, 5).' – '.substr($report->end_time, 0, 5);
-            $doc->setValue("judul_lampiran#{$n}", trim($course.' '.($class->name ?? ''))." ({$time})");
+            $doc->setValue("judul_lampiran#{$n}", trim($course.' '.($className === '-' ? '' : $className))." ({$time})");
             self::photos($doc, "foto#{$n}", $report);
         }
 
         $doc->saveAs($path);
+    }
+
+    /** Awalan status pelaksanaan di kolom deskripsi, mis. "[Kelas ditiadakan] ". Terlaksana tanpa awalan. */
+    public static function statusPrefix(SupervisionReport $report): string
+    {
+        $tags = [match ($report->execution_status) {
+            ExecutionStatus::Held => null,
+            ExecutionStatus::Cancelled => 'Kelas ditiadakan',
+            ExecutionStatus::Replacement => 'Kelas pengganti',
+            ExecutionStatus::Additional => 'Kelas tambahan',
+            ExecutionStatus::Exam => 'Ujian '.strtoupper((string) $report->exam_type),
+        }];
+
+        if ($report->held_outside_lab) {
+            $tags[] = 'Di luar ruang Lab IR'.($report->outside_location ? ': '.$report->outside_location : '');
+        }
+
+        $tags = array_filter($tags);
+
+        return $tags === [] ? '' : '['.implode('] [', $tags).'] ';
     }
 
     /** Satu foto per baris; laporan tanpa foto diberi keterangan. */
