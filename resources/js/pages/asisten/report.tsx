@@ -46,6 +46,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { formatRelative, todayWib } from '@/lib/datetime';
+import { EXECUTION } from '@/lib/execution-status';
 import { cn } from '@/lib/utils';
 import type {
     ExecutionStatus,
@@ -91,20 +92,6 @@ const STATUS: Record<
     submitted: { label: 'Diajukan', variant: 'warning' },
     verified: { label: 'Diverifikasi', variant: 'success' },
     returned: { label: 'Dikembalikan', variant: 'destructive' },
-};
-
-const EXECUTION: Record<
-    ExecutionStatus,
-    {
-        label: string;
-        variant: 'success' | 'warning' | 'destructive' | 'muted' | 'secondary';
-    }
-> = {
-    held: { label: 'Terlaksana', variant: 'success' },
-    cancelled: { label: 'Ditiadakan', variant: 'destructive' },
-    replacement: { label: 'Pengganti', variant: 'secondary' },
-    additional: { label: 'Tambahan', variant: 'warning' },
-    exam: { label: 'Ujian (UTS/UAS)', variant: 'muted' },
 };
 
 const longDate = (iso: string) =>

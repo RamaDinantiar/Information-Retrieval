@@ -1,0 +1,1986 @@
+{
+    "month": "2026-04",
+    "semester": {
+        "name": "Genap 2025/2026",
+        "start": "2026-02-16",
+        "end": "2026-06-19",
+        "sk": "03/SK/Genap/IRLab/2026",
+        "term": "SEMESTER GENAP TAHUN 2025/2026"
+    },
+    "holidays": [
+        {
+            "date": "2026-04-03",
+            "label": "Wafat Isa Almasih"
+        }
+    ],
+    "assistants": [
+        {
+            "name": "Asisten 1",
+            "nim": "2023-31-001"
+        },
+        {
+            "name": "Asisten 2",
+            "nim": "2023-31-002"
+        },
+        {
+            "name": "Asisten 3",
+            "nim": "2023-31-003"
+        },
+        {
+            "name": "Asisten 4",
+            "nim": "2023-31-004"
+        },
+        {
+            "name": "Asisten 5",
+            "nim": "2023-31-005"
+        },
+        {
+            "name": "Asisten 6",
+            "nim": "2023-31-006"
+        },
+        {
+            "name": "Asisten 7",
+            "nim": "2023-31-007"
+        },
+        {
+            "name": "Asisten 8",
+            "nim": "2023-31-008"
+        },
+        {
+            "name": "Asisten 9",
+            "nim": "2023-31-009"
+        }
+    ],
+    "classes": {
+        "DATA WAREHOUSE|E": {
+            "assistants": [0, 2, 4, 6],
+            "course": "Data Warehouse",
+            "credits": 2,
+            "name": "Kelas E",
+            "day": 1
+        },
+        "TEKNOLOGI BLOCKCHAIN|A": {
+            "assistants": [0, 1, 2, 5],
+            "course": "Teknologi Blockchain",
+            "credits": 3,
+            "name": "Kelas A",
+            "day": 3
+        },
+        "PENGANTAR BIG DATA|A": {
+            "assistants": [0, 1, 2, 6],
+            "course": "Pengantar Big Data",
+            "credits": 2,
+            "name": "Kelas A",
+            "day": 3
+        },
+        "TEKNOLOGI BLOCKCHAIN|C": {
+            "assistants": [0, 2, 4, 6],
+            "course": "Teknologi Blockchain",
+            "credits": 3,
+            "name": "Kelas C",
+            "day": 4
+        },
+        "SIMULASI DAN PEMODELAN|B": {
+            "assistants": [0, 2, 3, 8],
+            "course": "Simulasi dan Pemodelan",
+            "credits": 2,
+            "name": "Kelas B",
+            "day": 5
+        },
+        "BUSINESS INTELLIGENCE|C": {
+            "assistants": [0, 2, 5],
+            "course": "Business Intelligence",
+            "credits": 3,
+            "name": "Kelas C",
+            "day": 6
+        },
+        "DATA WAREHOUSE|B": {
+            "assistants": [1, 3, 4, 7],
+            "course": "Data Warehouse",
+            "credits": 2,
+            "name": "Kelas B",
+            "day": 1
+        },
+        "PEMROGRAMAN WEB|B": {
+            "assistants": [1, 3, 5, 8],
+            "course": "Pemrograman Web",
+            "credits": 3,
+            "name": "Kelas B",
+            "day": 2
+        },
+        "DATA WAREHOUSE|C": {
+            "assistants": [1, 3, 5, 7],
+            "course": "Data Warehouse",
+            "credits": 2,
+            "name": "Kelas C",
+            "day": 4
+        },
+        "DATA WAREHOUSE|D": {
+            "assistants": [1, 3, 6, 8],
+            "course": "Data Warehouse",
+            "credits": 2,
+            "name": "Kelas D",
+            "day": 4
+        },
+        "BUSINESS INTELLIGENCE|B": {
+            "assistants": [1, 4, 5, 8],
+            "course": "Business Intelligence",
+            "credits": 3,
+            "name": "Kelas B",
+            "day": 6
+        },
+        "SIMULASI DAN PEMODELAN|A": {
+            "assistants": [2, 4, 7, 8],
+            "course": "Simulasi dan Pemodelan",
+            "credits": 2,
+            "name": "Kelas A",
+            "day": 1
+        },
+        "SIMULASI DAN PEMODELAN|D": {
+            "assistants": [3, 4, 7, 8],
+            "course": "Simulasi dan Pemodelan",
+            "credits": 2,
+            "name": "Kelas D",
+            "day": 5
+        },
+        "BUSINESS INTELLIGENCE|A": {
+            "assistants": [3, 6, 7, 8],
+            "course": "Business Intelligence",
+            "credits": 3,
+            "name": "Kelas A",
+            "day": 6
+        },
+        "DATA WAREHOUSE|A": {
+            "assistants": [4, 6, 7],
+            "course": "Data Warehouse",
+            "credits": 2,
+            "name": "Kelas A",
+            "day": 3
+        },
+        "DATA WAREHOUSE|KR": {
+            "assistants": [5],
+            "course": "Data Warehouse",
+            "credits": 2,
+            "name": "Kelas KR",
+            "day": 1
+        }
+    },
+    "cells": [
+        {
+            "assistant": 0,
+            "class": "DATA WAREHOUSE|E",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "DATA WAREHOUSE|E",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "DATA WAREHOUSE|E",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "DATA WAREHOUSE|E",
+            "day": 27,
+            "status": "cancelled"
+        },
+        {
+            "assistant": 0,
+            "class": "DATA WAREHOUSE|E",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 0,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 1,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 8,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 15,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 22,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 29,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 1,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 8,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 15,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 22,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 29,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 30,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 10,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 17,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 24,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 4,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 11,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 18,
+            "status": "held"
+        },
+        {
+            "assistant": 0,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 25,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|B",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|B",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|B",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|B",
+            "day": 27,
+            "status": "cancelled"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|B",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 1,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 7,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 14,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 21,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 28,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 1,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 8,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 15,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 22,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 29,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 1,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 8,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 15,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 22,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 29,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|C",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|C",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|C",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|C",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|C",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|D",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|D",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|D",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|D",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "DATA WAREHOUSE|D",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 1,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 4,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 11,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 18,
+            "status": "held"
+        },
+        {
+            "assistant": 1,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 25,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 27,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "DATA WAREHOUSE|E",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "DATA WAREHOUSE|E",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "DATA WAREHOUSE|E",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "DATA WAREHOUSE|E",
+            "day": 27,
+            "status": "cancelled"
+        },
+        {
+            "assistant": 2,
+            "class": "DATA WAREHOUSE|E",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 2,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 1,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 8,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 15,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 22,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 29,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 1,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 8,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 15,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 22,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 29,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 30,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 10,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 17,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 24,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 4,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 11,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 18,
+            "status": "held"
+        },
+        {
+            "assistant": 2,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 25,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|B",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|B",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|B",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|B",
+            "day": 27,
+            "status": "cancelled"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|B",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 3,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 7,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 14,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 21,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 28,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|C",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|C",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|C",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|C",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|C",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|D",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|D",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|D",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|D",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "DATA WAREHOUSE|D",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 3,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 10,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 17,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 24,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 10,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 17,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 24,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 4,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 11,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 18,
+            "status": "held"
+        },
+        {
+            "assistant": 3,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 25,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 27,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|B",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|B",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|B",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|B",
+            "day": 27,
+            "status": "cancelled"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|B",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|E",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|E",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|E",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|E",
+            "day": 27,
+            "status": "cancelled"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|E",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|A",
+            "day": 1,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|A",
+            "day": 8,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|A",
+            "day": 15,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|A",
+            "day": 22,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|A",
+            "day": 29,
+            "status": "cancelled"
+        },
+        {
+            "assistant": 4,
+            "class": "DATA WAREHOUSE|A",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 4,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 30,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 10,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 17,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 24,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 4,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 11,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 18,
+            "status": "held"
+        },
+        {
+            "assistant": 4,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 25,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 7,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 14,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 21,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 28,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 1,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 8,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 15,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 22,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "TEKNOLOGI BLOCKCHAIN|A",
+            "day": 29,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "DATA WAREHOUSE|C",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "DATA WAREHOUSE|C",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "DATA WAREHOUSE|C",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "DATA WAREHOUSE|C",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "DATA WAREHOUSE|C",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 5,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 4,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 11,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 18,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 25,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 4,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 11,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 18,
+            "status": "held"
+        },
+        {
+            "assistant": 5,
+            "class": "BUSINESS INTELLIGENCE|C",
+            "day": 25,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|E",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|E",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|E",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|E",
+            "day": 27,
+            "status": "cancelled"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|E",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 6,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 1,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 8,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 15,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 22,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "PENGANTAR BIG DATA|A",
+            "day": 29,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|A",
+            "day": 1,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|A",
+            "day": 8,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|A",
+            "day": 15,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|A",
+            "day": 22,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|A",
+            "day": 29,
+            "status": "cancelled"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|A",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 6,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "TEKNOLOGI BLOCKCHAIN|C",
+            "day": 30,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|D",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|D",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|D",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|D",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "DATA WAREHOUSE|D",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 6,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 4,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 11,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 18,
+            "status": "held"
+        },
+        {
+            "assistant": 6,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 25,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 27,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|B",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|B",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|B",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|B",
+            "day": 27,
+            "status": "cancelled"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|B",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|A",
+            "day": 1,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|A",
+            "day": 8,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|A",
+            "day": 15,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|A",
+            "day": 22,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|A",
+            "day": 29,
+            "status": "cancelled"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|A",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|C",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|C",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|C",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|C",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "DATA WAREHOUSE|C",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 7,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 10,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 17,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 24,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 4,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 11,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 18,
+            "status": "held"
+        },
+        {
+            "assistant": 7,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 25,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 6,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 13,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 20,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "SIMULASI DAN PEMODELAN|A",
+            "day": 27,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 7,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 14,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 21,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "PEMROGRAMAN WEB|B",
+            "day": 28,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "DATA WAREHOUSE|D",
+            "day": 2,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "DATA WAREHOUSE|D",
+            "day": 9,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "DATA WAREHOUSE|D",
+            "day": 16,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "DATA WAREHOUSE|D",
+            "day": 23,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "DATA WAREHOUSE|D",
+            "day": 30,
+            "status": "replacement"
+        },
+        {
+            "assistant": 8,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 10,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 17,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "SIMULASI DAN PEMODELAN|B",
+            "day": 24,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 10,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 17,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "SIMULASI DAN PEMODELAN|D",
+            "day": 24,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 4,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 11,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 18,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "BUSINESS INTELLIGENCE|A",
+            "day": 25,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 4,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 11,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 18,
+            "status": "held"
+        },
+        {
+            "assistant": 8,
+            "class": "BUSINESS INTELLIGENCE|B",
+            "day": 25,
+            "status": "held"
+        }
+    ],
+    "replacements": {
+        "DATA WAREHOUSE|B": {
+            "original": "2026-04-27",
+            "note": "",
+            "start": "10:10",
+            "end": "11:50"
+        },
+        "DATA WAREHOUSE|E": {
+            "original": "2026-04-27",
+            "note": "",
+            "start": "13:00",
+            "end": "14:40"
+        },
+        "DATA WAREHOUSE|A": {
+            "original": "2026-04-29",
+            "note": "",
+            "start": "13:00",
+            "end": "14:40"
+        },
+        "DATA WAREHOUSE|C": {
+            "original": "2026-04-30",
+            "note": "Menjadi dimulai jam 19.30 Malam",
+            "start": "10:10",
+            "end": "11:50"
+        },
+        "DATA WAREHOUSE|D": {
+            "original": "2026-04-30",
+            "note": "Menjadi dimulai jam 19.30 Malam",
+            "start": "13:00",
+            "end": "14:40"
+        }
+    },
+    "expected": {
+        "sundays": [5, 12, 19, 26],
+        "holidays": [3],
+        "hours": [55, 64, 62, 53, 56, 51, 54, 45, 55],
+        "hoursRaw": [
+            55, 64.1667, 61.6667, 53.3333, 55.8333, 50.8333, 54.1667, 45, 55
+        ],
+        "days": [26, 32, 30, 28, 29, 22, 28, 25, 27],
+        "totalHours": 495,
+        "rows": [
+            {
+                "DATA WAREHOUSE|E": {
+                    "days": [6, 13, 20, 30],
+                    "replacement": [30],
+                    "cancelled": [27]
+                },
+                "TEKNOLOGI BLOCKCHAIN|A": {
+                    "days": [1, 8, 15, 22, 29]
+                },
+                "PENGANTAR BIG DATA|A": {
+                    "days": [1, 8, 15, 22, 29]
+                },
+                "TEKNOLOGI BLOCKCHAIN|C": {
+                    "days": [2, 9, 16, 23, 30]
+                },
+                "SIMULASI DAN PEMODELAN|B": {
+                    "days": [10, 17, 24]
+                },
+                "BUSINESS INTELLIGENCE|C": {
+                    "days": [4, 11, 18, 25]
+                }
+            },
+            {
+                "DATA WAREHOUSE|B": {
+                    "days": [6, 13, 20, 30],
+                    "replacement": [30],
+                    "cancelled": [27]
+                },
+                "PEMROGRAMAN WEB|B": {
+                    "days": [7, 14, 21, 28]
+                },
+                "TEKNOLOGI BLOCKCHAIN|A": {
+                    "days": [1, 8, 15, 22, 29]
+                },
+                "PENGANTAR BIG DATA|A": {
+                    "days": [1, 8, 15, 22, 29]
+                },
+                "DATA WAREHOUSE|C": {
+                    "days": [2, 9, 16, 23, 30],
+                    "replacement": [30]
+                },
+                "DATA WAREHOUSE|D": {
+                    "days": [2, 9, 16, 23, 30],
+                    "replacement": [30]
+                },
+                "BUSINESS INTELLIGENCE|B": {
+                    "days": [4, 11, 18, 25]
+                }
+            },
+            {
+                "SIMULASI DAN PEMODELAN|A": {
+                    "days": [6, 13, 20, 27]
+                },
+                "DATA WAREHOUSE|E": {
+                    "days": [6, 13, 20, 30],
+                    "replacement": [30],
+                    "cancelled": [27]
+                },
+                "TEKNOLOGI BLOCKCHAIN|A": {
+                    "days": [1, 8, 15, 22, 29]
+                },
+                "PENGANTAR BIG DATA|A": {
+                    "days": [1, 8, 15, 22, 29]
+                },
+                "TEKNOLOGI BLOCKCHAIN|C": {
+                    "days": [2, 9, 16, 23, 30]
+                },
+                "SIMULASI DAN PEMODELAN|B": {
+                    "days": [10, 17, 24]
+                },
+                "BUSINESS INTELLIGENCE|C": {
+                    "days": [4, 11, 18, 25]
+                }
+            },
+            {
+                "DATA WAREHOUSE|B": {
+                    "days": [6, 13, 20, 30],
+                    "replacement": [30],
+                    "cancelled": [27]
+                },
+                "PEMROGRAMAN WEB|B": {
+                    "days": [7, 14, 21, 28]
+                },
+                "DATA WAREHOUSE|C": {
+                    "days": [2, 9, 16, 23, 30],
+                    "replacement": [30]
+                },
+                "DATA WAREHOUSE|D": {
+                    "days": [2, 9, 16, 23, 30],
+                    "replacement": [30]
+                },
+                "SIMULASI DAN PEMODELAN|B": {
+                    "days": [10, 17, 24]
+                },
+                "SIMULASI DAN PEMODELAN|D": {
+                    "days": [10, 17, 24]
+                },
+                "BUSINESS INTELLIGENCE|A": {
+                    "days": [4, 11, 18, 25]
+                }
+            },
+            {
+                "SIMULASI DAN PEMODELAN|A": {
+                    "days": [6, 13, 20, 27]
+                },
+                "DATA WAREHOUSE|B": {
+                    "days": [6, 13, 20, 30],
+                    "replacement": [30],
+                    "cancelled": [27]
+                },
+                "DATA WAREHOUSE|E": {
+                    "days": [6, 13, 20, 30],
+                    "replacement": [30],
+                    "cancelled": [27]
+                },
+                "DATA WAREHOUSE|A": {
+                    "days": [1, 8, 15, 22, 30],
+                    "replacement": [30],
+                    "cancelled": [29]
+                },
+                "TEKNOLOGI BLOCKCHAIN|C": {
+                    "days": [2, 9, 16, 23, 30]
+                },
+                "SIMULASI DAN PEMODELAN|D": {
+                    "days": [10, 17, 24]
+                },
+                "BUSINESS INTELLIGENCE|B": {
+                    "days": [4, 11, 18, 25]
+                }
+            },
+            {
+                "PEMROGRAMAN WEB|B": {
+                    "days": [7, 14, 21, 28]
+                },
+                "TEKNOLOGI BLOCKCHAIN|A": {
+                    "days": [1, 8, 15, 22, 29]
+                },
+                "DATA WAREHOUSE|C": {
+                    "days": [2, 9, 16, 23, 30],
+                    "replacement": [30]
+                },
+                "BUSINESS INTELLIGENCE|B": {
+                    "days": [4, 11, 18, 25]
+                },
+                "BUSINESS INTELLIGENCE|C": {
+                    "days": [4, 11, 18, 25]
+                }
+            },
+            {
+                "DATA WAREHOUSE|E": {
+                    "days": [6, 13, 20, 30],
+                    "replacement": [30],
+                    "cancelled": [27]
+                },
+                "PENGANTAR BIG DATA|A": {
+                    "days": [1, 8, 15, 22, 29]
+                },
+                "DATA WAREHOUSE|A": {
+                    "days": [1, 8, 15, 22, 30],
+                    "replacement": [30],
+                    "cancelled": [29]
+                },
+                "TEKNOLOGI BLOCKCHAIN|C": {
+                    "days": [2, 9, 16, 23, 30]
+                },
+                "DATA WAREHOUSE|D": {
+                    "days": [2, 9, 16, 23, 30],
+                    "replacement": [30]
+                },
+                "BUSINESS INTELLIGENCE|A": {
+                    "days": [4, 11, 18, 25]
+                }
+            },
+            {
+                "SIMULASI DAN PEMODELAN|A": {
+                    "days": [6, 13, 20, 27]
+                },
+                "DATA WAREHOUSE|B": {
+                    "days": [6, 13, 20, 30],
+                    "replacement": [30],
+                    "cancelled": [27]
+                },
+                "DATA WAREHOUSE|A": {
+                    "days": [1, 8, 15, 22, 30],
+                    "replacement": [30],
+                    "cancelled": [29]
+                },
+                "DATA WAREHOUSE|C": {
+                    "days": [2, 9, 16, 23, 30],
+                    "replacement": [30]
+                },
+                "SIMULASI DAN PEMODELAN|D": {
+                    "days": [10, 17, 24]
+                },
+                "BUSINESS INTELLIGENCE|A": {
+                    "days": [4, 11, 18, 25]
+                }
+            },
+            {
+                "SIMULASI DAN PEMODELAN|A": {
+                    "days": [6, 13, 20, 27]
+                },
+                "PEMROGRAMAN WEB|B": {
+                    "days": [7, 14, 21, 28]
+                },
+                "DATA WAREHOUSE|D": {
+                    "days": [2, 9, 16, 23, 30],
+                    "replacement": [30]
+                },
+                "SIMULASI DAN PEMODELAN|B": {
+                    "days": [10, 17, 24]
+                },
+                "SIMULASI DAN PEMODELAN|D": {
+                    "days": [10, 17, 24]
+                },
+                "BUSINESS INTELLIGENCE|A": {
+                    "days": [4, 11, 18, 25]
+                },
+                "BUSINESS INTELLIGENCE|B": {
+                    "days": [4, 11, 18, 25]
+                }
+            }
+        ],
+        "cancelledCells": 11,
+        "replacementCells": 19
+    }
+}

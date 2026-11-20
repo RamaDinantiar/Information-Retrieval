@@ -305,3 +305,47 @@ input[type='password']::-webkit-credentials-auto-fill-button {
     position: absolute;
     right: 0;
 }
+
+/*
+ * Rekap Jam Ngawas: warna penanda mengikuti legenda template Excel kampus
+ * (PRD 3.4). Selalu dipasangkan dengan label/ikon agar tidak bergantung warna saja.
+ */
+:root {
+    --ngawas-sunday: #0070c0;
+    --ngawas-holiday: #ff0000;
+    --ngawas-additional: #ffc000; /* juga dipakai "Di luar Lab IR" (keputusan P2/P3) */
+    --ngawas-replacement: #70ad47;
+    --ngawas-cancelled: #c55911;
+    --ngawas-exam: #afabab;
+}
+
+.ngawas-sunday {
+    background-color: var(--ngawas-sunday);
+    color: #fff;
+}
+
+.ngawas-holiday {
+    background-color: var(--ngawas-holiday);
+    color: #fff;
+}
+
+.ngawas-additional,
+.ngawas-outside {
+    background-color: var(--ngawas-additional);
+    color: #1a1a1a;
+}
+
+.ngawas-replacement {
+    background-color: var(--ngawas-replacement);
+    color: #1a1a1a;
+}
+
+.ngawas-cancelled {
+    background-color: var(--ngawas-cancelled);
+    color: #fff;
+}
+
+.ngawas-exam {
+    background-color: var(--ngawas-exam);
+    color: #1a1a1a;
+}

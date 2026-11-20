@@ -15,6 +15,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import GenerateController from '@/actions/App/Http/Controllers/Asisten/GenerateController';
 import { EmptyState } from '@/components/empty-state';
+import { GenerateTabs } from '@/components/ngawas-recap/generate-tabs';
 import { SelectField } from '@/components/select-field';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -204,6 +205,8 @@ export default function AsistenGenerate({
                         terstruktur.
                     </p>
                 </div>
+
+                <GenerateTabs current="reports" />
 
                 <section
                     aria-labelledby="criteria"

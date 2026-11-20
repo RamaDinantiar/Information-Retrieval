@@ -15,6 +15,7 @@ import {
     ScrollText,
     SlidersHorizontal,
     SquarePen,
+    Table2,
     Users,
 } from 'lucide-react';
 import type { NavGroup, NavItem, Position, Role } from '@/types';
@@ -58,6 +59,7 @@ const asistenItems = (p: string): NavItem[] => [
     },
     { title: 'Report', href: `${p}/report`, icon: FileText },
     { title: 'Generate', href: `${p}/generate`, icon: FileBarChart },
+    { title: 'Rekap Jam Ngawas', href: `${p}/ngawas-recap`, icon: Table2 },
     {
         title: 'Program',
         href: `${p}/program`,
