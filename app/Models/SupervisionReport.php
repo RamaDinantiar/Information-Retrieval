@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\HasFiles;
+use App\Enums\ExecutionStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\SupervisionReportFactory;
 use Illuminate\Database\Eloquent\Collection;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property int|null $shift_id
  * @property int $user_id
  * @property int|null $class_id
+ * @property int|null $outside_class_id
  * @property int|null $room_id
  * @property CarbonImmutable $date
  * @property string $start_time
@@ -31,6 +33,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property string|null $lab_condition Tidak lagi diisi (data lama).
  * @property string $notes
  * @property string $status
+ * @property ExecutionStatus $execution_status
+ * @property string|null $exam_type uts|uas
+ * @property CarbonImmutable|null $original_date
+ * @property string|null $original_start_time
+ * @property string|null $replacement_note
+ * @property bool $held_outside_lab
+ * @property string|null $outside_location
  * @property CarbonImmutable|null $submitted_at
  * @property int|null $verified_by
  * @property CarbonImmutable|null $verified_at
@@ -38,6 +47,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property CarbonImmutable $editable_until
  * @property-read User $user
  * @property-read LabClass|null $labClass
+ * @property-read OutsideClass|null $outsideClass
  * @property-read Room|null $room
  * @property-read Shift|null $shift
  * @property-read Collection<int, User&object{pivot: SupervisionReportAssistant}> $assistants
@@ -49,10 +59,18 @@ class SupervisionReport extends Model implements HasFiles
 
     protected $guarded = ['id'];
 
+    protected $attributes = [
+        'execution_status' => 'held',
+        'held_outside_lab' => false,
+    ];
+
     protected function casts(): array
     {
         return [
             'date' => 'date',
+            'execution_status' => ExecutionStatus::class,
+            'original_date' => 'date',
+            'held_outside_lab' => 'boolean',
             'submitted_at' => 'datetime',
             'verified_at' => 'datetime',
             'editable_until' => 'datetime',
@@ -91,6 +109,14 @@ class SupervisionReport extends Model implements HasFiles
     public function labClass(): BelongsTo
     {
         return $this->belongsTo(LabClass::class, 'class_id');
+    }
+
+    /**
+     * @return BelongsTo<OutsideClass, $this>
+     */
+    public function outsideClass(): BelongsTo
+    {
+        return $this->belongsTo(OutsideClass::class);
     }
 
     /**
@@ -135,6 +161,35 @@ class SupervisionReport extends Model implements HasFiles
         [$eh, $em] = array_map('intval', explode(':', $this->end_time));
 
         return round(max(0, ($eh * 60 + $em) - ($sh * 60 + $sm)) / 60, 2);
+    }
+
+    /** SKS kelas yang diawas: dari mata kuliah Lab IR atau kelas di luar Lab IR (PRD 3.2). */
+    public function credits(): ?int
+    {
+        $outside = $this->outsideClass;
+        if ($outside !== null) {
+            return $outside->credits;
+        }
+
+        $labClass = $this->labClass;
+
+        return $labClass === null ? null : $labClass->course->credits;
+    }
+
+    /**
+     * Jam untuk rekap ngawas = SKS × 50 menit ÷ 60 (bukan jam mulai–selesai),
+     * 0 bila status tidak menghitung jam. Tidak dibulatkan: pembulatan hanya
+     * pada total per asisten (PRD 3.2).
+     */
+    public function recapHours(): float
+    {
+        $credits = $this->credits();
+
+        if ($credits === null || ! $this->execution_status->countsHours()) {
+            return 0.0;
+        }
+
+        return $credits * 50 / 60;
     }
 
     public function fileVisibleTo(User $user): bool

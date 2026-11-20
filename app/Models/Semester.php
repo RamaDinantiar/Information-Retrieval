@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Semester akademik (US-D01, FR-ADM-02). Data operasional lain akan memakai
@@ -18,13 +19,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * @property CarbonImmutable $start_date
  * @property CarbonImmutable $end_date
+ * @property string|null $sk_number
+ * @property string|null $term_label
  * @property SemesterStatus $status
  * @property CarbonImmutable|null $activated_at
  * @property CarbonImmutable|null $archived_at
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
  */
-#[Fillable(['name', 'start_date', 'end_date'])]
+#[Fillable(['name', 'start_date', 'end_date', 'sk_number', 'term_label'])]
 class Semester extends Model
 {
     /** @use HasFactory<SemesterFactory> */
@@ -59,6 +62,22 @@ class Semester extends Model
     public static function current(): ?self
     {
         return static::active()->first();
+    }
+
+    /**
+     * @return HasMany<AcademicCalendarEvent, $this>
+     */
+    public function calendarEvents(): HasMany
+    {
+        return $this->hasMany(AcademicCalendarEvent::class);
+    }
+
+    /**
+     * @return HasMany<OutsideClass, $this>
+     */
+    public function outsideClasses(): HasMany
+    {
+        return $this->hasMany(OutsideClass::class);
     }
 
     /** Semester arsip bersifat read-only. */

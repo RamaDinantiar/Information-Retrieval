@@ -6,7 +6,7 @@
 
 | Perangkat lunak | Versi | Catatan                                                                                                   |
 | --------------- | ----- | --------------------------------------------------------------------------------------------------------- |
-| PHP             | 8.4+  | Ekstensi: `pdo_mysql`, `mbstring`, `xml`, `dom`, `fileinfo`, `zip`, `gd`, `intl`; `pdo_sqlite` untuk test |
+| PHP             | 8.4+  | Ekstensi: `pdo_mysql`, `mbstring`, `xml`, `dom`, `fileinfo`, `zip`, `gd`, `intl`; `pdo_sqlite` untuk test. `zip` + `gd` wajib untuk Rekap Jam Ngawas (PhpSpreadsheet: berkas xlsx dan gambar tanda tangan) |
 | Composer        | 2.x   |                                                                                                           |
 | Node.js         | 20+   | Beserta npm                                                                                               |
 | MySQL           | 8.x   |                                                                                                           |

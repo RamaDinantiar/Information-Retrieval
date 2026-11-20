@@ -25,6 +25,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string $email
  * @property string|null $phone
  * @property int|null $avatar_file_id
+ * @property int|null $signature_file_id
  * @property-read string|null $avatar
  * @property Role $role
  * @property Position $position
@@ -40,7 +41,7 @@ use Illuminate\Notifications\Notifiable;
  */
 #[Fillable(['nim', 'name', 'email', 'phone', 'password', 'major', 'cohort_year'])]
 #[Appends(['avatar'])]
-#[Hidden(['avatar_file_id', 'password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
+#[Hidden(['avatar_file_id', 'signature_file_id', 'password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
@@ -58,6 +59,16 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active' => true,
         'must_change_password' => false,
     ];
+
+    /**
+     * Tanda tangan asisten untuk rekap ngawas (US-RJN-02).
+     *
+     * @return BelongsTo<StoredFile, $this>
+     */
+    public function signature(): BelongsTo
+    {
+        return $this->belongsTo(StoredFile::class, 'signature_file_id');
+    }
 
     /**
      * Foto profil (disk privat, dikelola dari Pengaturan Akun › Profil).
@@ -121,6 +132,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function canViewAllRecaps(): bool
     {
         return $this->isAdmin() || $this->position === Position::SekretarisBendahara;
+    }
+
+    /** Rekap Jam Ngawas format kampus: Final, Buka Kembali, ekspor, kelas di luar Lab IR. */
+    public function canManageNgawasRecap(): bool
+    {
+        return $this->canViewAllRecaps();
     }
 
     public function isAdmin(): bool

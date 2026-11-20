@@ -17,6 +17,7 @@
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14",
         "openspout/openspout": "^5.12",
+        "phpoffice/phpspreadsheet": "^5.11",
         "phpoffice/phpword": "^1.4"
     },
     "require-dev": {
