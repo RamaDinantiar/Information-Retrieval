@@ -75,12 +75,14 @@ class SendLabNotifications
     public function handleExportFinished(ExportFinished $event): void
     {
         $export = $event->export;
+        $ngawas = $export->type === 'ngawas';
         $body = match ($export->status) {
-            'done' => 'Rekap '.$export->params_json['month'].' siap diunduh (berlaku 24 jam).',
+            'done' => ($ngawas ? 'Rekap Jam Ngawas (Excel, Draft) ' : 'Rekap ').$export->params_json['month'].' siap diunduh (berlaku 24 jam).',
             'empty' => 'Tidak ada laporan pada periode '.$export->params_json['month'].'.',
-            default => 'Rekap gagal dibuat. Coba lagi.',
+            default => $ngawas && $export->error ? 'Rekap Excel gagal dibuat: '.$export->error : 'Rekap gagal dibuat. Coba lagi.',
         };
+        $link = ($ngawas ? '/asisten/ngawas-recap?month=' : '/asisten/generate?month=').$export->params_json['month'];
 
-        Notify::send([$export->user_id], 'export', 'Generate rekap selesai', $body, '/asisten/generate?month='.$export->params_json['month']);
+        Notify::send([$export->user_id], 'export', $ngawas ? 'Rekap Jam Ngawas selesai' : 'Generate rekap selesai', $body, $link);
     }
 }

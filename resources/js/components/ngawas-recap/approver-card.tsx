@@ -51,7 +51,12 @@ export function ApproverCard({ approver }: { approver: Approver }) {
             aria-label={`Pengesah ${approver.index + 1}`}
             className="grid gap-3 border p-4"
         >
-            <h3 className="text-sm font-bold">Pengesah {approver.index + 1}</h3>
+            <h3 className="text-sm font-bold">
+                Pengesah {approver.index + 1}{' '}
+                <span className="font-normal text-muted-foreground">
+                    (tercetak di {approver.index === 0 ? 'kiri' : 'kanan'})
+                </span>
+            </h3>
             <div className="grid gap-2">
                 <Label htmlFor={`${id}-position`}>Jabatan</Label>
                 <Input

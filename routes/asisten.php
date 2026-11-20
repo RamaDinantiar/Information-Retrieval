@@ -114,6 +114,7 @@ Route::get('exports/{export}', [GenerateController::class, 'show'])->name('expor
 
 // FR-RJN: Rekap Jam Ngawas format kampus (pratinjau, pemeriksaan).
 Route::get('ngawas-recap', [NgawasRecapController::class, 'index'])->name('ngawas-recap.index');
+Route::post('ngawas-recap/export', [NgawasRecapController::class, 'export'])->middleware('throttle:10,1')->name('ngawas-recap.export');
 // US-RJN-06: kelas lab lain yang diawas asisten IR (CRUD: Sekretaris/Bendahara & Admin).
 Route::resource('outside-classes', OutsideClassController::class)->only(['index', 'store', 'update', 'destroy']);
 

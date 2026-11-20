@@ -114,11 +114,13 @@ export type PendingShift = {
 export type ExportRow = {
     id: number;
     /** 'pdf' hanya untuk riwayat ekspor lama (sebelum rekap berformat Word). */
-    type: 'zip' | 'docx' | 'excel' | 'pdf';
+    type: 'zip' | 'docx' | 'excel' | 'pdf' | 'ngawas';
     month: string;
     /** Tanggal laporan untuk Single DOC (YYYY-MM-DD). */
     date: string | null;
     scope: 'mine' | 'all';
+    /** Rekap ngawas: draft | final. */
+    mode: 'draft' | 'final' | null;
     status: 'queued' | 'processing' | 'done' | 'empty' | 'failed';
     progress: number;
     error: string | null;

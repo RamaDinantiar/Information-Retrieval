@@ -4,6 +4,7 @@ import type { LucideIcon } from 'lucide-react';
 import NgawasRecapController from '@/actions/App/Http/Controllers/Asisten/NgawasRecapController';
 import OutsideClassController from '@/actions/App/Http/Controllers/Asisten/OutsideClassController';
 import { EmptyState } from '@/components/empty-state';
+import { ExportPanel } from '@/components/ngawas-recap/export-panel';
 import { GenerateTabs } from '@/components/ngawas-recap/generate-tabs';
 import { RecapChecksPanel } from '@/components/ngawas-recap/recap-checks';
 import { RecapGrid } from '@/components/ngawas-recap/recap-grid';
@@ -11,7 +12,7 @@ import { RecapLegend } from '@/components/ngawas-recap/recap-legend';
 import { SelectField } from '@/components/select-field';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import type { NgawasRecapData, RecapChecks } from '@/types';
+import type { ExportRow, NgawasRecapData, RecapChecks } from '@/types';
 
 type Props = {
     filters: { month: string };
@@ -20,6 +21,7 @@ type Props = {
     checks: RecapChecks | null;
     status: { value: 'draft' | 'final'; revision: number } | null;
     signatures: { signed: number; total: number } | null;
+    exports: ExportRow[];
 };
 
 const MONTHS = [
@@ -72,6 +74,7 @@ export default function AsistenNgawasRecap({
     checks,
     status,
     signatures,
+    exports,
 }: Props) {
     const semester = usePage().props.activeSemester;
     const [year, month] = filters.month.split('-').map(Number);
@@ -197,6 +200,12 @@ export default function AsistenNgawasRecap({
                             )}
                         </div>
 
+                        {canManage && (
+                            <ExportPanel
+                                month={filters.month}
+                                exports={exports}
+                            />
+                        )}
                         {checks && <RecapChecksPanel checks={checks} />}
 
                         <RecapLegend />

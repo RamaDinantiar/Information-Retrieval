@@ -8,6 +8,7 @@ use App\Models\Export;
 use App\Models\Shift;
 use App\Models\SupervisionReport;
 use App\Support\Reports\DailyActivityReport;
+use App\Support\Reports\ExportPresenter;
 use App\Support\Reports\HoursRecap;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
@@ -53,7 +54,7 @@ class GenerateController extends Controller
                 'assistants' => $items->flatMap(fn (SupervisionReport $r) => $r->assistants->pluck('name'))->unique()->values(),
                 'materials' => $items->pluck('material')->filter()->unique()->values(),
             ])->values(),
-            'exports' => Export::where('user_id', $user->id)->with('file')->latest()->limit(10)->get()->map(fn (Export $e) => $this->exportRow($e)),
+            'exports' => Export::where('user_id', $user->id)->where('type', '!=', 'ngawas')->with('file')->latest()->limit(10)->get()->map(fn (Export $e) => ExportPresenter::row($e)),
             // Jam & SKS mengawas per mata kuliah (tanpa hitungan honor).
             'recap' => HoursRecap::forMonth($month, $allScope && $scope === 'all' ? null : $user->id),
         ]);
@@ -120,28 +121,6 @@ class GenerateController extends Controller
     {
         abort_unless($export->user_id === $request->user()->id, 403);
 
-        return response()->json($this->exportRow($export->load('file')));
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function exportRow(Export $export): array
-    {
-        $available = $export->status === 'done' && $export->file && $export->expires_at?->isFuture();
-
-        return [
-            'id' => $export->id,
-            'type' => $export->type,
-            'month' => $export->params_json['month'],
-            'date' => $export->params_json['date'] ?? null, // Single DOC lama (sebelum unduh langsung)
-            'scope' => $export->params_json['scope'] ?? 'mine',
-            'status' => $export->status,
-            'progress' => $export->progress,
-            'error' => $export->error,
-            'createdAt' => $export->created_at->toIso8601String(),
-            'expiresAt' => $export->expires_at?->toIso8601String(),
-            'file' => $available ? ['name' => $export->file->original_name, 'size' => $export->file->size, 'url' => $export->file->url()] : null,
-        ];
+        return response()->json(ExportPresenter::row($export->load('file')));
     }
 }

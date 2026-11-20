@@ -17,10 +17,14 @@ class NgawasApprovers
 
     public const COUNT = 2;
 
-    /** @var list<Approver> */
+    /**
+     * Urutan = urutan cetak di template, kiri ke kanan: Pengesah 1 = Dekan, Pengesah 2 = Kepala Laboratorium.
+     *
+     * @var list<Approver>
+     */
     public const DEFAULTS = [
-        ['position' => 'Kepala Laboratorium', 'name' => '', 'signature_file_id' => null],
-        ['position' => 'Dekan', 'name' => '', 'signature_file_id' => null],
+        ['position' => 'Dekan Fakultas Telematika Energi IT PLN', 'name' => '', 'signature_file_id' => null],
+        ['position' => 'Kepala Laboratorium Information Retrieval IT PLN', 'name' => '', 'signature_file_id' => null],
     ];
 
     /**

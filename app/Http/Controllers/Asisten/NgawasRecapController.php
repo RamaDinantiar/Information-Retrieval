@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\Asisten;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\GenerateNgawasRecapWorkbook;
+use App\Models\Export;
 use App\Models\NgawasRecap;
 use App\Models\Semester;
+use App\Support\Reports\ExportPresenter;
 use App\Support\Reports\NgawasRecap as RecapEngine;
 use App\Support\Reports\NgawasRecapChecks;
 use Carbon\CarbonImmutable;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -32,7 +37,7 @@ class NgawasRecapController extends Controller
             return Inertia::render('asisten/ngawas-recap', [
                 'filters' => ['month' => $month],
                 'canManage' => $manager,
-                'recap' => null, 'checks' => null, 'status' => null, 'signatures' => null,
+                'recap' => null, 'checks' => null, 'status' => null, 'signatures' => null, 'exports' => [],
             ]);
         }
 
@@ -52,7 +57,35 @@ class NgawasRecapController extends Controller
                 'signed' => count(array_filter($recap['assistants'], fn (array $a) => $a['hasSignature'])),
                 'total' => count($recap['assistants']),
             ],
+            // Riwayat ekspor Excel milik pengelola (progres dipantau lewat polling di halaman).
+            'exports' => $manager
+                ? Export::where('user_id', $user->id)->where('type', 'ngawas')->with('file')->latest()->limit(5)->get()->map(fn (Export $e) => ExportPresenter::row($e))->values()
+                : [],
         ]);
+    }
+
+    /** FR-RJN-11: ekspor Excel format kampus (Draft untuk pengecekan) lewat antrean. */
+    public function export(Request $request): RedirectResponse
+    {
+        abort_unless($request->user()->canManageNgawasRecap(), 403);
+
+        $validated = $request->validate(['month' => ['required', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/']]);
+        $semester = $this->semesterFor(CarbonImmutable::createFromFormat('Y-m', $validated['month'])->startOfMonth());
+
+        if ($semester === null) {
+            throw ValidationException::withMessages(['month' => 'Bulan ini tidak termasuk semester mana pun.']);
+        }
+
+        $export = Export::create([
+            'user_id' => $request->user()->id,
+            'type' => 'ngawas',
+            'params_json' => ['month' => $validated['month'], 'mode' => 'draft', 'semester_id' => $semester->id],
+        ]);
+
+        GenerateNgawasRecapWorkbook::dispatch($export);
+        Inertia::flash('toast', ['type' => 'info', 'message' => 'Rekap Excel (Draft) sedang diproses. Anda akan mendapat notifikasi saat selesai.']);
+
+        return back();
     }
 
     /** Semester yang mencakup bulan itu (utamakan yang aktif); jika tidak ada, semester aktif saat ini. */

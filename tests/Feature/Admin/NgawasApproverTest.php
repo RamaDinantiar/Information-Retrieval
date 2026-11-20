@@ -44,8 +44,8 @@ class NgawasApproverTest extends TestCase
     {
         $this->get(route('admin.system-settings.index'))->assertOk()->assertInertia(fn (Assert $page) => $page
             ->has('approvers', 2)
-            ->where('approvers.0.position', 'Kepala Laboratorium')
-            ->where('approvers.1.position', 'Dekan')
+            ->where('approvers.0.position', 'Dekan Fakultas Telematika Energi IT PLN')
+            ->where('approvers.1.position', 'Kepala Laboratorium Information Retrieval IT PLN')
             ->where('approvers.0.name', '')
             ->where('approvers.0.signatureUrl', null)
             ->missing('settings.ngawas_recap.approvers'));

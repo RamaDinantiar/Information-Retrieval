@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+import { useExportPolling } from '@/hooks/use-export-polling';
 import { formatRelative } from '@/lib/datetime';
 import { formatFileSize } from '@/lib/files';
 import { cn } from '@/lib/utils';
@@ -101,47 +102,6 @@ const EXPORT_STATUS: Record<
     empty: { label: 'Tidak ada data', variant: 'muted' },
     failed: { label: 'Gagal', variant: 'destructive' },
 };
-
-/** US-A04-1: tampilkan progres ekspor yang sedang berjalan. */
-function useExportPolling(exports: ExportRow[]) {
-    const [rows, setRows] = useState(exports);
-    useEffect(() => setRows(exports), [exports]);
-
-    const running = rows
-        .filter((e) => e.status === 'queued' || e.status === 'processing')
-        .map((e) => e.id);
-    const key = running.join(',');
-
-    useEffect(() => {
-        if (!key) return;
-
-        const timer = window.setInterval(async () => {
-            const updated = await Promise.all(
-                key.split(',').map((id) =>
-                    fetch(GenerateController.show.url(Number(id)), {
-                        headers: { Accept: 'application/json' },
-                    }).then((r) => r.json() as Promise<ExportRow>),
-                ),
-            );
-            setRows((current) =>
-                current.map(
-                    (row) => updated.find((u) => u.id === row.id) ?? row,
-                ),
-            );
-            if (
-                updated.every(
-                    (u) => u.status !== 'queued' && u.status !== 'processing',
-                )
-            ) {
-                router.reload({ only: ['exports'] });
-            }
-        }, 2000);
-
-        return () => window.clearInterval(timer);
-    }, [key]);
-
-    return rows;
-}
 
 /** Asisten › Generate — Figma "Generate Rekap Laporan Bulanan" (US-A04, FR-AGN). */
 export default function AsistenGenerate({
