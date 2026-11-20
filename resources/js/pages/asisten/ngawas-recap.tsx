@@ -1,7 +1,8 @@
-import { Head, router, usePage } from '@inertiajs/react';
-import { CalendarRange, Clock, PenLine, Users } from 'lucide-react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { CalendarRange, Clock, PenLine, School, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import NgawasRecapController from '@/actions/App/Http/Controllers/Asisten/NgawasRecapController';
+import OutsideClassController from '@/actions/App/Http/Controllers/Asisten/OutsideClassController';
 import { EmptyState } from '@/components/empty-state';
 import { GenerateTabs } from '@/components/ngawas-recap/generate-tabs';
 import { RecapChecksPanel } from '@/components/ngawas-recap/recap-checks';
@@ -9,6 +10,7 @@ import { RecapGrid } from '@/components/ngawas-recap/recap-grid';
 import { RecapLegend } from '@/components/ngawas-recap/recap-legend';
 import { SelectField } from '@/components/select-field';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import type { NgawasRecapData, RecapChecks } from '@/types';
 
 type Props = {
@@ -127,6 +129,11 @@ export default function AsistenNgawasRecap({
                         />
                     </label>
                     <div className="ml-auto flex flex-wrap items-center gap-2">
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href={OutsideClassController.index.url()}>
+                                <School /> Kelas di Luar Lab IR
+                            </Link>
+                        </Button>
                         {recap && (
                             <span className="bg-primary-100 px-3 py-1 font-mono text-xs text-primary-800">
                                 ● {recap.semester.name}

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Reports\NgawasApprovers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
@@ -24,6 +25,8 @@ class Setting extends Model
         // Pendaftaran mandiri praktikan (hanya email kampus).
         'registration_open' => true,
         'registration_domains' => 'itpln.ac.id',
+        // Rekap Jam Ngawas: dua pengesah bernama tanpa NIP (keputusan P4); lihat NgawasApprovers.
+        NgawasApprovers::KEY => NgawasApprovers::DEFAULTS,
     ];
 
     protected $primaryKey = 'key';

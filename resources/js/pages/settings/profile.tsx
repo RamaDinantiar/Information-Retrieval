@@ -5,6 +5,7 @@ import AvatarController from '@/actions/App/Http/Controllers/Settings/AvatarCont
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
+import { SignatureCard } from '@/components/signature-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,9 +19,14 @@ import { send } from '@/routes/verification';
 export default function Profile({
     mustVerifyEmail,
     status,
+    canSign,
+    signatureUrl,
 }: {
     mustVerifyEmail: boolean;
     status?: string;
+    /** US-RJN-02: kartu Tanda Tangan khusus Asisten. */
+    canSign: boolean;
+    signatureUrl: string | null;
 }) {
     const { auth } = usePage().props;
     const user = auth.user;
@@ -109,6 +115,8 @@ export default function Profile({
                         </>
                     )}
                 </Form>
+
+                {canSign && <SignatureCard signatureUrl={signatureUrl} />}
 
                 {praktikan && (!user.nim || !user.major) && (
                     <p

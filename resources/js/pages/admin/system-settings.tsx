@@ -1,8 +1,10 @@
 import { Form, Head } from '@inertiajs/react';
-import { Clock, HardDrive, UserPlus } from 'lucide-react';
+import { Clock, HardDrive, PenLine, UserPlus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import SystemSettingController from '@/actions/App/Http/Controllers/Admin/SystemSettingController';
 import InputError from '@/components/input-error';
+import { ApproverCard } from '@/components/ngawas-recap/approver-card';
+import type { Approver } from '@/components/ngawas-recap/approver-card';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -89,7 +91,13 @@ function NumberField({
 }
 
 /** Admin › Pengaturan Sistem (FR-ADM-10). */
-export default function SystemSettings({ settings }: { settings: Settings }) {
+export default function SystemSettings({
+    settings,
+    approvers,
+}: {
+    settings: Settings;
+    approvers: Approver[];
+}) {
     const root = useRef<HTMLDivElement>(null);
     useDashboardMotion(root);
 
@@ -213,6 +221,21 @@ export default function SystemSettings({ settings }: { settings: Settings }) {
                         </>
                     )}
                 </Form>
+
+                <Section
+                    icon={PenLine}
+                    title="Pengesah Rekap Ngawas"
+                    description="Dua pengesah yang namanya dan tanda tangannya dicetak di Rekap Jam Ngawas saat Final. Tanpa NIP. Rekap yang sudah Final tidak berubah bila pengesah diganti."
+                >
+                    <div className="grid gap-4 lg:grid-cols-2">
+                        {approvers.map((approver) => (
+                            <ApproverCard
+                                key={approver.index}
+                                approver={approver}
+                            />
+                        ))}
+                    </div>
+                </Section>
             </div>
         </>
     );

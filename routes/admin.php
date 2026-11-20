@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AcademicCalendarController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\ClassController;
 use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\NgawasApproverController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\SeatContractController;
 use App\Http\Controllers\Admin\SemesterController;
@@ -19,6 +21,12 @@ use Illuminate\Support\Facades\Route;
 Route::resource('semesters', SemesterController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::post('semesters/{semester}/activate', [SemesterController::class, 'activate'])->name('semesters.activate');
 Route::post('semesters/{semester}/copy-structure', [SemesterController::class, 'copyStructure'])->name('semesters.copy-structure');
+
+// FR-RJN-04: kalender akademik (libur nasional, UTS, UAS) per semester.
+Route::get('semesters/{semester}/calendar', [AcademicCalendarController::class, 'index'])->name('semesters.calendar');
+Route::post('semesters/{semester}/calendar-events', [AcademicCalendarController::class, 'store'])->name('calendar-events.store');
+Route::put('calendar-events/{event}', [AcademicCalendarController::class, 'update'])->name('calendar-events.update');
+Route::delete('calendar-events/{event}', [AcademicCalendarController::class, 'destroy'])->name('calendar-events.destroy');
 
 Route::resource('courses', CourseController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::post('courses/{course}/approve', [CourseController::class, 'approve'])->name('courses.approve');
@@ -38,6 +46,10 @@ Route::put('rooms/{room}/layout', [RoomController::class, 'saveLayout'])->name('
 Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
 Route::get('system-settings', [SystemSettingController::class, 'index'])->name('system-settings.index');
 Route::put('system-settings', [SystemSettingController::class, 'update'])->name('system-settings.update');
+
+// US-RJN-05.3: dua pengesah rekap ngawas (jabatan, nama, tanda tangan).
+Route::put('ngawas-approvers/{index}', [NgawasApproverController::class, 'update'])->whereNumber('index')->name('ngawas-approvers.update');
+Route::get('ngawas-approvers/{index}/signature', [NgawasApproverController::class, 'signature'])->whereNumber('index')->name('ngawas-approvers.signature');
 
 // FR-ADM-08: pengumuman.
 Route::resource('announcements', AnnouncementController::class)->only(['index', 'store', 'update', 'destroy']);

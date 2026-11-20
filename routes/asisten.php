@@ -10,6 +10,7 @@ use App\Http\Controllers\Asisten\GenerateController;
 use App\Http\Controllers\Asisten\GradeController;
 use App\Http\Controllers\Asisten\MeetingController;
 use App\Http\Controllers\Asisten\NgawasRecapController;
+use App\Http\Controllers\Asisten\OutsideClassController;
 use App\Http\Controllers\Asisten\ProgramController;
 use App\Http\Controllers\Asisten\ReportController;
 use App\Http\Controllers\Asisten\ScheduleController;
@@ -113,6 +114,8 @@ Route::get('exports/{export}', [GenerateController::class, 'show'])->name('expor
 
 // FR-RJN: Rekap Jam Ngawas format kampus (pratinjau, pemeriksaan).
 Route::get('ngawas-recap', [NgawasRecapController::class, 'index'])->name('ngawas-recap.index');
+// US-RJN-06: kelas lab lain yang diawas asisten IR (CRUD: Sekretaris/Bendahara & Admin).
+Route::resource('outside-classes', OutsideClassController::class)->only(['index', 'store', 'update', 'destroy']);
 
 // FR-APR: Program (Workshop, Quick Tutor, Rekrutmen, Maintenance).
 Route::redirect('program', '/asisten/program/workshop');

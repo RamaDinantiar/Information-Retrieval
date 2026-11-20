@@ -30,6 +30,8 @@ class SemesterController extends Controller
                 'name' => $semester->name,
                 'startDate' => $semester->start_date->toDateString(),
                 'endDate' => $semester->end_date->toDateString(),
+                'skNumber' => $semester->sk_number,
+                'termLabel' => $semester->term_label,
                 'status' => $semester->status->value,
                 'activatedAt' => $semester->activated_at?->toIso8601String(),
                 'archivedAt' => $semester->archived_at?->toIso8601String(),
@@ -55,7 +57,7 @@ class SemesterController extends Controller
 
     public function update(SemesterRequest $request, Semester $semester): RedirectResponse
     {
-        $before = $semester->only(['name', 'start_date', 'end_date']);
+        $before = $semester->only(['name', 'start_date', 'end_date', 'sk_number', 'term_label']);
         $semester->update($request->validated());
 
         AuditLog::record('semester.updated', $semester, $before, $request->validated());
