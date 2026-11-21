@@ -85,10 +85,14 @@ class NgawasRecap
         $replacements = [];
 
         foreach ($reports as $report) {
+            // Asisten Umum hanya boleh melihat laporan yang melibatkan dirinya (nama tim, tabel tambahan/pengganti).
+            $involved = $onlyUserId === null || $report->assistants->contains('id', $onlyUserId);
             $descriptor = self::describeReport($report);
 
             if ($descriptor === null) {
-                $unplaced[] = ['id' => $report->id, 'date' => $report->date->toDateString(), 'activity' => $report->activity];
+                if ($involved) {
+                    $unplaced[] = ['id' => $report->id, 'date' => $report->date->toDateString(), 'activity' => $report->activity];
+                }
 
                 continue;
             }
@@ -97,24 +101,26 @@ class NgawasRecap
             $status = $report->execution_status;
             $outsideLab = $report->outside_class_id !== null || $report->held_outside_lab;
 
-            $reportIndex[$report->id] = [
-                'id' => $report->id,
-                'date' => $report->date->toDateString(),
-                'start' => substr($report->start_time, 0, 5),
-                'end' => substr($report->end_time, 0, 5),
-                'class' => $title,
-                'status' => $report->status,
-                'executionStatus' => $status->value,
-                'team' => $report->assistants->pluck('name')->values()->all(),
-            ];
+            if ($involved) {
+                $reportIndex[$report->id] = [
+                    'id' => $report->id,
+                    'date' => $report->date->toDateString(),
+                    'start' => substr($report->start_time, 0, 5),
+                    'end' => substr($report->end_time, 0, 5),
+                    'class' => $title,
+                    'status' => $report->status,
+                    'executionStatus' => $status->value,
+                    'team' => $report->assistants->pluck('name')->values()->all(),
+                ];
+            }
 
             $time = str_replace(':', '.', substr($report->start_time, 0, 5)).' - '.str_replace(':', '.', substr($report->end_time, 0, 5));
 
-            if ($status === ExecutionStatus::Additional) {
+            if ($involved && $status === ExecutionStatus::Additional) {
                 $additional[] = ['date' => $report->date->toDateString(), 'class' => $title, 'time' => $time, 'note' => (string) $report->replacement_note];
             }
 
-            if ($status === ExecutionStatus::Replacement) {
+            if ($involved && $status === ExecutionStatus::Replacement) {
                 $replacements[] = ['date' => $report->date->toDateString(), 'class' => $title, 'time' => $time, 'note' => self::replacementNote($report)];
             }
 

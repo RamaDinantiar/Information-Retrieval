@@ -70,7 +70,7 @@ export function RecapStatusBar({
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                    {isFinal && final?.file && (
+                    {canManage && isFinal && final?.file && (
                         <Button variant="outline" asChild>
                             <a href={final.file.url}>
                                 <Download /> Unduh Final

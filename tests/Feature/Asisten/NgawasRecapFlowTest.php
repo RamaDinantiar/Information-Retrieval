@@ -215,20 +215,53 @@ class NgawasRecapFlowTest extends TestCase
                 ->has('revisions', 1, fn (Assert $r) => $r->where('revision', 0)->where('by', $this->manager->name)->has('file.url')->etc()));
     }
 
-    public function test_an_assistant_on_the_recap_sees_the_final_file_but_not_the_history()
+    public function test_an_assistant_sees_the_final_status_but_cannot_download_the_file_or_history()
     {
         $this->finalize();
+        $old = NgawasRecap::sole()->file;
         $this->reopen();
         $this->finalize();
         $assistant = User::whereKey(NgawasRecap::sole()->snapshot_json['recap']['assistants'][0]['userId'])->first();
 
         $this->actingAs($assistant)->get(route('asisten.ngawas-recap.index', ['month' => '2026-04']))
             ->assertInertia(fn (Assert $page) => $page
-                ->where('final.file.name', 'Rekap_Ngawas_LAB_IR_APRIL_2026_rev1.xlsx')
+                ->where('status', ['value' => 'final', 'revision' => 1])
+                ->where('final.file', null)
                 ->where('final.changedSinceFinal', false)
                 ->where('revisions', []));
 
-        $this->get(NgawasRecap::sole()->file->url())->assertOk();
+        // File Final (aktif maupun revisi lama) memuat data seluruh asisten: hanya pengelola yang boleh mengunduh.
+        $this->get(NgawasRecap::sole()->file->url())->assertForbidden();
+        $this->get($old->url())->assertForbidden();
+        $this->actingAs($this->manager)->get(NgawasRecap::sole()->file->url())->assertOk();
+        $this->actingAs(User::factory()->admin()->create())->get($old->url())->assertOk();
+    }
+
+    public function test_an_assistant_page_exposes_only_their_own_reports_and_hours()
+    {
+        $this->finalize();
+        $recap = NgawasRecap::sole()->snapshot_json['recap'];
+        $mine = User::whereKey($recap['assistants'][0]['userId'])->first();
+        $others = array_map(fn ($a) => $a['name'], array_slice($recap['assistants'], 1));
+
+        $this->actingAs($mine)->get(route('asisten.ngawas-recap.index', ['month' => '2026-04']))
+            ->assertInertia(function (Assert $page) use ($mine, $others) {
+                $props = $page->toArray()['props'];
+                $this->assertCount(1, $props['recap']['assistants']);
+                $this->assertNull($props['checks']);
+
+                $reports = (array) $props['recap']['reports'];
+                $this->assertNotEmpty($reports);
+                $this->assertLessThan(count(NgawasRecap::sole()->snapshot_json['recap']['reports']), count($reports));
+
+                // Nama asisten lain hanya boleh muncul bila satu tim jaga dengan pemilik halaman.
+                foreach ($reports as $report) {
+                    $this->assertContains($mine->name, $report['team']);
+                }
+
+                $this->assertStringNotContainsString('"checks":{', json_encode($props));
+                $this->assertGreaterThan(0, count($others));
+            });
     }
 
     public function test_data_changes_after_final_are_flagged()

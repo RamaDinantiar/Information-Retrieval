@@ -146,7 +146,7 @@ class NgawasRecapController extends Controller
         return [
             'finalizedAt' => $state->finalized_at?->toIso8601String(),
             'finalizedBy' => $state->finalizer->name ?? null,
-            'file' => $state->file ? ['name' => $state->file->original_name, 'size' => $state->file->size, 'url' => $state->file->url()] : null,
+            'file' => $manager && $state->file ? ['name' => $state->file->original_name, 'size' => $state->file->size, 'url' => $state->file->url()] : null,
             'changedSinceFinal' => $manager && $live !== null && md5((string) json_encode($live)) !== md5((string) json_encode($state->snapshot_json['recap'] ?? null)),
         ];
     }

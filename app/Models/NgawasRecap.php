@@ -81,15 +81,12 @@ class NgawasRecap extends Model implements HasFiles
         return $this->status === NgawasRecapStatus::Final;
     }
 
-    /** Berkas Final/revisi: pengelola rekap, atau asisten yang tampil di rekap itu (hanya-baca). */
+    /**
+     * Berkas Final/revisi memuat nama, jam, dan tanda tangan seluruh asisten: hanya pengelola rekap
+     * (Sekretaris/Bendahara dan Admin). Asisten lain melihat barisnya sendiri di halaman rekap.
+     */
     public function fileVisibleTo(User $user): bool
     {
-        if ($user->canManageNgawasRecap()) {
-            return true;
-        }
-
-        $ids = array_column($this->snapshot_json['recap']['assistants'] ?? [], 'userId');
-
-        return in_array($user->id, $ids, true);
+        return $user->canManageNgawasRecap();
     }
 }

@@ -94,7 +94,7 @@ class SendLabNotifications
         $label = $this->monthLabel($event->recap->month);
         $rev = $event->recap->revision > 0 ? " (revisi {$event->recap->revision})" : '';
 
-        Notify::send($event->userIds, 'export', 'Rekap Jam Ngawas Final', "Rekap Jam Ngawas {$label}{$rev} sudah ditetapkan Final dan dapat diunduh.", '/asisten/ngawas-recap?month='.$event->recap->month);
+        Notify::send($event->userIds, 'export', 'Rekap Jam Ngawas Final', "Rekap Jam Ngawas {$label}{$rev} sudah ditetapkan Final. Lihat jam ngawas Anda di halaman rekap.", '/asisten/ngawas-recap?month='.$event->recap->month);
     }
 
     public function handleNgawasRecapReopened(NgawasRecapReopened $event): void

@@ -191,7 +191,7 @@ Sebagai Asisten, saya ingin melihat rekap ngawas saya sebelum dikirim ke kampus,
 
 1. Di **Generate › Rekap Jam Ngawas**, asisten memilih bulan dan melihat grid **baris miliknya**: kelas × tanggal, warna, jam per sel, total hari, dan total jam.
 2. Klik sel menampilkan laporan sumbernya (tanggal, kelas, status, tim jaga) dengan tautan ke laporan.
-3. When rekap ditetapkan Final, Then asisten mendapat notifikasi dan dapat mengunduh file Final (hanya-baca).
+3. When rekap ditetapkan Final, Then asisten mendapat notifikasi dan melihat jam ngawas miliknya di halaman rekap (hanya-baca). File Excel Final hanya diunduh Sekretaris/Bendahara dan Admin, lalu dikirim ke kampus oleh Bendahara; asisten tidak mengunduhnya karena memuat data seluruh asisten.
 4. When ada yang salah, Then asisten memperbaiki laporannya lewat alur yang sudah ada (laporan dikembalikan atau minta buka kunci). Tidak ada edit sel langsung di grid.
 
 **US-RJN-04 — Menyusun, memeriksa, dan memfinalkan rekap [Wajib]**
@@ -323,7 +323,7 @@ Kampus menetapkan bahwa **hanya** bagian berikut yang boleh berubah: kelas, nama
                          │
 [Sek/Bend] Tetapkan Final ─► snapshot + Excel kampus (tanda tangan asisten & pengesah otomatis)
                          │
-                         └─► unduh ─► kirim ke Kak Naomi ─► asisten dapat notifikasi
+                         └─► unduh ─► Bendahara kirim ke Kak Naomi ─► asisten dapat notifikasi (lihat jam sendiri)
                          │
           revisi dari Kak Naomi? ── ya ─► Buka Kembali (catatan) ─► revisi +1 ─► ulangi
 ```
