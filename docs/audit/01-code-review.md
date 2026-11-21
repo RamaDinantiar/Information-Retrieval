@@ -9,32 +9,32 @@ Tinjauan kode `ir-lab` sebelum deploy. **Tidak ada kode yang diubah**; dokumen i
 
 ## Ringkasan
 
-| Tingkat | Jumlah | Catatan |
-|---|---|---|
-| Kritis | 0 | Tidak ada celah otorisasi, injeksi SQL, XSS, atau eksekusi kode yang saya temukan |
-| Tinggi | 2 | Keduanya mengenai alur yang dipakai rutin: Rekap Jam Ngawas dan impor akun |
-| Sedang | 10 | Konfigurasi antrean/proxy, integritas data rekap, dan satu keputusan bisnis yang belum pasti |
-| Rendah | 11 | Penanganan galat, kebersihan data, dan hal kecil |
+| Tingkat | Jumlah | Catatan                                                                                      |
+| ------- | ------ | -------------------------------------------------------------------------------------------- |
+| Kritis  | 0      | Tidak ada celah otorisasi, injeksi SQL, XSS, atau eksekusi kode yang saya temukan            |
+| Tinggi  | 2      | Keduanya mengenai alur yang dipakai rutin: Rekap Jam Ngawas dan impor akun                   |
+| Sedang  | 10     | Konfigurasi antrean/proxy, integritas data rekap, dan satu keputusan bisnis yang belum pasti |
+| Rendah  | 11     | Penanganan galat, kebersihan data, dan hal kecil                                             |
 
 **Rekomendasi:** perbaiki T1 dan T2 sebelum deploy, dan putuskan S4, S5, S9 (butuh keputusan Anda). S1, S6, dan S7 murah diperbaiki dan sebaiknya ikut sebelum deploy. Sisanya boleh menyusul.
 
 Daftar temuan:
 
-| ID | Tingkat | Judul |
-|---|---|---|
-| T1 | Tinggi | Bulan salah pada tanggal 29–31 (13 titik), termasuk saat Tetapkan Final |
-| T2 | Tinggi | Impor akun massal mengirim ratusan email password tanpa throttle dan tanpa percobaan ulang |
-| S1 | Sedang | `retry_after` antrean (90 dtk) lebih kecil dari `timeout` job (300 dtk) |
-| S2 | Sedang | Password sementara tersimpan polos di `jobs`/`failed_jobs`; `failed_jobs` tidak pernah dibersihkan |
-| S3 | Sedang | Teks bebas masuk sel Excel rekap sebagai formula |
-| S4 | Sedang | Laporan baru bisa dibuat untuk tanggal lampau dan bulan yang sudah Final |
-| S5 | Sedang | Semester laporan ngawas diambil dari semester aktif, bukan dari kelasnya |
-| S6 | Sedang | `trustProxies` belum diatur (bila di belakang reverse proxy) |
-| S7 | Sedang | Batas per IP bisa memblokir pengguna sah di jaringan kampus |
-| S8 | Sedang | Pembaruan langsung memicu muat ulang serentak pada setiap penyimpanan data |
-| S9 | Sedang | Skala huruf mutu bertanda "asumsi" di kode |
-| S10 | Sedang | Foto laporan lama terhapus sebelum foto baru lolos validasi |
-| R1–R11 | Rendah | Lihat bagian akhir |
+| ID     | Tingkat | Judul                                                                                              |
+| ------ | ------- | -------------------------------------------------------------------------------------------------- |
+| T1     | Tinggi  | Bulan salah pada tanggal 29–31 (13 titik), termasuk saat Tetapkan Final                            |
+| T2     | Tinggi  | Impor akun massal mengirim ratusan email password tanpa throttle dan tanpa percobaan ulang         |
+| S1     | Sedang  | `retry_after` antrean (90 dtk) lebih kecil dari `timeout` job (300 dtk)                            |
+| S2     | Sedang  | Password sementara tersimpan polos di `jobs`/`failed_jobs`; `failed_jobs` tidak pernah dibersihkan |
+| S3     | Sedang  | Teks bebas masuk sel Excel rekap sebagai formula                                                   |
+| S4     | Sedang  | Laporan baru bisa dibuat untuk tanggal lampau dan bulan yang sudah Final                           |
+| S5     | Sedang  | Semester laporan ngawas diambil dari semester aktif, bukan dari kelasnya                           |
+| S6     | Sedang  | `trustProxies` belum diatur (bila di belakang reverse proxy)                                       |
+| S7     | Sedang  | Batas per IP bisa memblokir pengguna sah di jaringan kampus                                        |
+| S8     | Sedang  | Pembaruan langsung memicu muat ulang serentak pada setiap penyimpanan data                         |
+| S9     | Sedang  | Skala huruf mutu bertanda "asumsi" di kode                                                         |
+| S10    | Sedang  | Foto laporan lama terhapus sebelum foto baru lolos validasi                                        |
+| R1–R11 | Rendah  | Lihat bagian akhir                                                                                 |
 
 ---
 
@@ -44,18 +44,18 @@ Daftar temuan:
 
 **Di mana:** `CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth()` muncul di 13 tempat:
 
-| File | Baris |
-|---|---|
-| `app/Support/Reports/NgawasRecap.php` | 46 |
-| `app/Support/Reports/HoursRecap.php` | 25 |
-| `app/Support/Reports/NgawasRecapChecks.php` | 33 |
-| `app/Http/Controllers/Asisten/NgawasRecapController.php` | 35, 78, 133 |
-| `app/Http/Controllers/Asisten/NgawasRecapOrderController.php` | 81 |
-| `app/Http/Controllers/Asisten/OutsideClassController.php` | 42 |
-| `app/Http/Controllers/Asisten/ReportController.php` | 40 |
-| `app/Http/Controllers/Asisten/GenerateController.php` | 31 |
-| `app/Jobs/GenerateMonthlyReport.php` | 41, 81 |
-| `app/Listeners/SendLabNotifications.php` | 109 |
+| File                                                          | Baris       |
+| ------------------------------------------------------------- | ----------- |
+| `app/Support/Reports/NgawasRecap.php`                         | 46          |
+| `app/Support/Reports/HoursRecap.php`                          | 25          |
+| `app/Support/Reports/NgawasRecapChecks.php`                   | 33          |
+| `app/Http/Controllers/Asisten/NgawasRecapController.php`      | 35, 78, 133 |
+| `app/Http/Controllers/Asisten/NgawasRecapOrderController.php` | 81          |
+| `app/Http/Controllers/Asisten/OutsideClassController.php`     | 42          |
+| `app/Http/Controllers/Asisten/ReportController.php`           | 40          |
+| `app/Http/Controllers/Asisten/GenerateController.php`         | 31          |
+| `app/Jobs/GenerateMonthlyReport.php`                          | 41, 81      |
+| `app/Listeners/SendLabNotifications.php`                      | 109         |
 
 **Masalah:** `createFromFormat('Y-m', ...)` tanpa penanda reset (`!`) mengisi hari dengan **hari ini**. Bila hari ini tanggal D dan bulan yang diminta punya kurang dari D hari, hasilnya meluap ke bulan berikutnya, lalu `startOfMonth()` memilih bulan yang salah.
 
@@ -199,19 +199,19 @@ today=2026-11-21 request=2026-02 -> startOfMonth=2026-02-01  OK
 
 ## Rendah
 
-| ID | File:baris | Temuan | Usulan |
-|---|---|---|---|
-| R1 | `ReportController.php:39`, `GenerateController.php:30` | Regex bulan `\d{2}` menerima `2026-13`/`2026-00`, sehingga `createFromFormat` melempar galat dan halaman 500. Controller lain sudah memakai `(0[1-9]\|1[0-2])`. | Samakan regex, atau gabungkan dengan perbaikan T1. |
-| R2 | `NgawasRecapController.php:168-176` | `semesterFor()` jatuh ke semester aktif bila bulan di luar semua semester, sehingga pesan "Bulan ini tidak termasuk semester mana pun" tidak pernah muncul selama ada semester aktif, dan bulan di luar rentang bisa difinalkan. | Kembalikan `null` bila tidak ada semester yang mencakup bulan itu. |
-| R3 | `NgawasRecapController.php:97-107` → `FinalizeRecap.php:63-67` | Tetapkan Final membangun berkas Excel (PhpSpreadsheet + tanda tangan) di dalam request HTTP, sedangkan ekspor Draft lewat antrean (`:90`). Dengan banyak asisten bisa melewati `max_execution_time` PHP-FPM atau timeout Nginx. | Ukur waktunya; bila lambat, pindahkan ke antrean dengan status progres. |
-| R4 | `GradeController.php:93`, `SaveGradesBatch.php:63-75` | `submission_id` ganda dalam satu batch membuat dua `new Grade` untuk submission yang sama, melanggar unique `grades.submission_id`, dan hasilnya 500. | Validasi `grades.*.submission_id` dengan `distinct`. |
-| R5 | `SubmitTask.php:46-48,89` | Cek pengumpulan ganda dan perhitungan `version` dilakukan di luar kunci. Dua permintaan bersamaan (klik ganda) sama-sama lolos, lalu yang kedua gagal di unique `(task_target_id, user_id, version)`. Data tetap utuh, tetapi pengguna melihat galat 500. | Pindahkan cek dan `max(version)` ke dalam transaksi dengan `lockForUpdate`, atau tangkap `QueryException` dan tampilkan pesan ramah. |
-| R6 | `NgawasSignatureFiles.php:25` | `tempnam()` membuat berkas kosong, lalu kode menambahkan `.png` ke jalur dan menulis ke berkas lain. Berkas kosong asli tidak pernah dihapus, jadi setiap ekspor meninggalkan satu berkas sampah per tanda tangan di folder sementara. | Hapus berkas dasar `tempnam`, atau tulis langsung ke jalur `tempnam` tanpa menambah ekstensi. |
-| R7 | `routes/console.php:70-99` | Tidak ada pembersihan untuk `notifications` (satu baris per penerima per notifikasi), `password_reset_codes` (baris kedaluwarsa tidak dihapus), dan `audit_logs`. Tumbuh tanpa batas, tetapi masih wajar untuk skala lab. | Jadwalkan pembersihan notifikasi terbaca > 90 hari dan kode OTP kedaluwarsa. |
-| R8 | `AvatarController.php:22-34`, `routes/settings.php:17` | Foto profil dapat dibaca pengguna mana pun yang sudah masuk lewat ID berurutan (komentar kode menyebut ini disengaja). Gambar tidak di-encode ulang, jadi metadata EXIF (mis. lokasi) tetap ikut. | Opsional: encode ulang dengan GD saat unggah (sudah ada pola di `SignatureImage`). |
-| R9 | `AuditLog.php:70-75`, `SaveGradesBatch.php:76` | Append-only hanya ditegakkan di level model (`updating`/`deleting`); `AuditLog::query()->delete()` melewatinya. Audit `grade.saved` menyimpan **isi feedback** tiap praktikan. | Pertimbangkan pembatasan hak DB untuk tabel ini; catat hanya skor, bukan isi feedback. |
-| R10 | `NgawasRecapChecks.php:179` | `$date->isFuture()` bernilai salah untuk hari ini pukul 00:00, jadi kelas yang terjadwal hari ini muncul sebagai "kemungkinan lupa lapor" sebelum kelasnya berlangsung. Hanya peringatan. | Bila hari ini ikut dilewati, ganti dengan `$date->greaterThanOrEqualTo(today())`. |
-| R11 | `docs/10-security.md:40` | ClamAV belum aktif; `scan_status` langsung `clean`. Sudah terdokumentasi, dicatat di sini agar tidak terlewat saat deploy. | Putuskan apakah cukup untuk peluncuran awal. |
+| ID  | File:baris                                                     | Temuan                                                                                                                                                                                                                                                    | Usulan                                                                                                                               |
+| --- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| R1  | `ReportController.php:39`, `GenerateController.php:30`         | Regex bulan `\d{2}` menerima `2026-13`/`2026-00`, sehingga `createFromFormat` melempar galat dan halaman 500. Controller lain sudah memakai `(0[1-9]\|1[0-2])`.                                                                                           | Samakan regex, atau gabungkan dengan perbaikan T1.                                                                                   |
+| R2  | `NgawasRecapController.php:168-176`                            | `semesterFor()` jatuh ke semester aktif bila bulan di luar semua semester, sehingga pesan "Bulan ini tidak termasuk semester mana pun" tidak pernah muncul selama ada semester aktif, dan bulan di luar rentang bisa difinalkan.                          | Kembalikan `null` bila tidak ada semester yang mencakup bulan itu.                                                                   |
+| R3  | `NgawasRecapController.php:97-107` → `FinalizeRecap.php:63-67` | Tetapkan Final membangun berkas Excel (PhpSpreadsheet + tanda tangan) di dalam request HTTP, sedangkan ekspor Draft lewat antrean (`:90`). Dengan banyak asisten bisa melewati `max_execution_time` PHP-FPM atau timeout Nginx.                           | Ukur waktunya; bila lambat, pindahkan ke antrean dengan status progres.                                                              |
+| R4  | `GradeController.php:93`, `SaveGradesBatch.php:63-75`          | `submission_id` ganda dalam satu batch membuat dua `new Grade` untuk submission yang sama, melanggar unique `grades.submission_id`, dan hasilnya 500.                                                                                                     | Validasi `grades.*.submission_id` dengan `distinct`.                                                                                 |
+| R5  | `SubmitTask.php:46-48,89`                                      | Cek pengumpulan ganda dan perhitungan `version` dilakukan di luar kunci. Dua permintaan bersamaan (klik ganda) sama-sama lolos, lalu yang kedua gagal di unique `(task_target_id, user_id, version)`. Data tetap utuh, tetapi pengguna melihat galat 500. | Pindahkan cek dan `max(version)` ke dalam transaksi dengan `lockForUpdate`, atau tangkap `QueryException` dan tampilkan pesan ramah. |
+| R6  | `NgawasSignatureFiles.php:25`                                  | `tempnam()` membuat berkas kosong, lalu kode menambahkan `.png` ke jalur dan menulis ke berkas lain. Berkas kosong asli tidak pernah dihapus, jadi setiap ekspor meninggalkan satu berkas sampah per tanda tangan di folder sementara.                    | Hapus berkas dasar `tempnam`, atau tulis langsung ke jalur `tempnam` tanpa menambah ekstensi.                                        |
+| R7  | `routes/console.php:70-99`                                     | Tidak ada pembersihan untuk `notifications` (satu baris per penerima per notifikasi), `password_reset_codes` (baris kedaluwarsa tidak dihapus), dan `audit_logs`. Tumbuh tanpa batas, tetapi masih wajar untuk skala lab.                                 | Jadwalkan pembersihan notifikasi terbaca > 90 hari dan kode OTP kedaluwarsa.                                                         |
+| R8  | `AvatarController.php:22-34`, `routes/settings.php:17`         | Foto profil dapat dibaca pengguna mana pun yang sudah masuk lewat ID berurutan (komentar kode menyebut ini disengaja). Gambar tidak di-encode ulang, jadi metadata EXIF (mis. lokasi) tetap ikut.                                                         | Opsional: encode ulang dengan GD saat unggah (sudah ada pola di `SignatureImage`).                                                   |
+| R9  | `AuditLog.php:70-75`, `SaveGradesBatch.php:76`                 | Append-only hanya ditegakkan di level model (`updating`/`deleting`); `AuditLog::query()->delete()` melewatinya. Audit `grade.saved` menyimpan **isi feedback** tiap praktikan.                                                                            | Pertimbangkan pembatasan hak DB untuk tabel ini; catat hanya skor, bukan isi feedback.                                               |
+| R10 | `NgawasRecapChecks.php:179`                                    | `$date->isFuture()` bernilai salah untuk hari ini pukul 00:00, jadi kelas yang terjadwal hari ini muncul sebagai "kemungkinan lupa lapor" sebelum kelasnya berlangsung. Hanya peringatan.                                                                 | Bila hari ini ikut dilewati, ganti dengan `$date->greaterThanOrEqualTo(today())`.                                                    |
+| R11 | `docs/10-security.md:40`                                       | ClamAV belum aktif; `scan_status` langsung `clean`. Sudah terdokumentasi, dicatat di sini agar tidak terlewat saat deploy.                                                                                                                                | Putuskan apakah cukup untuk peluncuran awal.                                                                                         |
 
 ---
 
@@ -260,14 +260,14 @@ Bagian ini penting agar perbaikan tidak merusak apa yang sudah benar.
 
 ## Usulan urutan perbaikan (menunggu persetujuan Anda)
 
-| Tahap | Isi | Butuh keputusan Anda? |
-|---|---|---|
-| 1 | T1 (pembantu bulan + tes tanggal 29–31) dengan R1 dan R2 sekalian | Tidak |
-| 2 | T2 + S2 (email kredensial: retry, jeda, enkripsi payload, pembersihan `failed_jobs`) dan S1 (`retry_after`) | Tidak |
-| 3 | S3 (formula Excel), S10 (urutan hapus foto), R4–R6 (galat kecil) | Tidak |
-| 4 | S6 + S7 (proxy dan batas per IP) | Ya: topologi server (di belakang proxy atau tidak) |
-| 5 | S4 + S5 (aturan laporan susulan dan semester) | Ya: kebijakan laporan susulan dan bulan Final |
-| 6 | S9 (skala huruf mutu) | Ya: skala resmi kampus |
-| 7 | S8 (beban pembaruan langsung), R3, R7–R11 | Setelah pengukuran beban |
+| Tahap | Isi                                                                                                         | Butuh keputusan Anda?                              |
+| ----- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| 1     | T1 (pembantu bulan + tes tanggal 29–31) dengan R1 dan R2 sekalian                                           | Tidak                                              |
+| 2     | T2 + S2 (email kredensial: retry, jeda, enkripsi payload, pembersihan `failed_jobs`) dan S1 (`retry_after`) | Tidak                                              |
+| 3     | S3 (formula Excel), S10 (urutan hapus foto), R4–R6 (galat kecil)                                            | Tidak                                              |
+| 4     | S6 + S7 (proxy dan batas per IP)                                                                            | Ya: topologi server (di belakang proxy atau tidak) |
+| 5     | S4 + S5 (aturan laporan susulan dan semester)                                                               | Ya: kebijakan laporan susulan dan bulan Final      |
+| 6     | S9 (skala huruf mutu)                                                                                       | Ya: skala resmi kampus                             |
+| 7     | S8 (beban pembaruan langsung), R3, R7–R11                                                                   | Setelah pengukuran beban                           |
 
 Tiap tahap akan saya kerjakan dengan tes baru, lalu saya jalankan ulang `php artisan test`, PHPStan, Pint, `npm run check`, dan build.

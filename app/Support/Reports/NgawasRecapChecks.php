@@ -138,7 +138,7 @@ class NgawasRecapChecks
     /**
      * Tanggal jadwal kelas Lab IR yang tidak punya laporan apa pun (status berapa pun)
      * dan bukan tanggal asli kelas pengganti. Libur, Minggu, periode UTS/UAS, tanggal
-     * di luar semester, dan tanggal setelah hari ini dilewati.
+     * di luar semester, dan hari ini dan tanggal setelahnya dilewati (kelas hari ini mungkin belum berlangsung).
      *
      * @param  Recap  $recap
      * @return list<string>
@@ -176,7 +176,7 @@ class NgawasRecapChecks
             for ($date = $start; $date->lte($end); $date = $date->addDay()) {
                 $key = $date->toDateString();
 
-                if ($date->dayOfWeekIso !== $class->day_of_week || isset($skip[$key]) || $date->isFuture()
+                if ($date->dayOfWeekIso !== $class->day_of_week || isset($skip[$key]) || $date->greaterThanOrEqualTo(today())
                     || $date->lt($semester->start_date) || $date->gt($semester->end_date) || isset($covered[$class->id.'|'.$key])) {
                     continue;
                 }

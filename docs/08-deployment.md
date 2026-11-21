@@ -119,16 +119,17 @@ dan ekspor bisa ditandai gagal padahal selesai.
 
 Menjalankan tugas otomatis. Tanpa cron, **sesi kelas tidak mulai/berhenti sendiri** dan Pre-Test tidak terbuka.
 
-| Perintah                 | Jadwal       | Fungsi                                                             |
-| ------------------------ | ------------ | ------------------------------------------------------------------ |
-| `meetings:sync`          | tiap menit   | Mulai/akhiri sesi sesuai jam kelas, buka Pre-Test                  |
-| `announcements:notify`   | tiap 5 menit | Notifikasi pengumuman terjadwal                                    |
-| `tasks:remind-deadlines` | tiap jam     | Pengingat tenggat H-1 (lonceng + email)                            |
-| `reminders:send`         | harian 08:00 | Pengingat: laporan belum diisi, belum menilai, menunggu verifikasi |
-| `signatures:remind`      | Senin 08:00  | Pengingat tanda tangan belum diunggah                              |
-| `shifts:expire-swaps`    | tiap jam     | Kedaluwarsakan pengajuan tukar shift                               |
-| `exports:prune`          | harian       | Hapus file ekspor > 7 hari                                         |
-| `queue:prune-failed`     | harian       | Buang job gagal > 48 jam                                           |
+| Perintah                 | Jadwal       | Fungsi                                                                     |
+| ------------------------ | ------------ | -------------------------------------------------------------------------- |
+| `meetings:sync`          | tiap menit   | Mulai/akhiri sesi sesuai jam kelas, buka Pre-Test                          |
+| `announcements:notify`   | tiap 5 menit | Notifikasi pengumuman terjadwal                                            |
+| `tasks:remind-deadlines` | tiap jam     | Pengingat tenggat H-1 (lonceng + email)                                    |
+| `reminders:send`         | harian 08:00 | Pengingat: laporan belum diisi, belum menilai, menunggu verifikasi         |
+| `signatures:remind`      | Senin 08:00  | Pengingat tanda tangan belum diunggah                                      |
+| `shifts:expire-swaps`    | tiap jam     | Kedaluwarsakan pengajuan tukar shift                                       |
+| `exports:prune`          | harian       | Hapus file ekspor > 7 hari                                                 |
+| `queue:prune-failed`     | harian       | Buang job gagal > 48 jam                                                   |
+| `housekeeping:prune`     | harian       | Hapus notifikasi terbaca > 90 hari (apa pun > 1 tahun) dan OTP kedaluwarsa |
 
 ```cron
 * * * * * cd /var/www/ir-lab && php artisan schedule:run >> /dev/null 2>&1
