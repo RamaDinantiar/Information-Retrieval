@@ -34,6 +34,7 @@ Semua perubahan penting dicatat di sini. Format mengikuti
 
 ### Diubah
 
+- Jabatan **Sekretaris/Bendahara dipegang satu akun**: menunjuk akun baru memindahkan jabatan (konfirmasi Admin, notifikasi ke dua akun, audit log). Dashboard Admin memperingatkan bila tidak ada Sekretaris/Bendahara aktif.
 - `LabNotification` kini hanya menyimpan notifikasi lonceng; email dikirim lewat `LabMailNotification` (antrean). Email tenggat H-1 dan pengingat tanda tangan ikut aturan baru ini.
 - **Rekap jam lama** (kartu Generate dan Excel Ringkasan/Per Mata Kuliah) kini memakai rumus **SKS × 50 ÷ 60** yang sama dengan Rekap Jam
   Ngawas; kelas ditiadakan tidak dihitung dan total per asisten dibulatkan seperti template. Angka bisa berbeda dari versi sebelumnya

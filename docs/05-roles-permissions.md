@@ -13,6 +13,9 @@
 - Setiap akun punya **satu peran** (`users.role`).
 - Asisten dapat diberi **jabatan Sekretaris/Bendahara** (`users.position`). Jabatan bukan peran baru;
   jabatan hanya membuka dua hak tambahan: **verifikasi laporan mengawas** dan **melihat rekap jam seluruh asisten**.
+- Jabatan Sekretaris/Bendahara dipegang **satu akun** pada satu waktu, ditentukan Admin di Admin › Pengguna. Menunjuk akun baru
+  memindahkan jabatan: pemegang lama otomatis menjadi Asisten Umum (setelah Admin mengonfirmasi), keduanya mendapat notifikasi, dan
+  perubahan tercatat di audit log. Dashboard Admin memberi peringatan bila tidak ada Sekretaris/Bendahara aktif.
 - Admin memiliki seluruh hak Asisten ditambah menu Master Data.
 
 ## Lapisan pemeriksaan

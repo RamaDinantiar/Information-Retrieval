@@ -1,10 +1,12 @@
-import { Form } from '@inertiajs/react';
+import { Form, usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import UserController from '@/actions/App/Http/Controllers/Admin/UserController';
 import InputError from '@/components/input-error';
 import { positionLabels } from '@/config/navigation';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogClose,
@@ -40,6 +42,16 @@ export function UserFormDialog({
     const [position, setPosition] = useState<Position>(
         user?.position ?? 'none',
     );
+    const [confirmed, setConfirmed] = useState(false);
+    // Hanya satu akun Sekretaris/Bendahara: menunjuk akun lain memindahkan jabatannya (perlu konfirmasi).
+    const { secretary } = usePage<{
+        secretary: { id: number; name: string; isActive: boolean } | null;
+    }>().props;
+    const needsConfirm =
+        role === 'asisten' &&
+        position === 'sekretaris_bendahara' &&
+        secretary !== null &&
+        secretary.id !== user?.id;
 
     return (
         <Dialog
@@ -48,6 +60,7 @@ export function UserFormDialog({
                 setOpen(next);
                 setRole(user?.role ?? 'praktikan');
                 setPosition(user?.position ?? 'none');
+                setConfirmed(false);
             }}
         >
             <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -152,6 +165,44 @@ export function UserFormDialog({
                                     <InputError message={errors.position} />
                                 </div>
                             </div>
+                            {needsConfirm && secretary && (
+                                <Alert>
+                                    <AlertTitle>
+                                        Jabatan Sekretaris/Bendahara hanya satu
+                                        akun
+                                    </AlertTitle>
+                                    <AlertDescription className="grid gap-3">
+                                        <p>
+                                            Saat ini dipegang{' '}
+                                            <strong>{secretary.name}</strong>
+                                            {!secretary.isActive &&
+                                                ' (akun nonaktif)'}
+                                            . Bila Anda melanjutkan,{' '}
+                                            {secretary.name} otomatis menjadi
+                                            Asisten Umum dan kehilangan hak
+                                            verifikasi laporan serta pengelolaan
+                                            rekap jam ngawas. Keduanya mendapat
+                                            notifikasi.
+                                        </p>
+                                        <label className="flex items-center gap-2 text-sm font-medium">
+                                            <input
+                                                type="hidden"
+                                                name="confirm_transfer"
+                                                value="0"
+                                            />
+                                            <Checkbox
+                                                name="confirm_transfer"
+                                                value="1"
+                                                checked={confirmed}
+                                                onCheckedChange={(v) =>
+                                                    setConfirmed(v === true)
+                                                }
+                                            />{' '}
+                                            Ya, pindahkan jabatan ke akun ini
+                                        </label>
+                                    </AlertDescription>
+                                </Alert>
+                            )}
                             <div className="grid gap-5 sm:grid-cols-[12rem_1fr]">
                                 <div className="grid gap-2">
                                     <Label htmlFor="user-nim">
@@ -230,7 +281,13 @@ export function UserFormDialog({
                                         Batal
                                     </Button>
                                 </DialogClose>
-                                <Button type="submit" disabled={processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={
+                                        processing ||
+                                        (needsConfirm && !confirmed)
+                                    }
+                                >
                                     {processing && <Spinner />}
                                     {user ? 'Simpan Perubahan' : 'Buat Akun'}
                                 </Button>
