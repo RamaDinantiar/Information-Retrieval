@@ -7,6 +7,17 @@ Semua perubahan penting dicatat di sini. Format mengikuti
 
 ### Ditambahkan
 
+- **Rekap Jam Ngawas format kampus** (`docs/11-prd-rekap-jam-ngawas.md`): halaman **Generate › Rekap Jam Ngawas** dengan grid bulanan,
+  legenda warna, dan pemeriksaan otomatis; ekspor **Excel berformat template kampus** (PhpSpreadsheet) berstatus Draft atau Final;
+  alur **Tetapkan Final → Buka Kembali (catatan wajib) → revisi** dengan snapshot, riwayat revisi, dan AuditLog.
+- Status pelaksanaan pada laporan ngawas (terlaksana, ditiadakan, pengganti, tambahan, UTS/UAS), kelas di luar Lab IR, kalender akademik
+  (libur, UTS, UAS), nomor SK dan label semester.
+- **Tanda tangan asisten** (unggah di Profil) yang dipasang otomatis di rekap, dua **pengesah** bernama (Admin), pengingat mingguan
+  `signatures:remind`, dan peringatan di dashboard.
+- Dialog **Atur Urutan** rekap (seret-dan-lepas, `@dnd-kit`), unggah dan pemulihan **template Excel** oleh Admin dengan validasi struktur.
+- Perintah `php artisan ngawas:make-template` untuk membuat ulang template dari rekap kampus.
+- Notifikasi Final, Buka Kembali, dan hasil ekspor Rekap Jam Ngawas.
+
 - Reset password dengan **kode OTP 6 digit** ke email kampus (@itpln.ac.id), dibatasi per email+IP dan per IP.
 - **Admin tetap untuk produksi** (`AdminSeeder`) dan perintah darurat `php artisan lab:recover-admin`.
 - Aturan **minimal satu Admin aktif**: Admin aktif terakhir tidak dapat dinonaktifkan atau diturunkan perannya.
@@ -19,6 +30,11 @@ Semua perubahan penting dicatat di sini. Format mengikuti
 
 ### Diubah
 
+- **Rekap jam lama** (kartu Generate dan Excel Ringkasan/Per Mata Kuliah) kini memakai rumus **SKS × 50 ÷ 60** yang sama dengan Rekap Jam
+  Ngawas; kelas ditiadakan tidak dihitung dan total per asisten dibulatkan seperti template. Angka bisa berbeda dari versi sebelumnya
+  yang memakai jam mulai–selesai. Kolom jam sheet Detail diberi nama "Durasi Sesi (jam)".
+- **Akses:** jam seluruh asisten, ekspor, Final, dan berkas Excel Final hanya untuk Sekretaris/Bendahara dan Admin; Asisten Umum hanya
+  melihat jam dan laporannya sendiri (nama asisten lain tidak lagi dikirim ke browser mereka).
 - Reset password oleh Admin kini mengakhiri semua sesi akun tersebut.
 - Audit log tidak lagi menyimpan nilai token kelas.
 - Seeder demo hanya berjalan di `APP_ENV=local`/`testing`.

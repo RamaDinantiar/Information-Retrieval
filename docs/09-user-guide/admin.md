@@ -20,6 +20,17 @@ praktikan/asisten/kelas, antrean persetujuan, antrean penilaian, dan aktivitas a
 
 ![Kelas & Jadwal](../images/admin-classes.jpg)
 
+### Pengaturan Rekap Jam Ngawas
+
+- **Semester**: isi **nomor SK** dan **label semester** untuk kop rekap (nomor SK kosong menahan tombol Final).
+- **Kalender akademik** (dari baris semester): tambah hari libur nasional serta periode UTS dan UAS. Hari ini mewarnai kolom
+  tanggal dan tidak dihitung "lupa lapor".
+- **Pengaturan Sistem › Pengesah Rekap Ngawas**: dua pengesah (jabatan, nama, gambar tanda tangan; tanpa NIP). Pengesah 1 tercetak di
+  kiri, pengesah 2 di kanan. Rekap yang sudah Final tidak berubah bila pengesah diganti.
+- **Pengaturan Sistem › Template Rekap Ngawas**: ganti template Excel kampus (.xlsx, maks. 2 MB). Berkas harus punya 2 sheet bernama sama,
+  header di baris 13, dan legenda di A79:B85. Bila ditolak, template lama tetap dipakai. **Pulihkan bawaan** mengembalikan template
+  bawaan aplikasi. Tata letak yang jauh berbeda memerlukan penyesuaian konstanta oleh developer.
+
 ## Pengguna
 
 ![Pengguna](../images/admin-users.jpg)

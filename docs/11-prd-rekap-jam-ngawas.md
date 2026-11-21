@@ -6,10 +6,10 @@
 
 **Penanda:** **[Wajib]** = harus ada di rilis pertama fitur ini · **[Sebaiknya]** = boleh menyusul. Keputusan klarifikasi tercatat di Bagian 12.
 
-| Versi | Tanggal | Keterangan |
-|---|---|---|
-| v1.0 | 20 Nov 2026 | Draft awal dengan 8 pertanyaan terbuka |
-| v1.1 | 20 Nov 2026 | Keputusan P1–P8 dimasukkan: pembulatan ikut template, warna oranye untuk kelas lab lain dan kelas IR di luar ruang lab, dua tanda tangan pengesah bernama, tanda tangan asisten otomatis tanpa konfirmasi, NIM format en dash, template dari file Mei 2026, semua asisten aktif ditampilkan |
+| Versi | Tanggal     | Keterangan                                                                                                                                                                                                                                                                                  |
+| ----- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1.0  | 20 Nov 2026 | Draft awal dengan 8 pertanyaan terbuka                                                                                                                                                                                                                                                      |
+| v1.1  | 20 Nov 2026 | Keputusan P1–P8 dimasukkan: pembulatan ikut template, warna oranye untuk kelas lab lain dan kelas IR di luar ruang lab, dua tanda tangan pengesah bernama, tanda tangan asisten otomatis tanpa konfirmasi, NIM format en dash, template dari file Mei 2026, semua asisten aktif ditampilkan |
 
 ---
 
@@ -24,6 +24,7 @@ Fitur ini membuat sistem **menghasilkan file Excel itu secara otomatis** dari la
 **Satu sumber data:** laporan harian (yang juga menjadi dokumen Word) adalah sumber rekap Excel. Keduanya tidak mungkin lagi saling bertentangan.
 
 ### Dalam cakupan
+
 - Status pelaksanaan kelas pada laporan ngawas: Terlaksana, Ditiadakan, Pengganti, Tambahan, Ujian (UTS/UAS).
 - Kalender akademik: libur nasional dan periode UTS/UAS. Hari Minggu dideteksi otomatis.
 - Kelas di luar Lab IR yang tetap diawas asisten lab IR.
@@ -33,6 +34,7 @@ Fitur ini membuat sistem **menghasilkan file Excel itu secara otomatis** dari la
 - Ekspor `.xlsx` dari template kampus. PDF bersifat **[Sebaiknya]**.
 
 ### Di luar cakupan
+
 - Akun untuk Kak Naomi, Bu Dine, atau Dekan. Mereka tidak masuk sistem; revisi dari Kak Naomi tetap datang lewat grup.
 - Perhitungan honor atau tarif. Ini sesuai revisi Kepala Lab 12 Nov 2026 yang menghapus honor dari sistem.
 - Mengubah tata letak template kampus, yang **tidak boleh diubah sedikit pun** (lihat Bagian 7).
@@ -44,64 +46,68 @@ Fitur ini membuat sistem **menghasilkan file Excel itu secara otomatis** dari la
 
 Bagian ini dirangkum dari penjelasan Bendahara lab (voice note 13 Nov 2026) dan pemeriksaan file contoh.
 
-| # | Masalah saat ini | Bukti | Dampak |
-|---|---|---|---|
-| M1 | SKS salah: rumus 3 SKS dipakai untuk mata kuliah 2 SKS | Voice note 2 ("Data Warehouse harusnya 2 SKS…"); file April sel `F33` Hilda memakai `2*50/60` di baris yang lain memakai `3*50/60` | Ditandai "SKS tidak sesuai", revisi |
-| M2 | Tanggal salah: kehadiran Senin tertaruh di Selasa | Voice note 2 | Revisi |
-| M3 | Excel tidak sesuai dengan laporan harian Word, misalnya Word menulis "kelas ditiadakan" tetapi Excel masih berisi jam | Voice note 3 | Revisi "kelas tidak sesuai" |
-| M4 | Pewarnaan sel manual dan sulit di ratusan sel | Voice note 1 & 2 | Warna salah atau terlewat |
-| M5 | Gambar tanda tangan asisten ditempel satu per satu di sheet 2; total kehadiran sheet 2 diketik manual | Voice note 1 | Pekerjaan paling lama |
-| M6 | Rentang rumus total jam tidak konsisten (mulai kolom `F`, bukan `E`, sehingga tanggal 1 tidak terhitung) | April & Mei: rumus total asisten no. 4–9 dimulai kolom `F` | **April 2026: 9,17 jam tidak terhitung** (Zahra 1,67; Michael 2,5; Bintang 3,33; Rafi 1,67); total Excel 484 jam, seharusnya 494,17 jam |
-| M7 | Catatan kelas pengganti dan tambahan ditulis manual di bawah tabel | Kedua file | Tidak konsisten dan terlewat |
-| M8 | Nomor urut ganda dan baris kelas kosong | April: nomor 8 dua kali; "DATA WAREHOUSE (KR)" kosong | Kesan tidak rapi |
+| #   | Masalah saat ini                                                                                                      | Bukti                                                                                                                              | Dampak                                                                                                                                  |
+| --- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| M1  | SKS salah: rumus 3 SKS dipakai untuk mata kuliah 2 SKS                                                                | Voice note 2 ("Data Warehouse harusnya 2 SKS…"); file April sel `F33` Hilda memakai `2*50/60` di baris yang lain memakai `3*50/60` | Ditandai "SKS tidak sesuai", revisi                                                                                                     |
+| M2  | Tanggal salah: kehadiran Senin tertaruh di Selasa                                                                     | Voice note 2                                                                                                                       | Revisi                                                                                                                                  |
+| M3  | Excel tidak sesuai dengan laporan harian Word, misalnya Word menulis "kelas ditiadakan" tetapi Excel masih berisi jam | Voice note 3                                                                                                                       | Revisi "kelas tidak sesuai"                                                                                                             |
+| M4  | Pewarnaan sel manual dan sulit di ratusan sel                                                                         | Voice note 1 & 2                                                                                                                   | Warna salah atau terlewat                                                                                                               |
+| M5  | Gambar tanda tangan asisten ditempel satu per satu di sheet 2; total kehadiran sheet 2 diketik manual                 | Voice note 1                                                                                                                       | Pekerjaan paling lama                                                                                                                   |
+| M6  | Rentang rumus total jam tidak konsisten (mulai kolom `F`, bukan `E`, sehingga tanggal 1 tidak terhitung)              | April & Mei: rumus total asisten no. 4–9 dimulai kolom `F`                                                                         | **April 2026: 9,17 jam tidak terhitung** (Zahra 1,67; Michael 2,5; Bintang 3,33; Rafi 1,67); total Excel 484 jam, seharusnya 494,17 jam |
+| M7  | Catatan kelas pengganti dan tambahan ditulis manual di bawah tabel                                                    | Kedua file                                                                                                                         | Tidak konsisten dan terlewat                                                                                                            |
+| M8  | Nomor urut ganda dan baris kelas kosong                                                                               | April: nomor 8 dua kali; "DATA WAREHOUSE (KR)" kosong                                                                              | Kesan tidak rapi                                                                                                                        |
 
 ### Tujuan
+
 1. **Nol kesalahan SKS, tanggal, dan rumus.** Semua dihitung dari data master dan laporan terverifikasi.
 2. **Excel konsisten dengan laporan harian.** Kelas yang ditiadakan tidak pernah menghasilkan jam.
 3. **Waktu penyusunan rekap bulanan turun** dari beberapa jam menjadi kurang dari 10 menit, termasuk pemeriksaan.
 4. **Tanda tangan sheet 2 terpasang otomatis** sesuai nama dan tanggal hadir.
 
 ### KPI (diukur 2 bulan setelah rilis)
-| KPI | Target |
-|---|---|
-| Revisi dari Kak Naomi terkait SKS, tanggal, warna, atau ketidaksesuaian Word–Excel | 0 per bulan |
-| Waktu dari "laporan terakhir diverifikasi" sampai "rekap Final diunduh" | ≤ 10 menit kerja Sekretaris/Bendahara |
-| Rekap yang dibuat lewat sistem (bukan manual) | 100% |
+
+| KPI                                                                                | Target                                |
+| ---------------------------------------------------------------------------------- | ------------------------------------- |
+| Revisi dari Kak Naomi terkait SKS, tanggal, warna, atau ketidaksesuaian Word–Excel | 0 per bulan                           |
+| Waktu dari "laporan terakhir diverifikasi" sampai "rekap Final diunduh"            | ≤ 10 menit kerja Sekretaris/Bendahara |
+| Rekap yang dibuat lewat sistem (bukan manual)                                      | 100%                                  |
 
 ---
 
 ## 2. Pengguna & Hak Akses
 
-| Pihak | Di sistem? | Peran dalam fitur ini |
-|---|---|---|
-| **Asisten Umum** | Ya (peran Asisten) | Mengisi laporan ngawas beserta status pelaksanaan; mengunggah tanda tangan sekali; melihat pratinjau rekap **miliknya** |
-| **Sekretaris/Bendahara** | Ya (Asisten, jabatan `sekretaris_bendahara`) | Semua hak Asisten, ditambah: memverifikasi laporan (sudah ada); mengelola kelas di luar Lab IR; melihat rekap **semua asisten**; menjalankan pemeriksaan; menetapkan Final; membuka kembali (revisi); mengekspor Excel kampus |
-| **Admin** | Ya | Semua hak di atas, ditambah: kalender akademik, nomor SK per semester, data dan tanda tangan pengesah, mengganti file template |
-| **Kak Naomi** (pemeriksa kampus) | Tidak | Menerima file Excel dan memberi revisi lewat grup. Revisi ditindaklanjuti Sekretaris/Bendahara lewat **Buka Kembali** (FR-RJN-09) |
-| **Bu Dine** (Kepala Lab) & **Dekan** | Tidak | Tanda tangan masing-masing ditempel sebagai **dua gambar terpisah** beserta nama di sheet 1 saat ekspor Final |
+| Pihak                                | Di sistem?                                   | Peran dalam fitur ini                                                                                                                                                                                                         |
+| ------------------------------------ | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Asisten Umum**                     | Ya (peran Asisten)                           | Mengisi laporan ngawas beserta status pelaksanaan; mengunggah tanda tangan sekali; melihat pratinjau rekap **miliknya**                                                                                                       |
+| **Sekretaris/Bendahara**             | Ya (Asisten, jabatan `sekretaris_bendahara`) | Semua hak Asisten, ditambah: memverifikasi laporan (sudah ada); mengelola kelas di luar Lab IR; melihat rekap **semua asisten**; menjalankan pemeriksaan; menetapkan Final; membuka kembali (revisi); mengekspor Excel kampus |
+| **Admin**                            | Ya                                           | Semua hak di atas, ditambah: kalender akademik, nomor SK per semester, data dan tanda tangan pengesah, mengganti file template                                                                                                |
+| **Kak Naomi** (pemeriksa kampus)     | Tidak                                        | Menerima file Excel dan memberi revisi lewat grup. Revisi ditindaklanjuti Sekretaris/Bendahara lewat **Buka Kembali** (FR-RJN-09)                                                                                             |
+| **Bu Dine** (Kepala Lab) & **Dekan** | Tidak                                        | Tanda tangan masing-masing ditempel sebagai **dua gambar terpisah** beserta nama di sheet 1 saat ekspor Final                                                                                                                 |
 
-| Resource | Asisten Umum | Sekretaris/Bendahara | Admin |
-|---|---|---|---|
-| Status pelaksanaan pada laporan | CRU (Own) | CRU (Own), verifikasi semua | R, verifikasi, buka kunci |
-| Tanda tangan diri sendiri | CRUD (Own) | CRUD (Own) | R semua (tanpa unduh massal), hapus |
-| Kalender akademik | R | R | CRUD |
-| Kelas di luar Lab IR | R (yang ditugaskan) | CRUD | CRUD |
-| Pratinjau rekap bulanan | R (baris sendiri) | R semua | R semua |
-| Final, Buka Kembali, Ekspor Excel kampus | — | Ya | Ya |
-| Nomor SK, pengesah, template | R | R | CRUD |
+| Resource                                 | Asisten Umum        | Sekretaris/Bendahara        | Admin                               |
+| ---------------------------------------- | ------------------- | --------------------------- | ----------------------------------- |
+| Status pelaksanaan pada laporan          | CRU (Own)           | CRU (Own), verifikasi semua | R, verifikasi, buka kunci           |
+| Tanda tangan diri sendiri                | CRUD (Own)          | CRUD (Own)                  | R semua (tanpa unduh massal), hapus |
+| Kalender akademik                        | R                   | R                           | CRUD                                |
+| Kelas di luar Lab IR                     | R (yang ditugaskan) | CRUD                        | CRUD                                |
+| Pratinjau rekap bulanan                  | R (baris sendiri)   | R semua                     | R semua                             |
+| Final, Buka Kembali, Ekspor Excel kampus | —                   | Ya                          | Ya                                  |
+| Nomor SK, pengesah, template             | R                   | R                           | CRUD                                |
 
 ---
 
 ## 3. Istilah & Aturan Bisnis
 
 ### 3.1 Istilah
+
 - **Rekap Ngawas:** dokumen Excel bulanan format kampus, berisi 2 sheet.
-- **Baris rekap:** satu kombinasi *asisten × kelas* (misalnya "RAMA DINANTIAR × SIMULASI DAN PEMODELAN (A)").
+- **Baris rekap:** satu kombinasi _asisten × kelas_ (misalnya "RAMA DINANTIAR × SIMULASI DAN PEMODELAN (A)").
 - **Sel kehadiran:** perpotongan baris rekap dengan satu tanggal.
 - **KR:** kode kelas **Karyawan**, misalnya "DATA WAREHOUSE (KR)". Ini hanya nama kelas dan tidak ada aturan khusus.
 - **Kelas di luar Lab IR:** kelas yang diawas asisten IR tetapi bukan kelas Lab IR (mata kuliah lab lain), **atau** kelas Lab IR yang sementara dilaksanakan di luar ruang lab. Lihat 3.6.
 
 ### 3.2 Rumus jam (keputusan 20 Nov 2026)
+
 - **Jam per sesi = SKS mata kuliah × 50 menit ÷ 60.** Nilainya 1,6667 jam untuk 2 SKS dan 2,5 jam untuk 3 SKS. Jam mulai/selesai di laporan **tidak** dipakai untuk rekap ini; jam itu tetap dipakai untuk dokumen Word.
 - SKS diambil dari `courses.credits`. Untuk kelas di luar Lab IR, SKS diambil dari data kelas tersebut. SKS **tidak pernah diketik per sel**.
 - Di Excel, sel kehadiran tetap ditulis sebagai rumus `=<SKS>*50/60`, persis seperti sekarang, supaya pemeriksa melihat format yang sama.
@@ -111,54 +117,59 @@ Bagian ini dirangkum dari penjelasan Bendahara lab (voice note 13 Nov 2026) dan 
 - **Pembulatan (keputusan P1): ikuti template.** Total jam per asisten dibulatkan ke bilangan bulat terdekat lewat `ROUND(…,0)` (setengah ke atas). Pratinjau web menampilkan angka yang sama dengan Excel, dengan jam sebenarnya (2 desimal) di tooltip. Konsekuensinya, jumlah total semua asisten bisa berbeda ±1 jam dari jumlah sebenarnya (contoh Mei 2026: 251 vs 250,00). Itu sesuai template.
 
 ### 3.3 Laporan yang dihitung
+
 - Hanya laporan berstatus **Diverifikasi** (FR-AR-05) yang masuk rekap.
 - Setiap anggota tim jaga pada laporan mendapat sel kehadiran dan jamnya sendiri. Satu kelas di hari yang sama boleh diawas lebih dari satu asisten (keputusan 20 Nov 2026).
 - Satu asisten hanya dihitung **sekali** per kelas per tanggal. Duplikat ditandai pemeriksaan (FR-RJN-07).
 
 ### 3.4 Status pelaksanaan dan warna sel
+
 Warna diambil dari **legenda template** (sheet 1, sel `A80:A85`), bukan warna buatan sistem.
 
-| Status pelaksanaan (baru) | Kapan dipakai | Jam dihitung? | Warna sel (sesuai legenda) |
-|---|---|---|---|
-| **Terlaksana** | Kelas berjalan sesuai jadwal | Ya | Tanpa warna khusus |
-| **Ditiadakan** | Kelas batal (dosen berhalangan, dll.); laporan tetap dibuat seperti di Word | **Tidak** (sel kosong, tidak dihitung `COUNT`) | "Kelas ditiadakan" (`A84`) |
-| **Pengganti** | Kelas dipindah ke tanggal/jam lain; dicatat di **tanggal pelaksanaan** | Ya | "SKS Pengganti dan SKS Ngawas" (`A83`) |
-| **Tambahan** | Kelas ekstra di minggu yang sama (jarang terjadi) | Ya | "Tambahan" (`A82`) |
-| **Ujian (UTS/UAS)** | UTS/UAS yang dilaksanakan **di lab** | Ya (rumus SKS yang sama) | "UTS/UAS" (`A85`) |
-| *(penanda)* **Di luar Lab IR** | Kelas lab lain, atau kelas Lab IR yang dilaksanakan di luar ruang lab (3.6) | Ya | **Oranye** "Tambahan" (`A82`), sesuai cara Bendahara selama ini (keputusan P2) |
+| Status pelaksanaan (baru)      | Kapan dipakai                                                               | Jam dihitung?                                  | Warna sel (sesuai legenda)                                                     |
+| ------------------------------ | --------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
+| **Terlaksana**                 | Kelas berjalan sesuai jadwal                                                | Ya                                             | Tanpa warna khusus                                                             |
+| **Ditiadakan**                 | Kelas batal (dosen berhalangan, dll.); laporan tetap dibuat seperti di Word | **Tidak** (sel kosong, tidak dihitung `COUNT`) | "Kelas ditiadakan" (`A84`)                                                     |
+| **Pengganti**                  | Kelas dipindah ke tanggal/jam lain; dicatat di **tanggal pelaksanaan**      | Ya                                             | "SKS Pengganti dan SKS Ngawas" (`A83`)                                         |
+| **Tambahan**                   | Kelas ekstra di minggu yang sama (jarang terjadi)                           | Ya                                             | "Tambahan" (`A82`)                                                             |
+| **Ujian (UTS/UAS)**            | UTS/UAS yang dilaksanakan **di lab**                                        | Ya (rumus SKS yang sama)                       | "UTS/UAS" (`A85`)                                                              |
+| _(penanda)_ **Di luar Lab IR** | Kelas lab lain, atau kelas Lab IR yang dilaksanakan di luar ruang lab (3.6) | Ya                                             | **Oranye** "Tambahan" (`A82`), sesuai cara Bendahara selama ini (keputusan P2) |
 
-| Penanda kalender | Sumber | Warna |
-|---|---|---|
-| Hari Minggu | Otomatis dari tanggal | "Minggu" (`A80`) seluruh kolom |
-| Libur nasional | Kalender akademik (Admin) | "Libur Nasional" (`A81`) seluruh kolom |
-| Periode UTS/UAS | Kalender akademik (Admin) | "UTS/UAS" (`A85`) seluruh kolom |
+| Penanda kalender | Sumber                    | Warna                                  |
+| ---------------- | ------------------------- | -------------------------------------- |
+| Hari Minggu      | Otomatis dari tanggal     | "Minggu" (`A80`) seluruh kolom         |
+| Libur nasional   | Kalender akademik (Admin) | "Libur Nasional" (`A81`) seluruh kolom |
+| Periode UTS/UAS  | Kalender akademik (Admin) | "UTS/UAS" (`A85`) seluruh kolom        |
 
 Aturan tambahan:
+
 - Kelas **Pengganti** di bulan berbeda dari kelas aslinya masuk ke **bulan pelaksanaan** (keputusan 20 Nov 2026). Contohnya pengganti tanggal 30 April untuk kelas 27 April masuk rekap April.
 - Laporan berstatus Terlaksana di hari Minggu atau libur nasional **diblokir** saat disimpan. Pengguna diminta memilih status Pengganti/Tambahan.
 - Laporan Terlaksana yang tanggalnya tidak cocok dengan hari jadwal kelas (`classes.day_of_week`) **diblokir**, dengan pesan: "Kelas ini terjadwal hari Senin. Jika ini kelas pengganti atau tambahan, ubah status pelaksanaan." Ini mencegah M2.
 
 ### 3.5 Tabel catatan di bawah sheet 1
+
 - **Kelas Tambahan** (kolom Tanggal | Kelas | Jam | Keterangan) diisi otomatis dari laporan berstatus Tambahan.
 - **Kelas Pengganti** (kolom Tanggal | Kelas | Jam | Keterangan) diisi otomatis dari laporan berstatus Pengganti.
-  - Keterangan otomatis: `Pengganti dari Kelas <Hari>, <tgl> <Bulan> <Tahun>`, misalnya "Pengganti dari Kelas Senin, 27 April 2026".
-  - Keterangan dapat diubah atau ditambah oleh Sekretaris/Bendahara sebelum Final, misalnya "…, Menjadi dimulai jam 15.30".
+    - Keterangan otomatis: `Pengganti dari Kelas <Hari>, <tgl> <Bulan> <Tahun>`, misalnya "Pengganti dari Kelas Senin, 27 April 2026".
+    - Keterangan dapat diubah atau ditambah oleh Sekretaris/Bendahara sebelum Final, misalnya "…, Menjadi dimulai jam 15.30".
 - Format **Jam** mengikuti contoh: `07.10 - 09.50`, diambil dari jam mulai–selesai laporan.
 - Format **Kelas** mengikuti contoh: `Teknologi Blockchain C` (nama mata kuliah + nama kelas, huruf kapital di awal kata).
 
 ### 3.6 Kelas di luar Lab IR
-Penjelasan Bendahara: *"Itu gw nambahin nama matkul nya di setiap orang tapi ditandain warna. Soalnya itu matkul lab lain, bukan punya IR. Dan gw harus laporan ke kak Naomi dan konfirmasi sama lab yang bersangkutan."*
+
+Penjelasan Bendahara: _"Itu gw nambahin nama matkul nya di setiap orang tapi ditandain warna. Soalnya itu matkul lab lain, bukan punya IR. Dan gw harus laporan ke kak Naomi dan konfirmasi sama lab yang bersangkutan."_
 
 - Sekretaris/Bendahara mendaftarkan **Kelas di Luar Lab IR** per semester dengan isian:
-  - nama mata kuliah, nama kelas, SKS, nama lab/ruang asal, hari dan jam, dan asisten yang ditugaskan;
-  - status konfirmasi ke lab terkait: Belum / Sudah dikonfirmasi, plus catatan.
+    - nama mata kuliah, nama kelas, SKS, nama lab/ruang asal, hari dan jam, dan asisten yang ditugaskan;
+    - status konfirmasi ke lab terkait: Belum / Sudah dikonfirmasi, plus catatan.
 - Data ini **tidak** dicampur dengan tabel `courses`/`classes`, karena tabel itu dipakai untuk enrollment, tugas, dan nilai praktikan.
 - Asisten membuat laporan ngawas untuk kelas tersebut seperti biasa, dengan memilih "Kelas di luar Lab IR" di form.
 - Di Excel, baris kelas ini muncul di bawah baris asisten yang bersangkutan, dan sel kehadirannya diberi warna **oranye** (gaya sel legenda "Tambahan", `A82`). Jamnya dihitung dengan rumus SKS biasa (keputusan P2).
 - **Mata kuliah Lab IR yang sementara dilaksanakan di luar ruang lab** (misalnya karena perbaikan) **ditandai sama seperti kelas lab lain** (keputusan P3):
-  - Asisten mencentang **"Dilaksanakan di luar ruang Lab IR"** di form laporan dan mengisi lokasi.
-  - Barisnya tetap baris kelas IR yang biasa (tidak dibuat baris baru), tetapi sel tanggal itu diwarnai **oranye**.
-  - Laporan ini ikut muncul di daftar ringkas untuk Kak Naomi (US-RJN-06 butir 3).
+    - Asisten mencentang **"Dilaksanakan di luar ruang Lab IR"** di form laporan dan mengisi lokasi.
+    - Barisnya tetap baris kelas IR yang biasa (tidak dibuat baris baru), tetapi sel tanggal itu diwarnai **oranye**.
+    - Laporan ini ikut muncul di daftar ringkas untuk Kak Naomi (US-RJN-06 butir 3).
 - Jika satu sel memenuhi dua penanda (misalnya kelas pengganti yang dilaksanakan di luar lab), prioritas warna: Ditiadakan > Ujian > Di luar Lab IR (oranye) > Pengganti > Tambahan.
 
 ---
@@ -221,24 +232,24 @@ Sebagai Sekretaris/Bendahara, saya ingin mencatat kelas lab lain yang diawas asi
 
 ## 5. Functional Requirements (FR-RJN)
 
-| ID | Kebutuhan | Prioritas |
-|---|---|---|
-| FR-RJN-01 | Laporan ngawas memiliki `execution_status` (`held`, `cancelled`, `replacement`, `additional`, `exam`), `exam_type` (`uts`/`uas`, untuk `exam`), `original_date` dan `original_start_time` (untuk `replacement`), `replacement_note` (keterangan tambahan untuk tabel pengganti), serta `held_outside_lab` (boolean) dan `outside_location` (teks) untuk kelas IR yang dilaksanakan di luar ruang lab. Laporan lama dianggap `held` dan `held_outside_lab = false`. | Wajib |
-| FR-RJN-02 | Validasi simpan laporan: (a) `held` harus jatuh di hari jadwal kelas dan bukan Minggu/libur; (b) `replacement` wajib `original_date` yang ≠ tanggal laporan; (c) satu asisten tidak boleh punya dua laporan non-`cancelled` untuk kelas dan tanggal yang sama; (d) foto opsional untuk `cancelled`. | Wajib |
-| FR-RJN-03 | Laporan dapat merujuk **kelas Lab IR** (`class_id`) **atau** **kelas di luar Lab IR** (`outside_class_id`), tepat salah satu. | Wajib |
-| FR-RJN-04 | Kalender akademik (`academic_calendar_events`) per semester: `date_from`, `date_to`, `type` (`national_holiday`, `uts`, `uas`), `label`. Minggu dideteksi otomatis, tidak disimpan. | Wajib |
-| FR-RJN-05 | **Mesin rekap** `NgawasRecap::build(semester, month)` menghasilkan struktur netral yang dipakai pratinjau web **dan** ekspor Excel: daftar asisten (urut), baris per kelas, sel per tanggal `{status, credits, hours, reportIds}`, penanda kolom (Minggu/libur/ujian), total, tabel tambahan, tabel pengganti, dan temuan pemeriksaan. | Wajib |
-| FR-RJN-06 | **Komposisi baris:** setiap Asisten aktif pada semester tersebut mendapat baris untuk (1) setiap kelas Lab IR yang diampunya (`class_assistants`), (2) setiap kelas di luar Lab IR yang ditugaskan, dan (3) kelas lain yang muncul di laporan terverifikasinya. Urutan asisten mengikuti pengaturan **Urutan Rekap** (drag & drop, disimpan per semester; default urut nama). Urutan kelas default hari lalu jam mulai, dan bisa diatur. **Semua asisten aktif semester itu ditampilkan** walau tidak mengawas sama sekali bulan itu (keputusan P8): baris kelasnya tetap muncul dengan sel kosong. Asisten tanpa kelas sama sekali mendapat satu baris dengan kolom MATA KULIAH berisi `-`. | Wajib |
-| FR-RJN-07 | **Pemeriksaan otomatis** sebelum Final. **Blokir:** laporan bulan itu masih Draft/Diajukan/Dikembalikan; SKS kelas kosong; nomor SK semester kosong; duplikat asisten × kelas × tanggal. **Peringatan:** asisten belum punya tanda tangan (sel sheet 2 dibiarkan kosong); baris kelas tanpa kehadiran sebulan penuh (seperti "DW (KR)"); kelas di luar Lab IR belum dikonfirmasi ke lab terkait; kelas terjadwal di suatu tanggal tanpa laporan apa pun (kemungkinan lupa lapor). | Wajib |
-| FR-RJN-08 | **Status rekap bulanan:** `draft` → `final` → (Buka Kembali) `draft` dengan `revision + 1`. Tidak ada tahap konfirmasi asisten (keputusan P5). Saat `final`, data rekap dan tanda tangan di-*snapshot* (`snapshot_json` + salinan file tanda tangan), lalu file Excel dibuat dan disimpan permanen (tidak ikut dihapus `exports:prune`). | Wajib |
-| FR-RJN-09 | **Buka Kembali** wajib menyertakan catatan revisi (≥ 5 karakter), misalnya "Revisi Kak Naomi: SKS DW (B) tanggal 6". Riwayat revisi beserta file versi lama dapat diunduh. | Wajib |
-| FR-RJN-10 | **Tanda tangan otomatis:** saat ekspor, sistem memasang tanda tangan setiap asisten di semua sel hadirnya pada sheet 2, berdasarkan `users.signature_file_id`, tanpa konfirmasi (keputusan P5). Asisten yang belum punya tanda tangan: sel dibiarkan kosong + peringatan. | Wajib |
-| FR-RJN-11 | **Ekspor Excel kampus** lewat job antrean `GenerateNgawasRecapWorkbook` (batas 300 detik) dengan PhpSpreadsheet: buka template, isi sesuai Bagian 7, simpan dengan nama `Rekap_Ngawas_LAB_IR_<BULAN>_<TAHUN>.xlsx` (misalnya `Rekap_Ngawas_LAB_IR_APRIL_2026.xlsx`). Ekspor **Draft** (untuk dicek) diberi watermark/header "DRAFT – belum final" di luar area cetak, dan tanpa tanda tangan pengesah. | Wajib |
-| FR-RJN-12 | Template disimpan di `resources/templates/rekap-ngawas.xlsx`. Admin dapat mengganti template; sistem memvalidasi keberadaan 2 sheet bernama sama, header di baris 13, dan legenda di `A79:B85`. Bila validasi gagal, template lama tetap dipakai. | Wajib |
-| FR-RJN-13 | Pratinjau web: grid sticky (kolom nama dan kelas tetap saat digulir), legenda, total, dan tooltip sel. Di ponsel, tampil sebagai daftar per asisten/kelas dengan jumlah hari dan jam. | Wajib |
-| FR-RJN-14 | Ekspor PDF (DomPDF atau konversi LibreOffice) dengan tata letak sama, untuk arsip. | Sebaiknya |
-| FR-RJN-15 | Notifikasi: (a) ke Sekretaris/Bendahara saat ekspor selesai; (b) ke semua asisten pada rekap saat rekap ditetapkan Final atau direvisi; (c) pengingat ke asisten yang belum mengunggah tanda tangan (sekali seminggu sampai diunggah). Saluran in-app dan email (mengikuti pengaturan notifikasi yang ada). | Wajib |
-| FR-RJN-16 | Rekap jam yang sudah ada (`HoursRecap`, sheet "Per Mata Kuliah" FR-AGN-03, kartu rekap di halaman Generate) **memakai rumus SKS yang sama** (3.2), agar tidak ada dua angka jam yang berbeda di sistem. Jam dari waktu mulai–selesai tetap ditampilkan hanya sebagai "durasi sesi" di laporan. | Wajib |
+| ID        | Kebutuhan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Prioritas |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| FR-RJN-01 | Laporan ngawas memiliki `execution_status` (`held`, `cancelled`, `replacement`, `additional`, `exam`), `exam_type` (`uts`/`uas`, untuk `exam`), `original_date` dan `original_start_time` (untuk `replacement`), `replacement_note` (keterangan tambahan untuk tabel pengganti), serta `held_outside_lab` (boolean) dan `outside_location` (teks) untuk kelas IR yang dilaksanakan di luar ruang lab. Laporan lama dianggap `held` dan `held_outside_lab = false`.                                                                                                                                                                                                                           | Wajib     |
+| FR-RJN-02 | Validasi simpan laporan: (a) `held` harus jatuh di hari jadwal kelas dan bukan Minggu/libur; (b) `replacement` wajib `original_date` yang ≠ tanggal laporan; (c) satu asisten tidak boleh punya dua laporan non-`cancelled` untuk kelas dan tanggal yang sama; (d) foto opsional untuk `cancelled`.                                                                                                                                                                                                                                                                                                                                                                                          | Wajib     |
+| FR-RJN-03 | Laporan dapat merujuk **kelas Lab IR** (`class_id`) **atau** **kelas di luar Lab IR** (`outside_class_id`), tepat salah satu.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Wajib     |
+| FR-RJN-04 | Kalender akademik (`academic_calendar_events`) per semester: `date_from`, `date_to`, `type` (`national_holiday`, `uts`, `uas`), `label`. Minggu dideteksi otomatis, tidak disimpan.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Wajib     |
+| FR-RJN-05 | **Mesin rekap** `NgawasRecap::build(semester, month)` menghasilkan struktur netral yang dipakai pratinjau web **dan** ekspor Excel: daftar asisten (urut), baris per kelas, sel per tanggal `{status, credits, hours, reportIds}`, penanda kolom (Minggu/libur/ujian), total, tabel tambahan, tabel pengganti, dan temuan pemeriksaan.                                                                                                                                                                                                                                                                                                                                                       | Wajib     |
+| FR-RJN-06 | **Komposisi baris:** setiap Asisten aktif pada semester tersebut mendapat baris untuk (1) setiap kelas Lab IR yang diampunya (`class_assistants`), (2) setiap kelas di luar Lab IR yang ditugaskan, dan (3) kelas lain yang muncul di laporan terverifikasinya. Urutan asisten mengikuti pengaturan **Urutan Rekap** (drag & drop, disimpan per semester; default urut nama). Urutan kelas default hari lalu jam mulai, dan bisa diatur. **Semua asisten aktif semester itu ditampilkan** walau tidak mengawas sama sekali bulan itu (keputusan P8): baris kelasnya tetap muncul dengan sel kosong. Asisten tanpa kelas sama sekali mendapat satu baris dengan kolom MATA KULIAH berisi `-`. | Wajib     |
+| FR-RJN-07 | **Pemeriksaan otomatis** sebelum Final. **Blokir:** laporan bulan itu masih Draft/Diajukan/Dikembalikan; SKS kelas kosong; nomor SK semester kosong; duplikat asisten × kelas × tanggal. **Peringatan:** asisten belum punya tanda tangan (sel sheet 2 dibiarkan kosong); baris kelas tanpa kehadiran sebulan penuh (seperti "DW (KR)"); kelas di luar Lab IR belum dikonfirmasi ke lab terkait; kelas terjadwal di suatu tanggal tanpa laporan apa pun (kemungkinan lupa lapor).                                                                                                                                                                                                            | Wajib     |
+| FR-RJN-08 | **Status rekap bulanan:** `draft` → `final` → (Buka Kembali) `draft` dengan `revision + 1`. Tidak ada tahap konfirmasi asisten (keputusan P5). Saat `final`, data rekap dan tanda tangan di-_snapshot_ (`snapshot_json` + salinan file tanda tangan), lalu file Excel dibuat dan disimpan permanen (tidak ikut dihapus `exports:prune`).                                                                                                                                                                                                                                                                                                                                                     | Wajib     |
+| FR-RJN-09 | **Buka Kembali** wajib menyertakan catatan revisi (≥ 5 karakter), misalnya "Revisi Kak Naomi: SKS DW (B) tanggal 6". Riwayat revisi beserta file versi lama dapat diunduh.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Wajib     |
+| FR-RJN-10 | **Tanda tangan otomatis:** saat ekspor, sistem memasang tanda tangan setiap asisten di semua sel hadirnya pada sheet 2, berdasarkan `users.signature_file_id`, tanpa konfirmasi (keputusan P5). Asisten yang belum punya tanda tangan: sel dibiarkan kosong + peringatan.                                                                                                                                                                                                                                                                                                                                                                                                                    | Wajib     |
+| FR-RJN-11 | **Ekspor Excel kampus** lewat job antrean `GenerateNgawasRecapWorkbook` (batas 300 detik) dengan PhpSpreadsheet: buka template, isi sesuai Bagian 7, simpan dengan nama `Rekap_Ngawas_LAB_IR_<BULAN>_<TAHUN>.xlsx` (misalnya `Rekap_Ngawas_LAB_IR_APRIL_2026.xlsx`). Ekspor **Draft** (untuk dicek) diberi watermark/header "DRAFT – belum final" di luar area cetak, dan tanpa tanda tangan pengesah.                                                                                                                                                                                                                                                                                       | Wajib     |
+| FR-RJN-12 | Template disimpan di `resources/templates/rekap-ngawas.xlsx`. Admin dapat mengganti template; sistem memvalidasi keberadaan 2 sheet bernama sama, header di baris 13, dan legenda di `A79:B85`. Bila validasi gagal, template lama tetap dipakai.                                                                                                                                                                                                                                                                                                                                                                                                                                            | Wajib     |
+| FR-RJN-13 | Pratinjau web: grid sticky (kolom nama dan kelas tetap saat digulir), legenda, total, dan tooltip sel. Di ponsel, tampil sebagai daftar per asisten/kelas dengan jumlah hari dan jam.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Wajib     |
+| FR-RJN-14 | Ekspor PDF (DomPDF atau konversi LibreOffice) dengan tata letak sama, untuk arsip.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Sebaiknya |
+| FR-RJN-15 | Notifikasi: (a) ke Sekretaris/Bendahara saat ekspor selesai; (b) ke semua asisten pada rekap saat rekap ditetapkan Final atau direvisi; (c) pengingat ke asisten yang belum mengunggah tanda tangan (sekali seminggu sampai diunggah). Saluran in-app dan email (mengikuti pengaturan notifikasi yang ada).                                                                                                                                                                                                                                                                                                                                                                                  | Wajib     |
+| FR-RJN-16 | Rekap jam yang sudah ada (`HoursRecap`, sheet "Per Mata Kuliah" FR-AGN-03, kartu rekap di halaman Generate) **memakai rumus SKS yang sama** (3.2), agar tidak ada dua angka jam yang berbeda di sistem. Jam dari waktu mulai–selesai tetap ditampilkan hanya sebagai "durasi sesi" di laporan.                                                                                                                                                                                                                                                                                                                                                                                               | Wajib     |
 
 ---
 
@@ -247,22 +258,24 @@ Sebagai Sekretaris/Bendahara, saya ingin mencatat kelas lab lain yang diawas asi
 Perubahan ini mengikuti konvensi PRD utama 6.1 (MySQL 8, `id` BIGINT, timestamps).
 
 ### 6.1 Tabel baru
-| Tabel | Kolom | Catatan |
-|---|---|---|
-| `academic_calendar_events` | semester_id, date_from, date_to, type ENUM(national_holiday, uts, uas), label, created_by | Index (semester_id, date_from) |
-| `outside_classes` | semester_id, course_name, class_name, credits (1–6), origin_lab, day_of_week (nullable), start_time, end_time (nullable), lab_confirmed_at (nullable), lab_confirmation_note, created_by, deleted_at | Kelas di luar Lab IR |
-| `outside_class_assistants` | outside_class_id, user_id | PK gabungan |
-| `ngawas_recaps` | semester_id, month CHAR(7), status ENUM(draft, final), revision (default 0), finalized_by, finalized_at, reopened_note, snapshot_json (nullable), file_id (nullable) | UNIQUE(semester_id, month) |
-| `ngawas_recap_revisions` | ngawas_recap_id, revision, file_id, note, created_by | Arsip file setiap Final |
-| `ngawas_recap_orders` | semester_id, user_id, position, class_order_json (nullable) | Urutan asisten/kelas di rekap |
+
+| Tabel                      | Kolom                                                                                                                                                                                                | Catatan                        |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| `academic_calendar_events` | semester_id, date_from, date_to, type ENUM(national_holiday, uts, uas), label, created_by                                                                                                            | Index (semester_id, date_from) |
+| `outside_classes`          | semester_id, course_name, class_name, credits (1–6), origin_lab, day_of_week (nullable), start_time, end_time (nullable), lab_confirmed_at (nullable), lab_confirmation_note, created_by, deleted_at | Kelas di luar Lab IR           |
+| `outside_class_assistants` | outside_class_id, user_id                                                                                                                                                                            | PK gabungan                    |
+| `ngawas_recaps`            | semester_id, month CHAR(7), status ENUM(draft, final), revision (default 0), finalized_by, finalized_at, reopened_note, snapshot_json (nullable), file_id (nullable)                                 | UNIQUE(semester_id, month)     |
+| `ngawas_recap_revisions`   | ngawas_recap_id, revision, file_id, note, created_by                                                                                                                                                 | Arsip file setiap Final        |
+| `ngawas_recap_orders`      | semester_id, user_id, position, class_order_json (nullable)                                                                                                                                          | Urutan asisten/kelas di rekap  |
 
 ### 6.2 Kolom tambahan
-| Tabel | Kolom baru | Catatan |
-|---|---|---|
+
+| Tabel                 | Kolom baru                                                                                                                                                                                                                                                                                       | Catatan                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
 | `supervision_reports` | execution_status VARCHAR(20) default `held`, exam_type VARCHAR(3) nullable, original_date DATE nullable, original_start_time TIME nullable, replacement_note VARCHAR(255) nullable, held_outside_lab BOOLEAN default false, outside_location VARCHAR(150) nullable, outside_class_id FK nullable | `class_id` menjadi nullable; aturan "tepat salah satu" di action |
-| `semesters` | sk_number VARCHAR(80) nullable, term_label VARCHAR(80) nullable | Kop rekap |
-| `users` | signature_file_id FK `files` nullable | Tanda tangan asisten |
-| `settings` (key baru) | `ngawas_recap.approvers` (JSON: daftar 2 pengesah `{position, name, signature_file_id}`), `ngawas_recap.template_file_id` | Pengesah & template |
+| `semesters`           | sk_number VARCHAR(80) nullable, term_label VARCHAR(80) nullable                                                                                                                                                                                                                                  | Kop rekap                                                        |
+| `users`               | signature_file_id FK `files` nullable                                                                                                                                                                                                                                                            | Tanda tangan asisten                                             |
+| `settings` (key baru) | `ngawas_recap.approvers` (JSON: daftar 2 pengesah `{position, name, signature_file_id}`), `ngawas_recap.template_file_id`                                                                                                                                                                        | Pengesah & template                                              |
 
 Indeks: `supervision_reports(status, date)` untuk query rekap bulanan, dan `supervision_reports(class_id, date)` untuk deteksi duplikat.
 
@@ -274,25 +287,26 @@ Kampus menetapkan bahwa **hanya** bagian berikut yang boleh berubah: kelas, nama
 
 ### 7.1 Sheet 1 — "Format Aslab " (nama sheet persis, termasuk spasi di akhir)
 
-| Bagian | Sel | Isi | Sumber |
-|---|---|---|---|
-| Kop | A1:A5 (merge selebar tabel) + 2 logo | Teks lab & alamat | **Tetap dari template** |
-| Judul | A8 | `REKAPITULASI KEHADIRAN ASISTEN LABORATORIUM INFORMATION RETRIEVAL` | Tetap |
-| Semester | A9 | `SEMESTER GENAP TAHUN 2025/2026` | `semesters.term_label` |
-| SK | A10 | `SESUAI SK NOMOR: <sk_number>` | `semesters.sk_number` |
-| Periode | A11 | `PERIODE BULAN: <BULAN KAPITAL> <TAHUN>` | Bulan rekap |
-| Header | Baris 13–15 | NO · NAMA MAHASISWA · NIM · MATA KULIAH · TANGGAL, BULAN (E14 = tanggal 1, baris 15 = 1…n) · TOTAL JUMLAH HARI KEHADIRAN · TOTAL JAM HADIR | Header tetap; jumlah kolom tanggal = jumlah hari bulan itu |
-| Data | Mulai baris 16 | Per asisten: NO, NAMA, NIM (merge vertikal sebanyak barisnya), lalu satu baris per kelas | Bagian 3 & FR-RJN-06 |
-| Sel kehadiran | Kolom E… | `=<SKS>*50/60` atau kosong; warna sesuai 3.4 | Mesin rekap |
-| Total hari | Kolom setelah tanggal terakhir | `=COUNT(E<r>:<kolom akhir><r>)` per baris | Rumus |
-| Total jam | Kolom terakhir (merge vertikal per asisten) | `=ROUND(SUM(E<r1>:<kolom akhir><r2>),0)` | Rumus |
-| Baris total | Setelah data | `=SUM(...)` dan `=ROUND(SUM(...),0)` | Rumus |
-| Legenda | "Keterangan" + 6 baris | Tetap | **Tetap dari template** |
-| Kelas Tambahan | Judul + header + baris data | Tanggal (format tanggal) · Kelas · Jam · Keterangan | 3.5 |
-| Kelas Pengganti | Judul + header + baris data | sda | 3.5 |
-| Tanda tangan pengesah | Area tanda tangan di file Mei (gambar di sel `AF77`, ±175 × 135 px, di bawah tabel) | **Dua gambar terpisah** berdampingan (Kepala Lab dan Dekan), masing-masing dengan jabatan dan nama di bawah gambar, memakai font dan gaya teks template. Tanpa NIP | Pengaturan Admin (keputusan P4), hanya saat Final |
+| Bagian                | Sel                                                                                 | Isi                                                                                                                                                                | Sumber                                                     |
+| --------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| Kop                   | A1:A5 (merge selebar tabel) + 2 logo                                                | Teks lab & alamat                                                                                                                                                  | **Tetap dari template**                                    |
+| Judul                 | A8                                                                                  | `REKAPITULASI KEHADIRAN ASISTEN LABORATORIUM INFORMATION RETRIEVAL`                                                                                                | Tetap                                                      |
+| Semester              | A9                                                                                  | `SEMESTER GENAP TAHUN 2025/2026`                                                                                                                                   | `semesters.term_label`                                     |
+| SK                    | A10                                                                                 | `SESUAI SK NOMOR: <sk_number>`                                                                                                                                     | `semesters.sk_number`                                      |
+| Periode               | A11                                                                                 | `PERIODE BULAN: <BULAN KAPITAL> <TAHUN>`                                                                                                                           | Bulan rekap                                                |
+| Header                | Baris 13–15                                                                         | NO · NAMA MAHASISWA · NIM · MATA KULIAH · TANGGAL, BULAN (E14 = tanggal 1, baris 15 = 1…n) · TOTAL JUMLAH HARI KEHADIRAN · TOTAL JAM HADIR                         | Header tetap; jumlah kolom tanggal = jumlah hari bulan itu |
+| Data                  | Mulai baris 16                                                                      | Per asisten: NO, NAMA, NIM (merge vertikal sebanyak barisnya), lalu satu baris per kelas                                                                           | Bagian 3 & FR-RJN-06                                       |
+| Sel kehadiran         | Kolom E…                                                                            | `=<SKS>*50/60` atau kosong; warna sesuai 3.4                                                                                                                       | Mesin rekap                                                |
+| Total hari            | Kolom setelah tanggal terakhir                                                      | `=COUNT(E<r>:<kolom akhir><r>)` per baris                                                                                                                          | Rumus                                                      |
+| Total jam             | Kolom terakhir (merge vertikal per asisten)                                         | `=ROUND(SUM(E<r1>:<kolom akhir><r2>),0)`                                                                                                                           | Rumus                                                      |
+| Baris total           | Setelah data                                                                        | `=SUM(...)` dan `=ROUND(SUM(...),0)`                                                                                                                               | Rumus                                                      |
+| Legenda               | "Keterangan" + 6 baris                                                              | Tetap                                                                                                                                                              | **Tetap dari template**                                    |
+| Kelas Tambahan        | Judul + header + baris data                                                         | Tanggal (format tanggal) · Kelas · Jam · Keterangan                                                                                                                | 3.5                                                        |
+| Kelas Pengganti       | Judul + header + baris data                                                         | sda                                                                                                                                                                | 3.5                                                        |
+| Tanda tangan pengesah | Area tanda tangan di file Mei (gambar di sel `AF77`, ±175 × 135 px, di bawah tabel) | **Dua gambar terpisah** berdampingan (Kepala Lab dan Dekan), masing-masing dengan jabatan dan nama di bawah gambar, memakai font dan gaya teks template. Tanpa NIP | Pengaturan Admin (keputusan P4), hanya saat Final          |
 
 ### 7.2 Sheet 2 — "Absensi Kehadiran Aslab (TTD)"
+
 - Kop, judul (`ABSENSI KEHADIRAN ASISTEN LABORATORIUM INFORMATION RETRIEVAL`), semester, SK, dan periode sama dengan sheet 1.
 - Baris asisten × kelas **sama persis urutannya** dengan sheet 1.
 - **Sel kehadiran berisi gambar tanda tangan asisten** (disesuaikan agar muat di dalam sel, dengan margin 2 px) di setiap sel yang di sheet 1 bernilai jam. Warna sel mengikuti sheet 1.
@@ -300,13 +314,14 @@ Kampus menetapkan bahwa **hanya** bagian berikut yang boleh berubah: kelas, nama
 - Baris **TOTAL** di akhir tabel.
 
 ### 7.3 Aturan teknis pengisian
+
 1. Template dasar `resources/templates/rekap-ngawas.xlsx` dibuat dari **file Mei 2026** (keputusan P7). Isi data, tabel catatan, dan gambar tanda tangan dikosongkan; kop, logo, legenda, gaya, lebar kolom, dan pengaturan cetak dipertahankan. File Mei dipakai karena sudah versi **31 hari**. Untuk bulan 28/29/30 hari, kolom tanggal berlebih dihapus lewat `removeColumn`, agar merge, lebar, dan legenda bergeser rapi.
 2. Baris data dibuat dengan menyalin gaya baris contoh (font Calibri 12, border, tinggi baris) lalu menyisipkan baris (`insertNewRowBefore`). Merge vertikal NO/NAMA/NIM/TOTAL JAM dibuat ulang per asisten.
 3. Warna diambil dengan **menyalin gaya sel legenda** (`A80:A85`) supaya warna tema identik.
 4. Nomor urut NO selalu 1…n tanpa duplikat (mencegah M8).
-5. Format NIM diseragamkan menjadi **`2023 – 31 – 044`** (tahun – kode prodi – nomor, dipisah *en dash* dengan spasi), karena format ini yang paling banyak dipakai di file contoh (keputusan P6). NIM disimpan apa adanya di `users.nim`; formatter hanya dipakai saat ekspor.
+5. Format NIM diseragamkan menjadi **`2023 – 31 – 044`** (tahun – kode prodi – nomor, dipisah _en dash_ dengan spasi), karena format ini yang paling banyak dipakai di file contoh (keputusan P6). NIM disimpan apa adanya di `users.nim`; formatter hanya dipakai saat ekspor.
 6. Setelah dibuat, sistem membuka ulang file dan memverifikasi bahwa nilai hasil hitung PhpSpreadsheet untuk total jam dan hari sama dengan hasil mesin rekap. Bila beda, ekspor gagal dengan pesan jelas.
-7. Pengaturan cetak (landscape, A4/Folio sesuai template, *fit to page*) tidak diubah.
+7. Pengaturan cetak (landscape, A4/Folio sesuai template, _fit to page_) tidak diubah.
 
 ---
 
@@ -332,16 +347,16 @@ Kampus menetapkan bahwa **hanya** bagian berikut yang boleh berubah: kelas, nama
 
 ## 9. UI / Halaman
 
-| Halaman | Lokasi | Isi utama |
-|---|---|---|
-| **Rekap Jam Ngawas** (baru) | `Asisten › Generate`, tab kedua di samping "Rekap Laporan Bulanan" | Pemilih bulan; badge status (Draft/Final rev. n); kartu ringkasan (jumlah asisten, total hari, total jam, tanda tangan terunggah x/y); grid; panel Pemeriksaan; tombol sesuai peran: Tetapkan Final / Buka Kembali / Unduh Excel (Draft/Final) / Riwayat revisi |
-| Pengaturan urutan | Dialog dari halaman di atas | Drag & drop asisten dan kelas |
-| Form laporan ngawas | `Asisten › Report` (modal yang sudah ada) | Field Status pelaksanaan, field kondisional, pilihan kelas IR / di luar Lab IR |
-| Tanda Tangan | `Pengaturan › Profil` | Unggah / gambar / pratinjau / hapus |
-| Kelas di Luar Lab IR | `Asisten › Generate › Rekap Jam Ngawas › Kelas di Luar Lab` (Sek/Bend) | Tabel CRUD + daftar bulanan |
-| Kalender Akademik | `Admin › Semester › Kalender` | Kalender bulanan + daftar; tambah rentang |
-| Semester | `Admin › Semester` (yang ada) | Field Nomor SK & Label semester |
-| Pengaturan Sistem | `Admin › Pengaturan Sistem` (yang ada) | Bagian "Rekap Ngawas": 2 pengesah (jabatan, nama, gambar tanda tangan), template |
+| Halaman                     | Lokasi                                                                 | Isi utama                                                                                                                                                                                                                                                       |
+| --------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Rekap Jam Ngawas** (baru) | `Asisten › Generate`, tab kedua di samping "Rekap Laporan Bulanan"     | Pemilih bulan; badge status (Draft/Final rev. n); kartu ringkasan (jumlah asisten, total hari, total jam, tanda tangan terunggah x/y); grid; panel Pemeriksaan; tombol sesuai peran: Tetapkan Final / Buka Kembali / Unduh Excel (Draft/Final) / Riwayat revisi |
+| Pengaturan urutan           | Dialog dari halaman di atas                                            | Drag & drop asisten dan kelas                                                                                                                                                                                                                                   |
+| Form laporan ngawas         | `Asisten › Report` (modal yang sudah ada)                              | Field Status pelaksanaan, field kondisional, pilihan kelas IR / di luar Lab IR                                                                                                                                                                                  |
+| Tanda Tangan                | `Pengaturan › Profil`                                                  | Unggah / gambar / pratinjau / hapus                                                                                                                                                                                                                             |
+| Kelas di Luar Lab IR        | `Asisten › Generate › Rekap Jam Ngawas › Kelas di Luar Lab` (Sek/Bend) | Tabel CRUD + daftar bulanan                                                                                                                                                                                                                                     |
+| Kalender Akademik           | `Admin › Semester › Kalender`                                          | Kalender bulanan + daftar; tambah rentang                                                                                                                                                                                                                       |
+| Semester                    | `Admin › Semester` (yang ada)                                          | Field Nomor SK & Label semester                                                                                                                                                                                                                                 |
+| Pengaturan Sistem           | `Admin › Pengaturan Sistem` (yang ada)                                 | Bagian "Rekap Ngawas": 2 pengesah (jabatan, nama, gambar tanda tangan), template                                                                                                                                                                                |
 
 Warna di web mengikuti legenda template. Setiap warna tetap disertai label atau ikon, agar tidak bergantung pada warna saja (aksesibilitas, PRD utama 8.5).
 
@@ -349,14 +364,14 @@ Warna di web mengikuti legenda template. Setiap warna tetap disertai label atau 
 
 ## 10. Non-Functional Requirements
 
-| Kategori | Kebutuhan |
-|---|---|
-| Kinerja | Pratinjau satu bulan (± 15 asisten × 7 kelas × 31 hari) dimuat ≤ 1,5 detik; ekspor Excel ≤ 30 detik |
-| Ketepatan | Total jam dari mesin rekap = nilai rumus Excel (FR-RJN-11 & 7.3.6); ditutup test otomatis |
-| Keamanan | File tanda tangan di disk privat, akses lewat signed URL ≤ 15 menit, tidak muncul di pencarian; audit log untuk unggah/hapus tanda tangan, perubahan pengesah, Final, dan Buka Kembali |
-| Integritas | Rekap Final tidak berubah walau laporan atau tanda tangan diubah kemudian (snapshot) |
-| Kompatibilitas | File dibuka tanpa peringatan "repair" di Microsoft Excel 2016+ dan Google Sheets |
-| Kualitas | PHPStan level 7 tanpa error baru; test feature untuk setiap FR Wajib |
+| Kategori       | Kebutuhan                                                                                                                                                                              |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kinerja        | Pratinjau satu bulan (± 15 asisten × 7 kelas × 31 hari) dimuat ≤ 1,5 detik; ekspor Excel ≤ 30 detik                                                                                    |
+| Ketepatan      | Total jam dari mesin rekap = nilai rumus Excel (FR-RJN-11 & 7.3.6); ditutup test otomatis                                                                                              |
+| Keamanan       | File tanda tangan di disk privat, akses lewat signed URL ≤ 15 menit, tidak muncul di pencarian; audit log untuk unggah/hapus tanda tangan, perubahan pengesah, Final, dan Buka Kembali |
+| Integritas     | Rekap Final tidak berubah walau laporan atau tanda tangan diubah kemudian (snapshot)                                                                                                   |
+| Kompatibilitas | File dibuka tanpa peringatan "repair" di Microsoft Excel 2016+ dan Google Sheets                                                                                                       |
+| Kualitas       | PHPStan level 7 tanpa error baru; test feature untuk setiap FR Wajib                                                                                                                   |
 
 ---
 
@@ -373,16 +388,16 @@ Warna di web mengikuti legenda template. Setiap warna tetap disertai label atau 
 
 ## 12. Keputusan Klarifikasi (20 Nov 2026)
 
-| ID | Pertanyaan | Keputusan | Bagian terdampak |
-|---|---|---|---|
-| P1 | Pembulatan total jam | **Ikuti template:** `ROUND(…,0)` per asisten | 3.2, 7.1 |
-| P2 | Warna sel kelas di luar Lab IR | **Oranye**, seperti di Excel selama ini (gaya legenda "Tambahan") | 3.4, 3.6 |
-| P3 | Mata kuliah IR yang dilaksanakan di luar ruang lab | **Ditandai seperti kelas lab lain** (oranye), lewat centang "Dilaksanakan di luar ruang Lab IR" | 3.6, FR-RJN-01 |
-| P4 | Tanda tangan pengesah | **Dua gambar terpisah** (Kepala Lab, Dekan) **dengan nama**, tanpa NIP. Hasil tidak boleh berbeda dari template | US-RJN-05, 7.1 |
-| P5 | Tanda tangan asisten | **Langsung otomatis**, tanpa konfirmasi asisten | US-RJN-02/03, FR-RJN-08/10 |
-| P6 | Format NIM | **`2023 – 31 – 044`** (en dash dengan spasi) | 7.3 |
-| P7 | Template kosong | **Dibuat dari file Mei 2026** yang dikosongkan; kampus tidak menyediakan versi kosong | 7.3, Catatan Perubahan B2 |
-| P8 | Asisten yang tidak mengawas sebulan penuh | **Tetap ditampilkan** sebagai baris kosong | FR-RJN-06 |
+| ID  | Pertanyaan                                         | Keputusan                                                                                                       | Bagian terdampak           |
+| --- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| P1  | Pembulatan total jam                               | **Ikuti template:** `ROUND(…,0)` per asisten                                                                    | 3.2, 7.1                   |
+| P2  | Warna sel kelas di luar Lab IR                     | **Oranye**, seperti di Excel selama ini (gaya legenda "Tambahan")                                               | 3.4, 3.6                   |
+| P3  | Mata kuliah IR yang dilaksanakan di luar ruang lab | **Ditandai seperti kelas lab lain** (oranye), lewat centang "Dilaksanakan di luar ruang Lab IR"                 | 3.6, FR-RJN-01             |
+| P4  | Tanda tangan pengesah                              | **Dua gambar terpisah** (Kepala Lab, Dekan) **dengan nama**, tanpa NIP. Hasil tidak boleh berbeda dari template | US-RJN-05, 7.1             |
+| P5  | Tanda tangan asisten                               | **Langsung otomatis**, tanpa konfirmasi asisten                                                                 | US-RJN-02/03, FR-RJN-08/10 |
+| P6  | Format NIM                                         | **`2023 – 31 – 044`** (en dash dengan spasi)                                                                    | 7.3                        |
+| P7  | Template kosong                                    | **Dibuat dari file Mei 2026** yang dikosongkan; kampus tidak menyediakan versi kosong                           | 7.3, Catatan Perubahan B2  |
+| P8  | Asisten yang tidak mengawas sebulan penuh          | **Tetap ditampilkan** sebagai baris kosong                                                                      | FR-RJN-06                  |
 
 **Satu hal teknis untuk dicek saat UAT:** file contoh hanya memuat satu gambar di area tanda tangan sheet 1 dan belum memperlihatkan posisi tulisan nama. Saat implementasi, posisi dua gambar dan nama dibuat sebagai konstanta yang mudah digeser, lalu dicocokkan dengan satu rekap Final yang sudah ditandatangani (bisa minta ke Bendahara) sebelum dipakai resmi.
 

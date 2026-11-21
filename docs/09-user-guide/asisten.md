@@ -82,3 +82,31 @@ catatan.
    **Excel**).
 2. ZIP/Excel diproses di latar belakang. Unduh dari daftar berkas setelah statusnya _Selesai_ (berlaku 24 jam).
 3. **Sekretaris/Bendahara** dapat merekap semua asisten dan melihat rekap jam & SKS mengawas semua asisten.
+4. Jam di rekap dihitung dari **SKS × 50 menit ÷ 60**, bukan dari jam mulai–selesai.
+
+## 8. Tanda tangan untuk rekap ngawas
+
+1. **Pengaturan › Profil** → bagian **Tanda tangan**: unggah gambar tanda tangan (PNG/JPG; latar putih diubah otomatis
+   menjadi transparan). Boleh diganti atau dihapus kapan saja.
+2. Tanda tangan dipasang **otomatis** di semua tanggal hadir Anda pada Rekap Jam Ngawas; tidak perlu konfirmasi.
+3. Bila belum diunggah, dashboard menampilkan peringatan dan Anda mendapat pengingat mingguan (Senin).
+4. Rekap yang sudah Final tetap memakai tanda tangan saat Final.
+
+## 9. Rekap Jam Ngawas (format kampus)
+
+Menu **Generate → Rekap Jam Ngawas**. Pilih bulan untuk melihat **jam ngawas Anda sendiri** (kelas, tanggal hadir, total hari, total jam).
+Warna sel: ditiadakan, pengganti, tambahan, UTS/UAS, atau kelas di luar Lab IR (oranye), lengkap dengan legenda. Status rekap
+(Draft atau Final rev. n) tampil di atas halaman.
+
+**Sekretaris/Bendahara** (dan Admin) juga:
+
+1. Mencatat **Kelas di Luar Lab IR** (mata kuliah, kelas, SKS, lab asal, asisten) agar masuk rekap.
+2. Memeriksa panel **Pemeriksaan**. Temuan **Blokir** menahan tombol Final; **Peringatan** hanya mengingatkan.
+3. **Unduh Excel (Draft)** untuk dicek. Berkas bertanda DRAFT dan tanpa tanda tangan pengesah.
+4. **Atur Urutan** asisten dan kelas dengan seret-dan-lepas (atau spasi + tombol panah di keyboard).
+5. **Tetapkan Final** bila pemeriksaan bersih. Data dibekukan, Excel Final dibuat, dan semua asisten mendapat notifikasi.
+   Unduh **Unduh Final** lalu kirim ke kampus.
+6. Bila kampus meminta revisi: **Buka Kembali** dengan catatan (min. 5 karakter), perbaiki laporan, lalu **Tetapkan Final** lagi
+   (revisi berikutnya). Berkas lama tersimpan di **Riwayat revisi**.
+
+Berkas Excel Final hanya dapat diunduh Sekretaris/Bendahara dan Admin karena memuat data seluruh asisten.

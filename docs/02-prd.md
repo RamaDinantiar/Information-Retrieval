@@ -19,6 +19,8 @@ IR Lab Management System adalah aplikasi web internal (Laravel + React) yang men
 
 **Dalam cakupan:** halaman Login, registrasi mandiri Praktikan, pemulihan akun (OTP), seluruh Dashboard internal untuk 3 peran (Praktikan, Asisten Lab, Admin), serta route dan database pendukungnya.
 
+**Tambahan (v2.1):** fitur **Rekap Jam Ngawas format kampus** (rekap jam, Excel berformat template kampus, tanda tangan otomatis, alur Final/Revisi) memiliki PRD tersendiri di [`11-prd-rekap-jam-ngawas.md`](11-prd-rekap-jam-ngawas.md); ringkasan hak aksesnya ada di matriks Bagian 2.
+
 **Di luar cakupan:** Landing Page publik (sudah dikerjakan terpisah), aplikasi mobile native, dan fitur pada Bagian 9.
 
 ### Asumsi yang dipakai
@@ -121,6 +123,8 @@ Keterangan: **C** = Create, **R** = Read, **U** = Update, **D** = Delete/Arsip, 
 | Denah ruang lab                                         | R                             | R                                                 | CRUD                            |
 | Laporan mengawas                                        | —                             | CRU (Own); Sekretaris/Bendahara: verifikasi semua | R semua, verifikasi, buka kunci |
 | Generate rekap                                          | —                             | Own; Sekretaris/Bendahara: rekap semua asisten    | Semua asisten                   |
+| Rekap Jam Ngawas (format kampus) — lihat jam            | —                             | R baris sendiri; Sekretaris/Bendahara: semua      | R semua                         |
+| Rekap Jam Ngawas — Final, Buka Kembali, ekspor Excel    | —                             | Hanya Sekretaris/Bendahara                        | CRUD (cadangan)                 |
 | Tukar shift                                             | —                             | Ajukan & setujui (Own)                            | R, override                     |
 | Program (Workshop, Quick Tutor, Rekrutmen, Maintenance) | R, daftar                     | CRUD                                              | CRUD                            |
 | Pengumuman                                              | R                             | C (Ampu)                                          | CRUD (global)                   |
