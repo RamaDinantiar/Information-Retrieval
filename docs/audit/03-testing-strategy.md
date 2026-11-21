@@ -170,6 +170,7 @@ Dicatat saat test P0 dan P1 ditulis. Tidak ada yang mengubah kode aplikasi; semu
 | N10 | Perulangan "ulang sampai token unik" di `JoinToken::generate` tidak bisa diuji secara deterministik tanpa celah untuk menyuntikkan angka acak. Yang diuji: panjang, alfabet, tanpa O/0/I/1.                                                                                                                                                                                                                                                                                    | Info                                           | Tidak ada                                                                                                                                                         |
 | N11 | `ImportMembers` (impor anggota oleh asisten) tidak memeriksa `is_locked`, sedangkan `JoinClass` (token) menolak kelas terkunci. Kemungkinan disengaja (asisten boleh menambah anggota ke kelas yang sudah ditutup untuk token), tetapi tidak ada test atau komentar yang menyatakannya. Test tidak mengunci salah satu arah.                                                                                                                                                   | Pertanyaan                                     | Diputuskan: disengaja; impor tetap jalan, tampilkan peringatan "Kelas sedang dikunci" (keputusan 6)                                                               |
 | N12 | Dari pembacaan `SaveGradesBatch`: mengubah nilai yang sudah **Published** tidak mengubah `status`, jadi nilai baru langsung terlihat praktikan tanpa publikasi ulang dan tanpa notifikasi. Belum diuji dan tidak dikunci.                                                                                                                                                                                                                                                      | Pertanyaan                                     | Diputuskan: langsung terlihat + notifikasi "Nilai diperbarui" + audit log (keputusan 6)                                                                           |
+| N13 | Respons yang tidak melewati grup middleware `web` tidak membawa header keamanan: alihan tamu ke login (middleware `auth` berjalan lebih dulu dari `AddSecurityHeaders`) dan 404 untuk URL yang tidak cocok rute apa pun. 403 dari middleware peran dan halaman biasa membawa header lengkap. Dampak kecil (tanpa isi halaman).                                                                                                                                                 | Rendah                                         | Opsional: daftarkan `AddSecurityHeaders` sebagai middleware global. Tidak diubah di tahap ini                                                                     |
 
 ### Bukti bahwa test P0 bisa gagal
 
@@ -177,10 +178,12 @@ Kode aplikasi dirusak sementara satu per satu, test dijalankan, lalu kode dikemb
 
 ### Status pelaksanaan
 
-Suite penuh: **648 test lolos** (554 sebelum tahap ini, +94), PHPStan 0 error, Pint dan `npm run check` lolos.
+Suite penuh: **664 test lolos, +110** (554 sebelum tahap ini), PHPStan 0 error, Pint dan `npm run check` lolos.
 
-| Prioritas | Status  | Perusakan sementara yang menggagalkan test |
-| --------- | ------- | ------------------------------------------ |
-| P0        | Selesai | 11 dari 12 (yang ke-12 bukan celah, N4)    |
-| P1        | Selesai | 15 dari 15                                 |
-| P2        | Belum   |                                            |
+| Prioritas | Status  | Perusakan sementara yang menggagalkan test                                       |
+| --------- | ------- | -------------------------------------------------------------------------------- |
+| P0        | Selesai | 11 dari 12 (yang ke-12 bukan celah, N4)                                          |
+| P1        | Selesai | 15 dari 15                                                                       |
+| P2        | Selesai | 6 dari 7 (M3 mutan setara: pemilik shift selalu bentrok dengan shiftnya sendiri) |
+
+P2 dikerjakan lebih sempit dari rencana karena sebagian sudah tercakup: isi Word (`OperationsTest`: escape `&`/`<`, urutan sesi, foto), pengingat harian (`DailyRemindersTest`), otorisasi `exports.show` untuk rekap (`NgawasExportTest`). `ClassDays` hanya konstanta nama hari, tidak ada logika. Yang ditambahkan: `MiddlewareTest`, `AssistantWeekTest`, `ExportLifecycleTest` (kegagalan job, 403 ekspor orang lain, pemangkasan tepat 7 hari).
