@@ -21,6 +21,8 @@ use Throwable;
  */
 class SubmitTask
 {
+    private const ALREADY_SUBMITTED = 'Anda sudah mengumpulkan. Batalkan pengumpulan (Unsend) dulu jika ingin mengubah jawaban.';
+
     public function __construct(private readonly FileStore $files) {}
 
     /**
@@ -44,7 +46,7 @@ class SubmitTask
         // Sudah mengumpulkan → tidak bisa mengumpulkan lagi, kecuali dibatalkan
         // dulu (UnsubmitTask). Mencegah jawaban tertimpa tanpa sengaja.
         if (Submission::where('task_target_id', $target->id)->where('user_id', $user->id)->where('is_current', true)->exists()) {
-            $this->fail('submission', 'Anda sudah mengumpulkan. Batalkan pengumpulan (Unsend) dulu jika ingin mengubah jawaban.');
+            $this->fail('submission', self::ALREADY_SUBMITTED);
         }
 
         // Seperti Teams: setelah Unsend, berkas lama tetap menjadi draf dan boleh dipakai lagi.
@@ -83,6 +85,14 @@ class SubmitTask
 
         try {
             return DB::transaction(function () use ($user, $target, $uploads, $text, $now, $reuse, &$stored) {
+                // Kunci baris target: dua permintaan bersamaan (klik ganda) berjalan berurutan, dan yang
+                // kedua melihat pengumpulan pertama alih-alih gagal di unique index versi.
+                TaskTarget::whereKey($target->id)->lockForUpdate()->first();
+
+                if (Submission::where('task_target_id', $target->id)->where('user_id', $user->id)->where('is_current', true)->exists()) {
+                    $this->fail('submission', self::ALREADY_SUBMITTED);
+                }
+
                 $lateMinutes = $target->isPastDue($now) ? max(1, (int) floor($target->due_at->diffInMinutes($now))) : 0;
 
                 // Nomor versi terus naik, termasuk pengumpulan yang pernah dibatalkan.

@@ -192,9 +192,9 @@ class NgawasRecapWorkbook
         $protos = $this->capturePrototypes($ws, $sheetIndex, $lastCol);
 
         // Kop: semester, SK, periode; tanggal 1 dan nomor hari.
-        $ws->setCellValue('A9', (string) ($recap['semester']['termLabel'] ?? ''));
-        $ws->setCellValue('A10', 'SESUAI SK NOMOR: '.($recap['semester']['skNumber'] ?? ''));
-        $ws->setCellValue('A11', 'PERIODE BULAN: '.$recap['monthLabel']);
+        $ws->setCellValueExplicit('A9', (string) ($recap['semester']['termLabel'] ?? ''), DataType::TYPE_STRING);
+        $ws->setCellValueExplicit('A10', 'SESUAI SK NOMOR: '.($recap['semester']['skNumber'] ?? ''), DataType::TYPE_STRING);
+        $ws->setCellValueExplicit('A11', 'PERIODE BULAN: '.$recap['monthLabel'], DataType::TYPE_STRING);
         $ws->setCellValue('E'.NgawasTemplate::DATE_ROW, Date::PHPToExcel(new \DateTimeImmutable($recap['month'].'-01')));
 
         for ($d = 1; $d <= $days; $d++) {
@@ -236,11 +236,11 @@ class NgawasRecapWorkbook
 
                 if ($isFirst) {
                     $ws->setCellValue("A{$row}", $number);
-                    $ws->setCellValue("B{$row}", $assistant['name']);
+                    $ws->setCellValueExplicit("B{$row}", $assistant['name'], DataType::TYPE_STRING);
                     $ws->setCellValueExplicit("C{$row}", $assistant['nim'], DataType::TYPE_STRING);
                 }
 
-                $ws->setCellValue("D{$row}", $item['label']);
+                $ws->setCellValueExplicit("D{$row}", $item['label'], DataType::TYPE_STRING);
 
                 foreach ($recap['columns'] as $column) {
                     $cell = $item['cells'][$column['day']] ?? null;
@@ -522,9 +522,9 @@ class NgawasRecapWorkbook
             }
 
             $ws->setCellValue("A{$row}", Date::PHPToExcel(new \DateTimeImmutable($entry['date'])));
-            $ws->setCellValue("B{$row}", $entry['class']);
+            $ws->setCellValueExplicit("B{$row}", $entry['class'], DataType::TYPE_STRING);
             $ws->setCellValueExplicit("C{$row}", $entry['time'], DataType::TYPE_STRING);
-            $ws->setCellValue("D{$row}", $entry['note']);
+            $ws->setCellValueExplicit("D{$row}", $entry['note'], DataType::TYPE_STRING);
             $ws->getRowDimension($row)->setRowHeight(-1);
         }
 

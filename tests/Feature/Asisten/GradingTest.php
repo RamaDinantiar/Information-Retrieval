@@ -75,6 +75,14 @@ class GradingTest extends TestCase
                 ->has('rows', 3));
     }
 
+    public function test_a_batch_with_a_duplicated_submission_is_rejected_cleanly()
+    {
+        $this->batch([$this->row($this->submissions[0], 80), $this->row($this->submissions[0], 90)])
+            ->assertSessionHasErrors('grades.1.submission_id');
+
+        $this->assertDatabaseCount('grades', 0);
+    }
+
     public function test_a_batch_is_saved_as_draft_with_versions()
     {
         $this->batch([

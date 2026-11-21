@@ -72,6 +72,24 @@ class OperationsTest extends TestCase
         ];
     }
 
+    public function test_an_invalid_replacement_photo_keeps_the_existing_photo_file()
+    {
+        $shift = $this->shift($this->asisten, '2026-10-05', '07:20', '09:50');
+        $this->actingAs($this->asisten);
+
+        $this->post(route('asisten.reports.store'), $this->payload(['shift_id' => $shift->id]))->assertSessionHasNoErrors();
+        $report = SupervisionReport::sole();
+        $old = $report->photos()->sole();
+        Storage::disk('lab')->assertExists($old->path);
+
+        $broken = UploadedFile::fake()->createWithContent('baru.jpg', 'ini bukan gambar');
+        $this->post(route('asisten.reports.update', $report), $this->payload(['shift_id' => $shift->id, 'photo' => $broken]))
+            ->assertSessionHasErrors('photo');
+
+        Storage::disk('lab')->assertExists($old->path);
+        $this->assertSame([$old->id], $report->photos()->pluck('id')->all());
+    }
+
     public function test_a_report_is_saved_as_draft_then_submitted_with_a_photo()
     {
         $shift = $this->shift($this->asisten, '2026-10-05', '07:20', '09:50');

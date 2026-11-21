@@ -111,8 +111,10 @@ class SaveSupervisionReport
             $report->assistants()->sync(collect($team)->mapWithKeys(fn ($id, $i) => [$id => ['position' => $i + 1]])->all());
 
             if ($photo) {
-                $report->photos()->get()->each->delete();
+                // Foto baru divalidasi & disimpan dulu; foto lama baru dihapus bila itu berhasil.
+                $old = $report->photos()->get();
                 $this->files->store($photo, ['image'], 'report_photo', $report, $author, 'photo');
+                $old->each->delete();
             }
 
             AuditLog::record($before ? 'report.updated' : 'report.created', $report, $before, $report->only(['status', 'execution_status', 'start_time', 'end_time', 'notes']));

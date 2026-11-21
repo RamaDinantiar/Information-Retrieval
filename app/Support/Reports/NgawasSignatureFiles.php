@@ -22,8 +22,11 @@ class NgawasSignatureFiles
             return null;
         }
 
-        $path = tempnam(sys_get_temp_dir(), 'sig').'.png';
+        // Ekstensi .png dibutuhkan PhpSpreadsheet; berkas dasar tempnam dihapus agar tidak tertinggal.
+        $base = (string) tempnam(sys_get_temp_dir(), 'sig');
+        $path = $base.'.png';
         file_put_contents($path, Storage::disk($file->disk)->get($file->path));
+        @unlink($base);
         $temp[] = $path;
 
         return $path;
