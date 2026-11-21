@@ -26,8 +26,11 @@ class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules, ProfileValidationRules;
 
-    /** Maks. percobaan daftar per IP per jam. */
-    private const MAX_ATTEMPTS = 10;
+    /**
+     * Maks. percobaan daftar per IP per jam. Longgar karena satu kampus berbagi satu IP (NAT);
+     * percobaan yang gagal validasi ikut dihitung agar tidak bisa dipakai menebak NIM/email terdaftar.
+     */
+    private const MAX_ATTEMPTS = 60;
 
     /** Program studi yang dapat dipilih saat pendaftaran mandiri. */
     public const MAJORS = ['S1 Teknik Informatika', 'S1 Sistem Informasi'];

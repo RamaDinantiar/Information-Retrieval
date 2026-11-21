@@ -65,6 +65,8 @@ return [
     |
     */
 
+    'trusted_proxies' => env('TRUSTED_PROXIES'),
+
     'timezone' => 'Asia/Jakarta', // PRD 8.5: semua tenggat memakai WIB
 
     /*

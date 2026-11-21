@@ -46,6 +46,10 @@ MAIL_FROM_ADDRESS=...
 MAIL_FROM_NAME="IR Lab"
 ```
 
+- [ ] Server di belakang reverse proxy, CDN, atau WAF? Isi `TRUSTED_PROXIES` (IP proxy dipisah koma, atau `*`).
+      Tanpa ini semua pengguna terbaca berasal dari satu IP (IP proxy), sehingga batas percobaan login/daftar/reset
+      per IP menjadi satu batas untuk semua orang, HSTS tidak terkirim, dan IP di audit log salah. Kosongkan bila
+      Nginx langsung menerima koneksi pengguna.
 - [ ] `php artisan key:generate` (sekali saja, saat pemasangan pertama)
 - [ ] `chmod 600 .env`; pastikan `.env` tidak bisa diakses dari browser dan tidak ikut ke git
 
@@ -149,6 +153,7 @@ Menjalankan tugas otomatis. Tanpa cron, **sesi kelas tidak mulai/berhenti sendir
 - [ ] `https://<domain>/dev/login-as/admin` → **404** (kalau terbuka, `APP_ENV` belum `production`)
 - [ ] Buka halaman yang tidak ada → halaman 404 ramah, bukan halaman debug Laravel
 - [ ] `curl -I https://<domain>/login` memuat `Strict-Transport-Security`, `X-Frame-Options`
+- [ ] Masuk sebagai Admin lalu buka Audit Log: kolom IP berisi IP perangkat Anda, bukan IP proxy/server
 - [ ] Admin › Pengaturan Sistem › Notifikasi Email menyala; buat satu notifikasi (mis. terbitkan tugas) → email masuk ke akun penerima
 - [ ] Login dengan NIM dan dengan email; 6 kali salah → diminta menunggu
 - [ ] Lupa password → email benar-benar masuk
