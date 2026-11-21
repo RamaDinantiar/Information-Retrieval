@@ -4,6 +4,7 @@ namespace Tests\Feature\Asisten;
 
 use App\Enums\TaskType;
 use App\Events\GradesPublished;
+use App\Models\AuditLog;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Grade;
@@ -73,6 +74,25 @@ class GradingTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page->component('asisten/grades/index')
                 ->where('selected.targetId', $this->target->id)
                 ->has('rows', 3));
+    }
+
+    public function test_the_audit_log_records_scores_but_not_the_feedback_text()
+    {
+        $this->batch([$this->row($this->submissions[0], 80, null, 'Catatan pribadi untuk praktikan ini')])->assertSessionHasNoErrors();
+
+        $log = AuditLog::where('action', 'grade.saved')->sole();
+        $this->assertEquals(80, $log->after_json['score']);
+        $this->assertTrue($log->after_json['has_feedback']);
+        $this->assertArrayNotHasKey('feedback', $log->after_json);
+        $this->assertStringNotContainsString('Catatan pribadi', json_encode($log->after_json).json_encode($log->before_json));
+    }
+
+    public function test_a_batch_with_a_duplicated_submission_is_rejected_cleanly()
+    {
+        $this->batch([$this->row($this->submissions[0], 80), $this->row($this->submissions[0], 90)])
+            ->assertSessionHasErrors('grades.1.submission_id');
+
+        $this->assertDatabaseCount('grades', 0);
     }
 
     public function test_a_batch_is_saved_as_draft_with_versions()

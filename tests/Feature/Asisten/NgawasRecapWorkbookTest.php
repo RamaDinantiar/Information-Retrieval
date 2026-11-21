@@ -9,6 +9,7 @@ use Carbon\CarbonImmutable;
 use DOMDocument;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Shared\Drawing as DrawingMath;
@@ -246,6 +247,21 @@ class NgawasRecapWorkbookTest extends TestCase
         $this->assertSame('-', $ws->getCell('D17')->getValue());
         $this->assertSame('ASISTEN 2', $ws->getCell('B17')->getValue());
         $this->assertSame(0, (int) $ws->getCell('AI17')->getCalculatedValue());
+    }
+
+    public function test_user_text_that_looks_like_a_formula_is_written_as_plain_text()
+    {
+        $recap = $this->fakeRecap('2026-04', [1, 1]);
+        $recap['assistants'][0]['name'] = '=HYPERLINK("http://contoh.test","klik")';
+        $recap['assistants'][0]['rows'][0]['label'] = '+cmd|calc';
+        $recap['semester']['termLabel'] = '=1+1';
+
+        $ws = $this->load($this->build($recap))->getSheet(0);
+
+        foreach (['A9' => '=1+1', 'B16' => '=HYPERLINK("http://contoh.test","klik")', 'D16' => '+cmd|calc'] as $address => $text) {
+            $this->assertSame(DataType::TYPE_STRING, $ws->getCell($address)->getDataType(), $address);
+            $this->assertSame($text, $ws->getCell($address)->getValue(), $address);
+        }
     }
 
     // --- Golden April -------------------------------------------------------

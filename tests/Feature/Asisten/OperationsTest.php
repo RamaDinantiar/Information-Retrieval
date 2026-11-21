@@ -9,6 +9,7 @@ use App\Models\Course;
 use App\Models\Export;
 use App\Models\LabClass;
 use App\Models\Meeting;
+use App\Models\NgawasRecap;
 use App\Models\Room;
 use App\Models\Semester;
 use App\Models\Shift;
@@ -70,6 +71,58 @@ class OperationsTest extends TestCase
             'photo' => UploadedFile::fake()->image('dokumentasi.jpg'),
             ...$overrides,
         ];
+    }
+
+    public function test_an_invalid_replacement_photo_keeps_the_existing_photo_file()
+    {
+        $shift = $this->shift($this->asisten, '2026-10-05', '07:20', '09:50');
+        $this->actingAs($this->asisten);
+
+        $this->post(route('asisten.reports.store'), $this->payload(['shift_id' => $shift->id]))->assertSessionHasNoErrors();
+        $report = SupervisionReport::sole();
+        $old = $report->photos()->sole();
+        Storage::disk('lab')->assertExists($old->path);
+
+        $broken = UploadedFile::fake()->createWithContent('baru.jpg', 'ini bukan gambar');
+        $this->post(route('asisten.reports.update', $report), $this->payload(['shift_id' => $shift->id, 'photo' => $broken]))
+            ->assertSessionHasErrors('photo');
+
+        Storage::disk('lab')->assertExists($old->path);
+        $this->assertSame([$old->id], $report->photos()->pluck('id')->all());
+    }
+
+    public function test_reports_cannot_be_created_or_reviewed_in_a_finalized_month()
+    {
+        $submitted = SupervisionReport::factory()->create([
+            'semester_id' => $this->semester->id, 'user_id' => $this->asisten->id, 'date' => '2026-10-05', 'status' => 'submitted',
+        ]);
+        NgawasRecap::create(['semester_id' => $this->semester->id, 'month' => '2026-10', 'status' => 'final']);
+
+        $this->actingAs($this->asisten);
+        $this->post(route('asisten.reports.store'), $this->payload())->assertSessionHasErrors('date');
+        $this->assertSame(1, SupervisionReport::count());
+
+        $this->actingAs($this->sekretaris);
+        $this->post(route('asisten.reports.verify', $submitted))->assertSessionHasErrors('report');
+        $this->assertSame('submitted', $submitted->fresh()->status);
+
+        // Setelah rekap dibuka kembali (kembali Draft), verifikasi berjalan normal.
+        NgawasRecap::where('month', '2026-10')->update(['status' => 'draft']);
+        $this->post(route('asisten.reports.verify', $submitted))->assertSessionHasNoErrors();
+        $this->assertSame('verified', $submitted->fresh()->status);
+    }
+
+    public function test_a_report_belongs_to_the_semester_of_its_class_not_the_active_semester()
+    {
+        $old = Semester::factory()->archived()->create(['start_date' => '2026-02-01', 'end_date' => '2026-06-30']);
+        $oldClass = LabClass::factory()->create(['semester_id' => $old->id, 'room_id' => $this->room->id]);
+        $this->actingAs($this->asisten);
+
+        $this->post(route('asisten.reports.store'), $this->payload([
+            'class_id' => $oldClass->id, 'date' => '2026-10-04', 'execution_status' => 'additional',
+        ]))->assertSessionHasNoErrors();
+
+        $this->assertSame($old->id, SupervisionReport::sole()->semester_id);
     }
 
     public function test_a_report_is_saved_as_draft_then_submitted_with_a_photo()

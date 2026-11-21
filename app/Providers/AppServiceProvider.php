@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Setting;
 use App\Support\LiveVersion;
+use App\Support\TrustedProxies;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -30,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        TrustedProxies::configure(config('app.trusted_proxies'));
 
         // `composer run dev` ikut menjalankan scheduler (sesi otomatis, pengingat, dll.).
         if ($this->app->runningInConsole()) {

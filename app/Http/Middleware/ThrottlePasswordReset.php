@@ -18,7 +18,7 @@ class ThrottlePasswordReset
 {
     /** Route → [maks per email+IP per 10 menit, maks per IP per jam, field pesan error]. */
     private const LIMITS = [
-        'password.email' => [3, 20, 'email'],
+        'password.email' => [3, 60, 'email'],
         'password.code.verify' => [10, 30, 'code'],
         'password.update' => [5, 30, 'password'],
     ];

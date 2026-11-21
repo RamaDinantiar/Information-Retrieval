@@ -90,7 +90,7 @@ class GradeController extends Controller
         $validated = $request->validate([
             'target_id' => ['required', 'integer', 'exists:task_targets,id'],
             'grades' => ['required', 'array', 'min:1', 'max:500'],
-            'grades.*.submission_id' => ['required', 'integer'],
+            'grades.*.submission_id' => ['required', 'integer', 'distinct'],
             'grades.*.score' => ['nullable'],
             'grades.*.feedback' => ['nullable', 'string'],
             'grades.*.version' => ['nullable', 'integer'],

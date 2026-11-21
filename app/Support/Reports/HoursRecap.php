@@ -22,7 +22,7 @@ class HoursRecap
      */
     public static function forMonth(string $month, ?int $onlyUserId = null): array
     {
-        $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
+        $start = CarbonImmutable::createFromFormat('!Y-m', $month)->startOfMonth();
 
         $reports = SupervisionReport::where('status', 'verified')
             ->whereDateBetween('date', [$start->toDateString(), $start->endOfMonth()->toDateString()])

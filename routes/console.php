@@ -13,7 +13,9 @@ use App\Enums\Role;
 use App\Models\AuditLog;
 use App\Models\Export;
 use App\Models\User;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Str;
 
@@ -31,6 +33,16 @@ Artisan::command('exports:prune', function () {
     });
     $this->info($old->count().' ekspor lama dihapus.');
 })->purpose('Hapus ekspor rekap yang lebih dari 7 hari');
+
+// Tabel yang tumbuh terus: notifikasi lonceng (terbaca > 90 hari, atau apa pun > 1 tahun) dan kode OTP kedaluwarsa.
+Artisan::command('housekeeping:prune', function () {
+    $notifications = DatabaseNotification::query()
+        ->where(fn ($q) => $q->where('read_at', '<', now()->subDays(90))->orWhere('created_at', '<', now()->subYear()))
+        ->delete();
+    $codes = DB::table('password_reset_codes')->where('expires_at', '<', now()->subDay())->delete();
+
+    $this->info("{$notifications} notifikasi lama dan {$codes} kode OTP kedaluwarsa dihapus.");
+})->purpose('Hapus notifikasi lama dan kode OTP kedaluwarsa');
 
 // Jalur darurat (hanya lewat akses server): pulihkan akses Admin bila semua Admin
 // terkunci/lupa password. Kata sandi sementara tampil di terminal, tidak lewat email.
@@ -70,6 +82,9 @@ Artisan::command('lab:recover-admin {email : Email akun yang dipulihkan} {--forc
 
 Schedule::command('shifts:expire-swaps')->hourly();
 Schedule::command('exports:prune')->daily();
+// Job gagal memuat payload; buang setelah 48 jam agar tidak menumpuk (payload email kredensial dienkripsi).
+Schedule::command('queue:prune-failed --hours=48')->daily();
+Schedule::command('housekeeping:prune')->daily();
 
 // Pengumuman terjadwal → notifikasi saat terbit.
 Artisan::command('announcements:notify', function (NotifyAnnouncements $notify) {

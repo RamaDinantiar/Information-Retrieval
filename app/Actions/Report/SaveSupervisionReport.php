@@ -8,6 +8,7 @@ use App\Events\SupervisionReportSubmitted;
 use App\Models\AcademicCalendarEvent;
 use App\Models\AuditLog;
 use App\Models\LabClass;
+use App\Models\NgawasRecap;
 use App\Models\OutsideClass;
 use App\Models\Semester;
 use App\Models\Shift;
@@ -70,7 +71,16 @@ class SaveSupervisionReport
             throw ValidationException::withMessages(['class_id' => 'Kelas wajib dipilih.']);
         }
 
-        $semesterId = Semester::current()->id ?? $class->semester_id ?? $outside?->semester_id;
+        // Semester laporan = semester kelasnya (bukan semester aktif): laporan H+1 untuk kelas semester lama
+        // yang dibuat setelah semester baru diaktifkan tetap masuk rekap semester lama.
+        $semesterId = $class->semester_id ?? $outside->semester_id ?? Semester::current()?->id;
+
+        // S4: bulan yang rekapnya sudah Final tidak boleh ditambah atau diubah laporannya.
+        foreach (array_filter([[$semesterId, $date], $report ? [$report->semester_id, $report->date] : null]) as [$checkSemester, $checkDate]) {
+            if (NgawasRecap::isFinalFor($checkSemester, $checkDate)) {
+                throw ValidationException::withMessages(['date' => 'Rekap Jam Ngawas '.$checkDate->translatedFormat('F Y').' sudah Final. Minta Sekretaris/Bendahara membukanya kembali sebelum laporan ditambah atau diubah.']);
+            }
+        }
         $status = ExecutionStatus::from($data['execution_status'] ?? 'held');
         $extra = $this->validateExecution($author, $data, $status, $date, $class, $outside, $semesterId, $team, $report);
 
@@ -111,8 +121,10 @@ class SaveSupervisionReport
             $report->assistants()->sync(collect($team)->mapWithKeys(fn ($id, $i) => [$id => ['position' => $i + 1]])->all());
 
             if ($photo) {
-                $report->photos()->get()->each->delete();
+                // Foto baru divalidasi & disimpan dulu; foto lama baru dihapus bila itu berhasil.
+                $old = $report->photos()->get();
                 $this->files->store($photo, ['image'], 'report_photo', $report, $author, 'photo');
+                $old->each->delete();
             }
 
             AuditLog::record($before ? 'report.updated' : 'report.created', $report, $before, $report->only(['status', 'execution_status', 'start_time', 'end_time', 'notes']));
@@ -139,9 +151,6 @@ class SaveSupervisionReport
             $assigned = $outside->assistants()->whereKey($author->id)->exists();
             if (! $author->isAdmin() && ! $assigned) {
                 throw ValidationException::withMessages(['outside_class_id' => 'Anda tidak ditugaskan pada kelas di luar Lab IR ini.']);
-            }
-            if ($semesterId !== null && $outside->semester_id !== $semesterId) {
-                throw ValidationException::withMessages(['outside_class_id' => 'Kelas di luar Lab IR ini bukan milik semester aktif.']);
             }
         }
 

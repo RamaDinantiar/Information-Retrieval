@@ -26,7 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::get('live/version', fn () => response()
                 ->json(['v' => LiveVersion::current()])
                 ->header('Cache-Control', 'no-store'))
-                ->middleware('throttle:120,1')
+                // Polling tiap 5 dtk per tab terbuka; praktikan satu kampus berbagi IP, jadi batasnya longgar (endpoint ini murah).
+                ->middleware('throttle:600,1')
                 ->name('live.version');
         },
     )

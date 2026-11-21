@@ -52,7 +52,7 @@ class SecurityHardeningTest extends TestCase
         Notification::fake();
 
         // Email tak terdaftar tetap dihitung: mencegah menebak email terdaftar secara massal.
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 60; $i++) {
             $this->post(route('password.email'), ['email' => "orang{$i}@itpln.ac.id"])
                 ->assertSessionHasErrors(['email' => 'Email ini belum terdaftar di IR Lab. Periksa kembali penulisannya atau daftar akun terlebih dahulu.']);
         }

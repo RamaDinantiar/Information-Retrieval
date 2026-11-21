@@ -27,6 +27,20 @@ class RegistrationTest extends TestCase
         ];
     }
 
+    public function test_a_campus_sized_burst_of_attempts_from_one_ip_is_not_blocked_but_is_still_capped()
+    {
+        // Audit S7: 10/jam per IP memblokir mahasiswa sah di Wi-Fi kampus yang sama; kini 60/jam.
+        for ($i = 0; $i < 60; $i++) {
+            $this->post(route('register.store'), $this->payload(['email' => 'bukan-kampus@gmail.com']))
+                ->assertSessionHasErrors('email');
+        }
+
+        $this->post(route('register.store'), $this->payload(['email' => 'bukan-kampus@gmail.com']))
+            ->assertSessionHasErrors(['email' => 'Terlalu banyak percobaan pendaftaran. Coba lagi dalam 60 menit.']);
+
+        $this->assertDatabaseCount('users', 0);
+    }
+
     public function test_the_registration_page_is_shown_and_linked_from_login()
     {
         $this->get(route('register'))->assertOk()->assertInertia(fn (Assert $page) => $page->component('auth/register')->where('domains', ['itpln.ac.id'])

@@ -33,11 +33,12 @@ class MakeNgawasTemplate extends Command
 
     public function handle(): int
     {
-        $source = (string) $this->argument('source');
-        $output = (string) ($this->option('output') ?: NgawasTemplate::path());
+        $source = $this->argument('source');
+        $option = $this->option('output');
+        $output = is_string($option) && $option !== '' ? $option : NgawasTemplate::path();
 
-        if (! is_file($source)) {
-            $this->error("File sumber tidak ditemukan: {$source}");
+        if (! is_string($source) || ! is_file($source)) {
+            $this->error('File sumber tidak ditemukan: '.(is_string($source) ? $source : ''));
 
             return self::FAILURE;
         }

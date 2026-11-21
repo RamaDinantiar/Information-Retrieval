@@ -397,6 +397,19 @@ class NgawasRecapTest extends TestCase
         $this->assertSame(['1 Apr 2026 · Data Warehouse (Kelas A)'], collect($this->checks()['findings'])->firstWhere('code', 'missing_reports')['items']);
     }
 
+    public function test_a_class_scheduled_today_is_not_flagged_as_missing_until_the_day_has_passed()
+    {
+        $this->lab('Data Warehouse', 'Kelas A', 2, 3, [$this->rama]);
+
+        $this->travelTo(CarbonImmutable::parse('2026-04-08 10:00'));
+        $items = collect($this->checks()['findings'])->firstWhere('code', 'missing_reports')['items'];
+        $this->assertSame(['1 Apr 2026 · Data Warehouse (Kelas A)'], $items);
+
+        $this->travelTo(CarbonImmutable::parse('2026-04-09 08:00'));
+        $items = collect($this->checks()['findings'])->firstWhere('code', 'missing_reports')['items'];
+        $this->assertSame(['1 Apr 2026 · Data Warehouse (Kelas A)', '8 Apr 2026 · Data Warehouse (Kelas A)'], $items);
+    }
+
     public function test_a_clean_month_has_no_blocking_findings()
     {
         $class = $this->lab('Data Warehouse', 'Kelas A', 2, 1, [$this->rama]);

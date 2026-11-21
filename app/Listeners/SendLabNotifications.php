@@ -106,6 +106,6 @@ class SendLabNotifications
 
     private function monthLabel(string $month): string
     {
-        return CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth()->translatedFormat('F Y');
+        return CarbonImmutable::createFromFormat('!Y-m', $month)->startOfMonth()->translatedFormat('F Y');
     }
 }

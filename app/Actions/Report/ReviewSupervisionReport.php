@@ -4,6 +4,7 @@ namespace App\Actions\Report;
 
 use App\Events\SupervisionReportReviewed;
 use App\Models\AuditLog;
+use App\Models\NgawasRecap;
 use App\Models\SupervisionReport;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
@@ -56,6 +57,10 @@ class ReviewSupervisionReport
 
         if ($report->status !== 'submitted') {
             throw ValidationException::withMessages(['report' => 'Hanya laporan berstatus Diajukan yang dapat diverifikasi.']);
+        }
+
+        if (NgawasRecap::isFinalFor($report->semester_id, $report->date)) {
+            throw ValidationException::withMessages(['report' => 'Rekap Jam Ngawas bulan '.$report->date->translatedFormat('F Y').' sudah Final. Buka kembali rekapnya sebelum memverifikasi atau mengembalikan laporan.']);
         }
 
         if ($report->user_id === $reviewer->id && ! $reviewer->isAdmin()) {

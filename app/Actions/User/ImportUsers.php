@@ -25,6 +25,11 @@ class ImportUsers
 {
     public const MAX_ROWS = 1000;
 
+    /** Email password sementara dikirim 20 per 30 detik. */
+    public const MAIL_BATCH = 20;
+
+    public const MAIL_BATCH_SECONDS = 30;
+
     public const HEADERS = ['nim', 'nama', 'email', 'jurusan', 'angkatan'];
 
     /** Alias header yang juga diterima. */
@@ -70,6 +75,7 @@ class ImportUsers
                 continue;
             }
 
+            // Email password sementara disebar (20 per 30 detik) agar tidak melewati batas kirim SMTP.
             ($this->createAccount)([
                 'nim' => $row['nim'],
                 'name' => $row['nama'],
@@ -77,7 +83,7 @@ class ImportUsers
                 'major' => $row['jurusan'] ?: null,
                 'cohort_year' => $row['angkatan'] !== '' ? (int) $row['angkatan'] : null,
                 'role' => $role->value,
-            ]);
+            ], intdiv($created, self::MAIL_BATCH) * self::MAIL_BATCH_SECONDS);
             $created++;
         }
 

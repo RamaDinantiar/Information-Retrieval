@@ -62,7 +62,8 @@ class SaveGradesBatch
 
             foreach ($rows as $row) {
                 $grade = $existing[(int) $row['submission_id']] ?? new Grade(['submission_id' => (int) $row['submission_id'], 'version' => 0]);
-                $before = $grade->exists ? $grade->only(['score', 'feedback']) : null;
+                // Audit mencatat skor dan ada/tidaknya feedback, bukan isinya (feedback bersifat pribadi per praktikan).
+                $before = $grade->exists ? ['score' => $grade->score, 'has_feedback' => $grade->feedback !== null] : null;
 
                 $grade->fill([
                     'score' => $row['score'] === '' ? null : $row['score'],
@@ -73,7 +74,7 @@ class SaveGradesBatch
                 $grade->version++;
                 $grade->save();
 
-                AuditLog::record('grade.saved', $grade, $before, $grade->only(['score', 'feedback', 'status']));
+                AuditLog::record('grade.saved', $grade, $before, ['score' => $grade->score, 'status' => $grade->status, 'has_feedback' => $grade->feedback !== null]);
             }
 
             return count($rows);

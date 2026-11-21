@@ -20,9 +20,9 @@ class CreateUserAccount
      * @param  array{nim?: string|null, name: string, email: string, major?: string|null, cohort_year?: int|null, role?: string, position?: string}  $data
      * @return array{0: User, 1: string}
      */
-    public function __invoke(array $data): array
+    public function __invoke(array $data, int $mailDelaySeconds = 0): array
     {
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data, $mailDelaySeconds) {
             $user = new User([
                 'nim' => $data['nim'] ?? null,
                 'name' => $data['name'],
@@ -40,7 +40,7 @@ class CreateUserAccount
                 'password' => str()->random(40),
             ])->save();
 
-            $password = ($this->issuePassword)($user);
+            $password = ($this->issuePassword)($user, mailDelaySeconds: $mailDelaySeconds);
 
             AuditLog::record('user.created', $user, null, $user->only(['nim', 'name', 'email', 'role', 'position']));
 

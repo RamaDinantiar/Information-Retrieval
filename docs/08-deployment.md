@@ -46,6 +46,10 @@ MAIL_FROM_ADDRESS=...
 MAIL_FROM_NAME="IR Lab"
 ```
 
+- [ ] Server di belakang reverse proxy, CDN, atau WAF? Isi `TRUSTED_PROXIES` (IP proxy dipisah koma, atau `*`).
+      Tanpa ini semua pengguna terbaca berasal dari satu IP (IP proxy), sehingga batas percobaan login/daftar/reset
+      per IP menjadi satu batas untuk semua orang, HSTS tidak terkirim, dan IP di audit log salah. Kosongkan bila
+      Nginx langsung menerima koneksi pengguna.
 - [ ] `php artisan key:generate` (sekali saja, saat pemasangan pertama)
 - [ ] `chmod 600 .env`; pastikan `.env` tidak bisa diakses dari browser dan tidak ikut ke git
 
@@ -104,7 +108,9 @@ stopwaitsecs=330
 stdout_logfile=/var/www/ir-lab/storage/logs/worker.log
 ```
 
-`--timeout` harus lebih besar dari batas job rekap (300 detik).
+`--timeout` harus lebih besar dari batas job rekap (300 detik), dan `DB_QUEUE_RETRY_AFTER` (default 330, di `.env`)
+harus lebih besar lagi dari `--timeout`; bila lebih kecil, job yang masih berjalan diambil ulang worker lain
+dan ekspor bisa ditandai gagal padahal selesai.
 
 - [ ] `supervisorctl reread && supervisorctl update && supervisorctl start ir-lab-worker`
 - [ ] Setiap kali deploy kode baru: `php artisan queue:restart`
@@ -113,15 +119,17 @@ stdout_logfile=/var/www/ir-lab/storage/logs/worker.log
 
 Menjalankan tugas otomatis. Tanpa cron, **sesi kelas tidak mulai/berhenti sendiri** dan Pre-Test tidak terbuka.
 
-| Perintah                 | Jadwal       | Fungsi                                                             |
-| ------------------------ | ------------ | ------------------------------------------------------------------ |
-| `meetings:sync`          | tiap menit   | Mulai/akhiri sesi sesuai jam kelas, buka Pre-Test                  |
-| `announcements:notify`   | tiap 5 menit | Notifikasi pengumuman terjadwal                                    |
-| `tasks:remind-deadlines` | tiap jam     | Pengingat tenggat H-1 (lonceng + email)                            |
-| `reminders:send`         | harian 08:00 | Pengingat: laporan belum diisi, belum menilai, menunggu verifikasi |
-| `signatures:remind`      | Senin 08:00  | Pengingat tanda tangan belum diunggah                              |
-| `shifts:expire-swaps`    | tiap jam     | Kedaluwarsakan pengajuan tukar shift                               |
-| `exports:prune`          | harian       | Hapus file ekspor > 7 hari                                         |
+| Perintah                 | Jadwal       | Fungsi                                                                     |
+| ------------------------ | ------------ | -------------------------------------------------------------------------- |
+| `meetings:sync`          | tiap menit   | Mulai/akhiri sesi sesuai jam kelas, buka Pre-Test                          |
+| `announcements:notify`   | tiap 5 menit | Notifikasi pengumuman terjadwal                                            |
+| `tasks:remind-deadlines` | tiap jam     | Pengingat tenggat H-1 (lonceng + email)                                    |
+| `reminders:send`         | harian 08:00 | Pengingat: laporan belum diisi, belum menilai, menunggu verifikasi         |
+| `signatures:remind`      | Senin 08:00  | Pengingat tanda tangan belum diunggah                                      |
+| `shifts:expire-swaps`    | tiap jam     | Kedaluwarsakan pengajuan tukar shift                                       |
+| `exports:prune`          | harian       | Hapus file ekspor > 7 hari                                                 |
+| `queue:prune-failed`     | harian       | Buang job gagal > 48 jam                                                   |
+| `housekeeping:prune`     | harian       | Hapus notifikasi terbaca > 90 hari (apa pun > 1 tahun) dan OTP kedaluwarsa |
 
 ```cron
 * * * * * cd /var/www/ir-lab && php artisan schedule:run >> /dev/null 2>&1
@@ -146,6 +154,7 @@ Menjalankan tugas otomatis. Tanpa cron, **sesi kelas tidak mulai/berhenti sendir
 - [ ] `https://<domain>/dev/login-as/admin` → **404** (kalau terbuka, `APP_ENV` belum `production`)
 - [ ] Buka halaman yang tidak ada → halaman 404 ramah, bukan halaman debug Laravel
 - [ ] `curl -I https://<domain>/login` memuat `Strict-Transport-Security`, `X-Frame-Options`
+- [ ] Masuk sebagai Admin lalu buka Audit Log: kolom IP berisi IP perangkat Anda, bukan IP proxy/server
 - [ ] Admin › Pengaturan Sistem › Notifikasi Email menyala; buat satu notifikasi (mis. terbitkan tugas) → email masuk ke akun penerima
 - [ ] Login dengan NIM dan dengan email; 6 kali salah → diminta menunggu
 - [ ] Lupa password → email benar-benar masuk
