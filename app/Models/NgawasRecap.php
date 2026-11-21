@@ -76,6 +76,16 @@ class NgawasRecap extends Model implements HasFiles
         return $this->hasMany(NgawasRecapRevision::class)->orderBy('revision');
     }
 
+    /** Apakah rekap semester + bulan dari tanggal itu sudah Final? (laporan pada bulan itu tidak boleh berubah lagi) */
+    public static function isFinalFor(?int $semesterId, \DateTimeInterface $date): bool
+    {
+        return $semesterId !== null && static::query()
+            ->where('semester_id', $semesterId)
+            ->where('month', $date->format('Y-m'))
+            ->where('status', NgawasRecapStatus::Final->value)
+            ->exists();
+    }
+
     public function isFinal(): bool
     {
         return $this->status === NgawasRecapStatus::Final;
