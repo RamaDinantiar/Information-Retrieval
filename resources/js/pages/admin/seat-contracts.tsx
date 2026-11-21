@@ -223,10 +223,7 @@ export default function AdminSeatContracts({
     return (
         <>
             <Head title="Kontrak Kursi" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Kontrak Kursi"
                     description="Lihat dan koreksi kontrak tempat duduk seluruh kelas. Klik kursi terisi untuk memindahkan atau membatalkan kontrak."

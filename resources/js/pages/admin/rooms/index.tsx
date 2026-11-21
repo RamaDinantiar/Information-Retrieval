@@ -129,10 +129,7 @@ export default function RoomsIndex({
     return (
         <>
             <Head title="Ruang & Denah" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Ruang & Denah"
                     description="Ruang lab yang dipakai kelas praktikum beserta denah kursinya (kursi, meja asisten, lorong)."

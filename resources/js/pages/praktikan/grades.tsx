@@ -157,10 +157,7 @@ export default function PraktikanGrades({
     return (
         <>
             <Head title="Penilaian (Grade)" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <div className="space-y-1 border-b border-primary-200 pb-5">
                     <h1 className="text-h1 font-bold text-primary-900">
                         Penilaian (Grade)

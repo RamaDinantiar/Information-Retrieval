@@ -141,10 +141,7 @@ export default function AuditLogs({
     return (
         <>
             <Head title="Audit Log" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Audit Log"
                     description="Jejak aksi sensitif (nilai, kontrak kursi, peran, semester, persetujuan, laporan). Catatan tidak dapat diubah atau dihapus."

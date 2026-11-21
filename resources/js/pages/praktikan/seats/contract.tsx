@@ -120,10 +120,7 @@ export default function SeatContractForm({
     return (
         <>
             <Head title="Formulir Kontrak Tempat Duduk" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <section className="flex flex-col gap-4 border bg-card p-5 md:flex-row md:items-start md:justify-between">
                     <div className="max-w-2xl space-y-2">
                         <span

@@ -75,7 +75,8 @@ export function ClassCard({
                             status={
                                 PENDING_STATUS[
                                     klass.approvalStatus as
-                                        'pending' | 'rejected'
+                                        | 'pending'
+                                        | 'rejected'
                                 ]
                             }
                         />

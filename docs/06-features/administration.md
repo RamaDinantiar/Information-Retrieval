@@ -42,12 +42,12 @@ pembukaan kunci laporan, dan lain-lain. Dapat difilter berdasarkan modul, pelaku
 
 ![Pengaturan sistem](../images/admin-settings.jpg)
 
-| Pengaturan                      | Bawaan                         |
-| ------------------------------- | ------------------------------ |
-| Batas idle sesi                 | 30 menit                       |
-| Batas unggah PDF / ZIP / gambar | 10 / 20 / 5 MB                 |
-| Registrasi mandiri praktikan    | Dibuka                         |
-| Domain email registrasi         | `itpln.ac.id`                  |
+| Pengaturan                      | Bawaan         |
+| ------------------------------- | -------------- |
+| Batas idle sesi                 | 30 menit       |
+| Batas unggah PDF / ZIP / gambar | 10 / 20 / 5 MB |
+| Registrasi mandiri praktikan    | Dibuka         |
+| Domain email registrasi         | `itpln.ac.id`  |
 
 ## Kode terkait
 

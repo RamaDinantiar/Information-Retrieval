@@ -3,7 +3,11 @@
 import type { ScheduleColor } from './dashboard';
 
 export type SwapStatus =
-    'pending' | 'approved' | 'rejected' | 'expired' | 'cancelled';
+    | 'pending'
+    | 'approved'
+    | 'rejected'
+    | 'expired'
+    | 'cancelled';
 
 export type ShiftSwapRow = {
     id: number;

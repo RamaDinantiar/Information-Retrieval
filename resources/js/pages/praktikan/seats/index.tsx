@@ -85,10 +85,7 @@ export default function PraktikanSeats({
     return (
         <>
             <Head title="Kontrak Tempat Duduk" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div className="space-y-2">
                         {activeSemester && (

@@ -35,10 +35,7 @@ export default function AsistenSeats({
     return (
         <>
             <Head title="Seat Mapping" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Seat Mapping"
                     description="Pusat pemetaan kontrak tempat duduk mahasiswa di Laboratorium Information Retrieval."

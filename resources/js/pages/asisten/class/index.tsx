@@ -123,10 +123,7 @@ export default function AsistenClassIndex({
     return (
         <>
             <Head title="Class" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Class"
                     description={

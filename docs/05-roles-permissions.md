@@ -39,7 +39,7 @@ flowchart LR
 | Password sementara | `EnsurePasswordIsChanged`: wajib ganti sebelum mengakses menu lain            |
 | Peran              | `EnsureUserHasRole` (`role:praktikan`, `role:asisten,admin`, `role:admin`)    |
 | Kepemilikan        | Controller/action, mis. `LabClass::isTaughtBy($user)` untuk kelas yang diampu |
-| Jabatan            | `User::canVerifyReports()`, `User::canViewAllRecaps()`                         |
+| Jabatan            | `User::canVerifyReports()`, `User::canViewAllRecaps()`                        |
 
 ## Matriks hak akses
 
@@ -60,7 +60,7 @@ flowchart LR
 | Kontrak kursi                                    | C, R kelas yang diikuti     | R (Ampu)                                              | CRUD, koreksi                            |
 | Denah ruang                                      | R                           | R                                                     | CRUD                                     |
 | Laporan mengawas                                 | —                           | CRU (Own); **Sekretaris/Bendahara: verifikasi semua** | R semua, verifikasi, buka kunci          |
-| Generate rekap                                   | —                           | Own; **Sekretaris/Bendahara: rekap semua asisten**          | Semua asisten                            |
+| Generate rekap                                   | —                           | Own; **Sekretaris/Bendahara: rekap semua asisten**    | Semua asisten                            |
 | Jadwal shift & tukar shift                       | —                           | Ajukan & setujui (Own)                                | R, kelola                                |
 | Pengumuman                                       | R                           | C (kelas Ampu)                                        | CRUD (global & kelas)                    |
 | Pengguna                                         | —                           | —                                                     | CRUD, impor, reset password, nonaktifkan |

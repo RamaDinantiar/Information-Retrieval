@@ -31,10 +31,7 @@ export default function AdminDashboard({
     return (
         <>
             <Head title="Dashboard" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                     <div className="space-y-3">
                         {dashboard.isSample && (

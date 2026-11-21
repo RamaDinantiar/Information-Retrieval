@@ -82,10 +82,7 @@ export default function SemestersIndex({
     return (
         <>
             <Head title="Semester" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Semester"
                     description="Data operasional (kelas, tugas, nilai) terpisah per semester. Hanya satu semester yang dapat aktif; semester sebelumnya otomatis diarsipkan."
