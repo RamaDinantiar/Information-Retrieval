@@ -15,7 +15,6 @@ import {
     ScrollText,
     SlidersHorizontal,
     SquarePen,
-    Table2,
     Users,
 } from 'lucide-react';
 import type { NavGroup, NavItem, Position, Role } from '@/types';
@@ -58,8 +57,13 @@ const asistenItems = (p: string): NavItem[] => [
         children: taskTypes(`${p}/grade`),
     },
     { title: 'Report', href: `${p}/report`, icon: FileText },
-    { title: 'Generate', href: `${p}/generate`, icon: FileBarChart },
-    { title: 'Rekap Jam Ngawas', href: `${p}/ngawas-recap`, icon: Table2 },
+    {
+        title: 'Generate',
+        href: `${p}/generate`,
+        icon: FileBarChart,
+        // Rekap Jam Ngawas dibuka lewat tab di halaman Generate, bukan menu tersendiri.
+        alsoActiveFor: [`${p}/ngawas-recap`, `${p}/outside-classes`],
+    },
     {
         title: 'Program',
         href: `${p}/program`,

@@ -11,6 +11,8 @@ export type NavItem = {
     href: NonNullable<InertiaLinkProps['href']>;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    /** Halaman lain yang membuat item ini tetap menyala (mis. halaman yang dibuka lewat tab). */
+    alsoActiveFor?: string[];
     /** Sub-menu, mis. Task → Laporan Praktikum / Post-Test / Pre-Test (Figma). */
     children?: NavItem[];
 };

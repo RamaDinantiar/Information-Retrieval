@@ -59,7 +59,11 @@ export function NavMain({ groups }: { groups: NavGroup[] }) {
             )}
             <SidebarMenu className="gap-1">
                 {group.items.map((item) => {
-                    const active = isCurrentOrParentUrl(item.href);
+                    const active =
+                        isCurrentOrParentUrl(item.href) ||
+                        (item.alsoActiveFor ?? []).some((url) =>
+                            isCurrentOrParentUrl(url),
+                        );
 
                     if (!item.children?.length) {
                         return (
