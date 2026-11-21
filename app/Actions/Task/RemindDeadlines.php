@@ -6,7 +6,7 @@ use App\Models\TaskTarget;
 use App\Support\Notifications\Notify;
 
 /**
- * A8 / PRD Notifikasi: tenggat H-1 lewat lonceng + email, hanya untuk
+ * A8 / PRD Notifikasi: tenggat H-1 lewat lonceng + email (email ikut otomatis di Notify), hanya untuk
  * praktikan yang belum mengumpulkan. Sekali per target (reminded_at).
  */
 class RemindDeadlines
@@ -27,7 +27,7 @@ class RemindDeadlines
 
                 Notify::send($pending, 'deadline', "Tenggat besok: {$target->task->title}",
                     "{$target->labClass->course->name} · {$target->labClass->name} — tenggat ".$target->due_at->translatedFormat('l, d M Y H:i').' WIB.',
-                    '/praktikan/tasks/'.$target->id, mail: true);
+                    '/praktikan/tasks/'.$target->id);
 
                 $target->forceFill(['reminded_at' => now()])->save();
                 $sent += count($pending);

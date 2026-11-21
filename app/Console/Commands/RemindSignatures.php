@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 /**
  * FR-RJN-15(c): mengingatkan asisten aktif yang belum mengunggah tanda tangan
  * (dipasang otomatis di sheet absensi Rekap Jam Ngawas). Dijadwalkan mingguan;
- * berhenti dengan sendirinya setelah tanda tangan diunggah. Hanya notifikasi lonceng.
+ * berhenti dengan sendirinya setelah tanda tangan diunggah. Lonceng + email.
  */
 class RemindSignatures extends Command
 {

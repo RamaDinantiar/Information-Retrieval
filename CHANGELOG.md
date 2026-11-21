@@ -7,6 +7,10 @@ Semua perubahan penting dicatat di sini. Format mengikuti
 
 ### Ditambahkan
 
+- **Notifikasi email untuk semua notifikasi penting**, semua peran (Praktikan, Asisten, Admin): salinan email dikirim lewat **antrean**
+  (dicoba ulang 3 kali, bertahap 20 penerima per 30 detik) dan tidak lagi memblokir halaman. Saklar global di Admin › Pengaturan Sistem.
+- **Pengingat harian 08:00 WIB** (`reminders:send`): laporan ngawas belum diisi (maks. 3 kali per shift), pengumpulan belum dinilai,
+  dan laporan menunggu verifikasi untuk Sekretaris/Bendahara. Dicatat di `reminder_logs` agar tidak terkirim ganda.
 - **Rekap Jam Ngawas format kampus** (`docs/11-prd-rekap-jam-ngawas.md`): halaman **Generate › Rekap Jam Ngawas** dengan grid bulanan,
   legenda warna, dan pemeriksaan otomatis; ekspor **Excel berformat template kampus** (PhpSpreadsheet) berstatus Draft atau Final;
   alur **Tetapkan Final → Buka Kembali (catatan wajib) → revisi** dengan snapshot, riwayat revisi, dan AuditLog.
@@ -30,6 +34,7 @@ Semua perubahan penting dicatat di sini. Format mengikuti
 
 ### Diubah
 
+- `LabNotification` kini hanya menyimpan notifikasi lonceng; email dikirim lewat `LabMailNotification` (antrean). Email tenggat H-1 dan pengingat tanda tangan ikut aturan baru ini.
 - **Rekap jam lama** (kartu Generate dan Excel Ringkasan/Per Mata Kuliah) kini memakai rumus **SKS × 50 ÷ 60** yang sama dengan Rekap Jam
   Ngawas; kelas ditiadakan tidak dihitung dan total per asisten dibulatkan seperti template. Angka bisa berbeda dari versi sebelumnya
   yang memakai jam mulai–selesai. Kolom jam sheet Detail diberi nama "Durasi Sesi (jam)".

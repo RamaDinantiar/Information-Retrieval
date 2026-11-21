@@ -26,6 +26,8 @@ class Setting extends Model
         // Pendaftaran mandiri praktikan (hanya email kampus).
         'registration_open' => true,
         'registration_domains' => 'itpln.ac.id',
+        // Salinan email untuk semua notifikasi penting (semua peran); matikan bila SMTP bermasalah.
+        'email_notifications' => true,
         // Rekap Jam Ngawas: dua pengesah bernama tanpa NIP (keputusan P4); lihat NgawasApprovers.
         NgawasApprovers::KEY => NgawasApprovers::DEFAULTS,
         // Rekap Jam Ngawas: id file template unggahan Admin (null = template bawaan repo); lihat NgawasTemplate::activePath().

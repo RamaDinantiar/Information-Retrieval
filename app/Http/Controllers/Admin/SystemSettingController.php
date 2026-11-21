@@ -56,11 +56,13 @@ class SystemSettingController extends Controller
             'limit_zip_mb' => ['required', 'integer', 'between:1,100'],
             'limit_image_mb' => ['required', 'integer', 'between:1,20'],
             'registration_open' => ['boolean'],
+            'email_notifications' => ['boolean'],
             'registration_domains' => ['nullable', 'string', 'max:255', 'regex:/^\s*@?[a-z0-9.-]+\.[a-z]{2,}(\s*,\s*@?[a-z0-9.-]+\.[a-z]{2,})*\s*$/i'],
         ], ['registration_domains.regex' => 'Format domain tidak valid, mis. itpln.ac.id (pisahkan dengan koma).'], [
             'idle_minutes' => 'durasi idle', 'limit_pdf_mb' => 'batas PDF', 'limit_zip_mb' => 'batas ZIP', 'limit_image_mb' => 'batas gambar',
             'registration_domains' => 'domain email',
         ]);
+        $validated['email_notifications'] = $request->has('email_notifications') ? $request->boolean('email_notifications') : (bool) Setting::value('email_notifications');
         $validated['registration_open'] = $request->has('registration_open') ? $request->boolean('registration_open') : (bool) Setting::value('registration_open');
         $validated['registration_domains'] = collect(explode(',', $validated['registration_domains'] ?? (string) Setting::value('registration_domains')))
             ->map(fn ($d) => strtolower(trim(ltrim(trim($d), '@'))))->filter()->unique()->join(', ');

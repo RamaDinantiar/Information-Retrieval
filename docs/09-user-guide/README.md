@@ -31,3 +31,9 @@
 - Tampilan menyesuaikan layar ponsel.
 
 <img src="../images/praktikan-mobile.jpg" alt="Tampilan ponsel" width="280">
+
+## Notifikasi
+
+Notifikasi penting (tugas baru, nilai, tenggat, laporan ngawas, pengumuman, dan pengingat) muncul di ikon lonceng **dan dikirim ke
+email akun Anda**. Pastikan email di profil benar dan cek folder spam bila email tidak masuk. Asisten juga mendapat pengingat harian
+pukul 08:00 untuk laporan ngawas yang belum diisi dan pengumpulan yang belum dinilai.

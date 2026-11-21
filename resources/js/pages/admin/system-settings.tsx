@@ -3,6 +3,7 @@ import {
     Clock,
     FileSpreadsheet,
     HardDrive,
+    Mail,
     PenLine,
     UserPlus,
 } from 'lucide-react';
@@ -29,6 +30,7 @@ type Settings = {
     limit_image_mb: number;
     registration_open: boolean;
     registration_domains: string;
+    email_notifications: boolean;
 };
 
 function Section({
@@ -186,6 +188,32 @@ export default function SystemSettings({
                                         message={errors.registration_domains}
                                     />
                                 </div>
+                            </Section>
+                            <Section
+                                icon={Mail}
+                                title="Notifikasi Email"
+                                description="Semua notifikasi penting (tugas, nilai, tenggat, laporan ngawas, pengumuman, dll.) juga dikirim ke email akun, untuk semua peran. Dikirim lewat antrean; pastikan worker antrean berjalan."
+                            >
+                                <label className="flex items-center gap-2 text-sm">
+                                    <input
+                                        type="hidden"
+                                        name="email_notifications"
+                                        value="0"
+                                    />
+                                    <Checkbox
+                                        name="email_notifications"
+                                        value="1"
+                                        defaultChecked={
+                                            settings.email_notifications
+                                        }
+                                    />{' '}
+                                    Kirim notifikasi ke email
+                                </label>
+                                <p className="text-xs text-muted-foreground">
+                                    Matikan sementara bila SMTP bermasalah.
+                                    Notifikasi lonceng di aplikasi tetap
+                                    berjalan.
+                                </p>
                             </Section>
                             <Section
                                 icon={HardDrive}
