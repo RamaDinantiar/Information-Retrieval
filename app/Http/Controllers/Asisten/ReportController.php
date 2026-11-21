@@ -36,8 +36,8 @@ class ReportController extends Controller
         $date = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $request->query('date')) && strtotime((string) $request->query('date'))
             ? CarbonImmutable::parse($request->query('date'))->toDateString() : null;
         $month = $date ? substr($date, 0, 7)
-            : (preg_match('/^\d{4}-\d{2}$/', (string) $request->query('month')) ? $request->query('month') : now()->format('Y-m'));
-        $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
+            : (preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', (string) $request->query('month')) ? $request->query('month') : now()->format('Y-m'));
+        $start = CarbonImmutable::createFromFormat('!Y-m', $month)->startOfMonth();
         $reviewer = $user->canVerifyReports();
         $tab = in_array($request->query('tab'), ['verify', 'all'], true) && $reviewer ? $request->query('tab') : 'mine';
         $search = trim((string) $request->query('q'));

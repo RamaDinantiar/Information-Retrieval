@@ -39,7 +39,7 @@ class OutsideClassController extends Controller
             ->when(! $manager, fn ($q) => $q->whereHas('assistants', fn ($a) => $a->whereKey($user->id)))
             ->with('assistants:id,name')->orderBy('course_name')->orderBy('class_name')->get();
 
-        $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
+        $start = CarbonImmutable::createFromFormat('!Y-m', $month)->startOfMonth();
 
         $monthly = $classes->isEmpty() ? collect() : SupervisionReport::query()
             ->whereIn('outside_class_id', $classes->pluck('id'))

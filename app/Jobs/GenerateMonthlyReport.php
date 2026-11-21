@@ -38,7 +38,7 @@ class GenerateMonthlyReport implements ShouldQueue
         $export->update(['status' => 'processing', 'progress' => 5]);
 
         $month = $export->params_json['month'];
-        $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
+        $start = CarbonImmutable::createFromFormat('!Y-m', $month)->startOfMonth();
         $reports = self::reports($export->user_id, $month, $export->params_json['scope'] ?? 'mine');
 
         // US-A04-4: bukan file kosong.
@@ -78,7 +78,7 @@ class GenerateMonthlyReport implements ShouldQueue
      */
     public static function reports(int $userId, string $month, string $scope, ?string $date = null): Collection
     {
-        $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
+        $start = CarbonImmutable::createFromFormat('!Y-m', $month)->startOfMonth();
         $range = $date ? [$date, $date] : [$start->toDateString(), $start->endOfMonth()->toDateString()];
 
         return SupervisionReport::where('status', 'verified')

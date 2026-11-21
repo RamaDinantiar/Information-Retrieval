@@ -43,7 +43,7 @@ class NgawasRecap
      */
     public static function build(Semester $semester, string $month, ?int $onlyUserId = null): array
     {
-        $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
+        $start = CarbonImmutable::createFromFormat('!Y-m', $month)->startOfMonth();
         $end = $start->endOfMonth();
         $days = $start->daysInMonth;
 

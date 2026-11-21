@@ -27,8 +27,8 @@ class GenerateController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user();
-        $month = preg_match('/^\d{4}-\d{2}$/', (string) $request->query('month')) ? $request->query('month') : now()->format('Y-m');
-        $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
+        $month = preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', (string) $request->query('month')) ? $request->query('month') : now()->format('Y-m');
+        $start = CarbonImmutable::createFromFormat('!Y-m', $month)->startOfMonth();
         $allScope = $user->canViewAllRecaps();
         $scope = $allScope && $request->query('scope') === 'all' ? 'all' : 'mine';
 

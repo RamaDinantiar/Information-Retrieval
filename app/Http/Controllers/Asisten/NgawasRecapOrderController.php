@@ -78,13 +78,13 @@ class NgawasRecapOrderController extends Controller
 
     private function semester(string $month): Semester
     {
-        $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
+        $start = CarbonImmutable::createFromFormat('!Y-m', $month)->startOfMonth();
 
         $semester = Semester::query()
             ->whereDate('start_date', '<=', $start->endOfMonth()->toDateString())
             ->whereDate('end_date', '>=', $start->toDateString())
             ->orderByRaw("status = 'active' desc")->orderByDesc('start_date')
-            ->first() ?? Semester::current();
+            ->first();
 
         return $semester ?? throw ValidationException::withMessages(['month' => 'Bulan ini tidak termasuk semester mana pun.']);
     }

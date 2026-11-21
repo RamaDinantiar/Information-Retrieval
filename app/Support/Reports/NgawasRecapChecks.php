@@ -30,7 +30,7 @@ class NgawasRecapChecks
      */
     public static function run(Semester $semester, string $month, array $recap): array
     {
-        $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
+        $start = CarbonImmutable::createFromFormat('!Y-m', $month)->startOfMonth();
         $findings = [];
 
         // --- Blokir ---------------------------------------------------------

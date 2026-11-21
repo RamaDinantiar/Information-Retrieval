@@ -32,7 +32,7 @@ class NgawasRecapController extends Controller
         $user = $request->user();
         $manager = $user->canManageNgawasRecap();
         $month = preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', (string) $request->query('month')) ? (string) $request->query('month') : now()->format('Y-m');
-        $start = CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth();
+        $start = CarbonImmutable::createFromFormat('!Y-m', $month)->startOfMonth();
 
         $semester = $this->semesterFor($start);
 
@@ -75,7 +75,7 @@ class NgawasRecapController extends Controller
         abort_unless($request->user()->canManageNgawasRecap(), 403);
 
         $validated = $request->validate(['month' => ['required', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/']]);
-        $semester = $this->semesterFor(CarbonImmutable::createFromFormat('Y-m', $validated['month'])->startOfMonth());
+        $semester = $this->semesterFor(CarbonImmutable::createFromFormat('!Y-m', $validated['month'])->startOfMonth());
 
         if ($semester === null) {
             throw ValidationException::withMessages(['month' => 'Bulan ini tidak termasuk semester mana pun.']);
@@ -130,7 +130,7 @@ class NgawasRecapController extends Controller
     private function semesterForMonth(Request $request): Semester
     {
         $validated = $request->validate(['month' => ['required', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/']]);
-        $semester = $this->semesterFor(CarbonImmutable::createFromFormat('Y-m', $validated['month'])->startOfMonth());
+        $semester = $this->semesterFor(CarbonImmutable::createFromFormat('!Y-m', $validated['month'])->startOfMonth());
 
         return $semester ?? throw ValidationException::withMessages(['month' => 'Bulan ini tidak termasuk semester mana pun.']);
     }
@@ -165,13 +165,13 @@ class NgawasRecapController extends Controller
         return array_values($rows);
     }
 
-    /** Semester yang mencakup bulan itu (utamakan yang aktif); jika tidak ada, semester aktif saat ini. */
+    /** Semester yang mencakup bulan itu (utamakan yang aktif); null bila bulan di luar semua semester. */
     private function semesterFor(CarbonImmutable $start): ?Semester
     {
         return Semester::query()
             ->whereDate('start_date', '<=', $start->endOfMonth()->toDateString())
             ->whereDate('end_date', '>=', $start->toDateString())
             ->orderByRaw("status = 'active' desc")->orderByDesc('start_date')
-            ->first() ?? Semester::current();
+            ->first();
     }
 }
