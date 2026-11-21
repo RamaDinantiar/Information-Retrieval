@@ -153,4 +153,21 @@ class AuthenticationTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page->component('error')->where('status', 403)
                 ->where('signedInAs', ['name' => 'Rina', 'role' => 'Praktikan']));
     }
+
+    public function test_the_session_id_changes_on_login_and_the_old_one_is_dead_after_logout()
+    {
+        $user = User::factory()->create();
+
+        $this->get(route('login'));
+        $before = session()->getId();
+
+        $this->post(route('login.store'), ['login' => $user->email, 'password' => 'password']);
+        $this->assertAuthenticatedAs($user);
+        $this->assertNotSame($before, session()->getId(), 'ID sesi harus diganti saat login (fiksasi sesi).');
+
+        $loggedIn = session()->getId();
+        $this->post(route('logout'));
+        $this->assertGuest();
+        $this->assertNotSame($loggedIn, session()->getId(), 'ID sesi harus diganti lagi saat logout.');
+    }
 }
