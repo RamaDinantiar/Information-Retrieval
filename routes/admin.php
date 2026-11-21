@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\ClassController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\NgawasApproverController;
+use App\Http\Controllers\Admin\NgawasTemplateController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\SeatContractController;
 use App\Http\Controllers\Admin\SemesterController;
@@ -50,6 +51,9 @@ Route::put('system-settings', [SystemSettingController::class, 'update'])->name(
 // US-RJN-05.3: dua pengesah rekap ngawas (jabatan, nama, tanda tangan).
 Route::put('ngawas-approvers/{index}', [NgawasApproverController::class, 'update'])->whereNumber('index')->name('ngawas-approvers.update');
 Route::get('ngawas-approvers/{index}/signature', [NgawasApproverController::class, 'signature'])->whereNumber('index')->name('ngawas-approvers.signature');
+// FR-RJN-12: ganti/pulihkan template Excel kampus.
+Route::post('ngawas-template', [NgawasTemplateController::class, 'store'])->name('ngawas-template.store');
+Route::delete('ngawas-template', [NgawasTemplateController::class, 'destroy'])->name('ngawas-template.destroy');
 
 // FR-ADM-08: pengumuman.
 Route::resource('announcements', AnnouncementController::class)->only(['index', 'store', 'update', 'destroy']);

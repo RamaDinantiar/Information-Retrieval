@@ -10,6 +10,7 @@ use App\Http\Controllers\Asisten\GenerateController;
 use App\Http\Controllers\Asisten\GradeController;
 use App\Http\Controllers\Asisten\MeetingController;
 use App\Http\Controllers\Asisten\NgawasRecapController;
+use App\Http\Controllers\Asisten\NgawasRecapOrderController;
 use App\Http\Controllers\Asisten\OutsideClassController;
 use App\Http\Controllers\Asisten\ProgramController;
 use App\Http\Controllers\Asisten\ReportController;
@@ -117,6 +118,8 @@ Route::get('ngawas-recap', [NgawasRecapController::class, 'index'])->name('ngawa
 Route::post('ngawas-recap/export', [NgawasRecapController::class, 'export'])->middleware('throttle:10,1')->name('ngawas-recap.export');
 Route::post('ngawas-recap/finalize', [NgawasRecapController::class, 'finalize'])->middleware('throttle:10,1')->name('ngawas-recap.finalize');
 Route::post('ngawas-recap/reopen', [NgawasRecapController::class, 'reopen'])->middleware('throttle:10,1')->name('ngawas-recap.reopen');
+Route::put('ngawas-recap/order', [NgawasRecapOrderController::class, 'update'])->name('ngawas-recap.order.update');
+Route::delete('ngawas-recap/order', [NgawasRecapOrderController::class, 'destroy'])->name('ngawas-recap.order.destroy');
 // US-RJN-06: kelas lab lain yang diawas asisten IR (CRUD: Sekretaris/Bendahara & Admin).
 Route::resource('outside-classes', OutsideClassController::class)->only(['index', 'store', 'update', 'destroy']);
 

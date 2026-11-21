@@ -112,6 +112,11 @@ class AsistenDashboardData
             ['key' => 'shift-swaps', 'label' => 'permintaan tukar shift', 'count' => ShiftSwap::where('to_user_id', $user->id)->where('status', 'pending')->count(), 'href' => '/asisten/schedule', 'tone' => 'info'],
         ];
 
+        // US-RJN-02 / FR-RJN-15(c): tanda tangan dipasang otomatis di rekap jam ngawas.
+        if ($user->signature_file_id === null) {
+            $alerts[] = ['key' => 'signature', 'label' => 'tanda tangan belum diunggah (dipakai di rekap jam ngawas)', 'count' => 1, 'href' => '/settings/profile', 'tone' => 'warning'];
+        }
+
         if ($user->canVerifyReports()) {
             $alerts[] = ['key' => 'to-verify', 'label' => 'laporan ngawas menunggu verifikasi', 'count' => SupervisionReport::where('status', 'submitted')->where('user_id', '!=', $user->id)->count(), 'href' => '/asisten/report?tab=verify', 'tone' => 'warning'];
         }

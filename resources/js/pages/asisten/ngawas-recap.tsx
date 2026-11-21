@@ -8,6 +8,7 @@ import { ExportPanel } from '@/components/ngawas-recap/export-panel';
 import { GenerateTabs } from '@/components/ngawas-recap/generate-tabs';
 import { RecapChecksPanel } from '@/components/ngawas-recap/recap-checks';
 import { RecapGrid } from '@/components/ngawas-recap/recap-grid';
+import { RecapOrderDialog } from '@/components/ngawas-recap/recap-order-dialog';
 import { RecapLegend } from '@/components/ngawas-recap/recap-legend';
 import { RecapStatusBar } from '@/components/ngawas-recap/recap-status-bar';
 import { RevisionHistory } from '@/components/ngawas-recap/revision-history';
@@ -149,6 +150,12 @@ export default function AsistenNgawasRecap({
                                 <School /> Kelas di Luar Lab IR
                             </Link>
                         </Button>
+                        {canManage && recap && (
+                            <RecapOrderDialog
+                                recap={recap}
+                                month={filters.month}
+                            />
+                        )}
                         {recap && (
                             <span className="bg-primary-100 px-3 py-1 font-mono text-xs text-primary-800">
                                 ● {recap.semester.name}

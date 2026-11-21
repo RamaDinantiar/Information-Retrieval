@@ -88,7 +88,7 @@ class NgawasRecapWorkbook
      */
     private function assemble(array $recap, string $mode, array $approvers, array $signatures, ?string $templatePath): string
     {
-        $template = $templatePath ?? NgawasTemplate::path();
+        $template = $templatePath ?? NgawasTemplate::activePath();
         $errors = NgawasTemplateValidator::validate($template);
 
         if ($errors !== []) {

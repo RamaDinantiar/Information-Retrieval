@@ -2,6 +2,10 @@
 
 namespace App\Support\Reports;
 
+use App\Models\Setting;
+use App\Models\StoredFile;
+use Illuminate\Support\Facades\Storage;
+
 /**
  * Letak elemen di `resources/templates/rekap-ngawas.xlsx` (PRD Bagian 7). Semua
  * koordinat berlaku untuk template dengan 59 baris data; builder menggeser
@@ -11,6 +15,9 @@ namespace App\Support\Reports;
 final class NgawasTemplate
 {
     public const RESOURCE = 'templates/rekap-ngawas.xlsx';
+
+    /** Kunci Pengaturan Sistem: id file template unggahan Admin (FR-RJN-12). */
+    public const KEY = 'ngawas_recap.template_file_id';
 
     /** Nama sheet persis (sheet 1 memakai spasi di akhir). */
     public const SHEET_RECAP = 'Format Aslab ';
@@ -107,5 +114,29 @@ final class NgawasTemplate
     public static function path(): string
     {
         return resource_path(self::RESOURCE);
+    }
+
+    /** Id file template unggahan Admin yang aktif, atau null bila memakai template bawaan. */
+    public static function uploadedId(): ?int
+    {
+        $id = Setting::value(self::KEY);
+
+        return is_numeric($id) ? (int) $id : null;
+    }
+
+    /**
+     * Template yang dipakai ekspor: unggahan Admin bila ada dan berkasnya masih utuh,
+     * jika tidak template bawaan repo (FR-RJN-12: template lama tetap dipakai bila unggahan gagal).
+     */
+    public static function activePath(): string
+    {
+        $id = self::uploadedId();
+        $file = $id === null ? null : StoredFile::find($id);
+
+        if ($file !== null && Storage::disk($file->disk)->exists($file->path)) {
+            return $file->absolutePath();
+        }
+
+        return self::path();
     }
 }

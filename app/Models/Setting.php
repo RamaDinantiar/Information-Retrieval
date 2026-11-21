@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\Reports\NgawasApprovers;
+use App\Support\Reports\NgawasTemplate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
@@ -27,6 +28,8 @@ class Setting extends Model
         'registration_domains' => 'itpln.ac.id',
         // Rekap Jam Ngawas: dua pengesah bernama tanpa NIP (keputusan P4); lihat NgawasApprovers.
         NgawasApprovers::KEY => NgawasApprovers::DEFAULTS,
+        // Rekap Jam Ngawas: id file template unggahan Admin (null = template bawaan repo); lihat NgawasTemplate::activePath().
+        NgawasTemplate::KEY => null,
     ];
 
     protected $primaryKey = 'key';
@@ -72,6 +75,13 @@ class Setting extends Model
             static::updateOrCreate(['key' => $key], ['value' => $value, 'updated_by' => $userId]);
         }
 
+        Cache::forget('lab.settings');
+    }
+
+    /** Kembalikan satu pengaturan ke nilai bawaan (baris dihapus; kolom `value` tidak boleh NULL). */
+    public static function reset(string $key): void
+    {
+        static::query()->whereKey($key)->delete();
         Cache::forget('lab.settings');
     }
 
