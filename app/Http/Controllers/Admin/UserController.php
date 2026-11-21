@@ -6,6 +6,7 @@ use App\Actions\User\CreateUserAccount;
 use App\Actions\User\ImportUsers;
 use App\Actions\User\IssueTemporaryPassword;
 use App\Actions\User\SetUserActive;
+use App\Actions\User\TransferSecretaryPosition;
 use App\Enums\Position;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
@@ -70,6 +71,8 @@ class UserController extends Controller
                 'role' => $filters['role'] ?? '',
                 'status' => $filters['status'] ?? '',
             ],
+            // Pemegang jabatan Sekretaris/Bendahara saat ini (satu akun), untuk konfirmasi pemindahan di form.
+            'secretary' => ($holder = TransferSecretaryPosition::otherHolders()->first()) === null ? null : ['id' => $holder->id, 'name' => $holder->name, 'isActive' => $holder->is_active],
             'counts' => [
                 'praktikan' => User::where('role', Role::Praktikan)->count(),
                 'asisten' => User::where('role', Role::Asisten)->count(),
@@ -78,9 +81,13 @@ class UserController extends Controller
         ]);
     }
 
-    public function store(UserRequest $request, CreateUserAccount $create): RedirectResponse
+    public function store(UserRequest $request, CreateUserAccount $create, TransferSecretaryPosition $transfer): RedirectResponse
     {
         [$user, $password] = $create($request->accountData());
+
+        if ($user->position === Position::SekretarisBendahara) {
+            $transfer($user);
+        }
 
         Inertia::flash('credentials', ['name' => $user->name, 'login' => $user->nim ?? $user->email, 'password' => $password]);
         Inertia::flash('toast', ['type' => 'success', 'message' => "Akun {$user->name} dibuat. Email aktivasi dikirim ke {$user->email}."]);
@@ -88,7 +95,7 @@ class UserController extends Controller
         return to_route('admin.users.index');
     }
 
-    public function update(UserRequest $request, User $user): RedirectResponse
+    public function update(UserRequest $request, User $user, TransferSecretaryPosition $transfer): RedirectResponse
     {
         $before = $user->only(['nim', 'name', 'email', 'major', 'cohort_year', 'role', 'position']);
 
@@ -99,10 +106,14 @@ class UserController extends Controller
             'position' => $role === Role::Asisten ? Position::from($request->validated('position')) : Position::None,
         ])->save();
 
+        $moved = $user->position === Position::SekretarisBendahara ? $transfer($user) : 0;
+
         // US-D04-3: perubahan peran & jabatan tercatat di audit log.
         $action = $before['role'] !== $user->role || $before['position'] !== $user->position ? 'user.role_changed' : 'user.updated';
         AuditLog::record($action, $user, $this->serialize($before), $this->serialize($user->only(array_keys($before))));
-        Inertia::flash('toast', ['type' => 'success', 'message' => "Akun {$user->name} diperbarui."]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => $moved > 0
+            ? "{$user->name} kini Sekretaris/Bendahara; pemegang sebelumnya menjadi Asisten Umum."
+            : "Akun {$user->name} diperbarui."]);
 
         return back();
     }

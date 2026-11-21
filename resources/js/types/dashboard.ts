@@ -241,6 +241,8 @@ export type AuditLogItem = {
 };
 
 export type AdminDashboard = {
+    /** Tidak ada akun Sekretaris/Bendahara yang aktif. */
+    noSecretary: boolean;
     /** true selama sebagian data masih contoh (fitur belum dibangun). */
     isSample: boolean;
     semester: {

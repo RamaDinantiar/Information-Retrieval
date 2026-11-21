@@ -33,6 +33,11 @@ praktikan/asisten/kelas, antrean persetujuan, antrean penilaian, dan aktivitas a
 
 ## Pengguna
 
+**Divisi asisten:** hanya ada dua, _Asisten Umum_ dan _Sekretaris/Bendahara_. Jabatan Sekretaris/Bendahara hanya untuk **satu akun**.
+Saat memilih divisi itu untuk akun lain, muncul kotak peringatan yang menyebut pemegang saat ini; centang **"Ya, pindahkan jabatan ke akun ini"**
+untuk melanjutkan. Pemegang lama otomatis menjadi Asisten Umum dan keduanya mendapat notifikasi. Bila tidak ada Sekretaris/Bendahara aktif,
+dashboard Admin menampilkan peringatan merah.
+
 ![Pengguna](../images/admin-users.jpg)
 
 - **Tambah Pengguna** atau **Import Praktikan** (unduh template CSV/Excel terlebih dahulu).

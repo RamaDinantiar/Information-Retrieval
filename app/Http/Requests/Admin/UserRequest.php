@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Actions\User\TransferSecretaryPosition;
 use App\Enums\Position;
 use App\Enums\Role;
 use App\Models\User;
@@ -48,6 +49,7 @@ class UserRequest extends FormRequest
         return [
             'role' => ['required', Rule::enum(Role::class)],
             'position' => ['required', Rule::enum(Position::class)],
+            'confirm_transfer' => ['sometimes', 'boolean'],
             // NIM wajib untuk Praktikan & Asisten (login dengan NIM, FR-AUTH-01).
             'nim' => [Rule::requiredIf($this->input('role') !== Role::Admin->value), 'nullable', 'regex:/^\d{5,20}$/', Rule::unique('users', 'nim')->ignore($user)],
             'name' => ['required', 'string', 'max:255'],
@@ -66,6 +68,15 @@ class UserRequest extends FormRequest
             // Jabatan hanya untuk Asisten.
             if ($this->input('role') !== Role::Asisten->value && $this->input('position', 'none') !== Position::None->value) {
                 $validator->errors()->add('position', 'Divisi Sekretaris/Bendahara hanya untuk Asisten.');
+            }
+
+            // Hanya satu akun Sekretaris/Bendahara: menunjuk akun baru memindahkan jabatan, dan wajib dikonfirmasi.
+            if ($this->input('role') === Role::Asisten->value && $this->input('position') === Position::SekretarisBendahara->value && ! $this->boolean('confirm_transfer')) {
+                $holders = TransferSecretaryPosition::otherHolders($this->route('user') instanceof User ? $this->route('user') : null);
+
+                if ($holders->isNotEmpty()) {
+                    $validator->errors()->add('position', 'Sekretaris/Bendahara saat ini: '.$holders->pluck('name')->join(', ').'. Centang konfirmasi pemindahan jabatan untuk melanjutkan.');
+                }
             }
 
             // Admin tidak dapat menurunkan perannya sendiri (mencegah lab tanpa Admin).

@@ -3,6 +3,7 @@
 namespace App\Support\Dashboard;
 
 use App\Enums\ApprovalStatus;
+use App\Enums\Position;
 use App\Enums\Role;
 use App\Models\AuditLog;
 use App\Models\Course;
@@ -79,6 +80,8 @@ class AdminDashboardData
             ],
             // KPI PRD Bagian 1: laporan ngawas tercatat di hari yang sama ≥ 90%.
             'reportCompliance' => self::compliance($now),
+            // Peringatan: tanpa Sekretaris/Bendahara aktif, tidak ada yang diingatkan memverifikasi laporan dan menetapkan rekap ngawas.
+            'noSecretary' => ! User::where('role', Role::Asisten)->where('position', Position::SekretarisBendahara)->where('is_active', true)->exists(),
             'approvals' => $active ? self::approvals($active) : [],
             'gradingQueue' => $admin ? GradingQueue::for($admin) : [],
             'activePrograms' => ! config('lab.features.programs') ? [] : Program::whereIn('status', ['open', 'closed'])->where('type', '!=', 'maintenance')

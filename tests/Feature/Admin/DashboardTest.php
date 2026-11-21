@@ -25,7 +25,7 @@ class DashboardTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('admin/dashboard')
                 ->has('dashboard', fn (Assert $dashboard) => $dashboard
-                    ->hasAll(['isSample', 'semester', 'counts', 'reportCompliance', 'approvals', 'gradingQueue', 'activePrograms', 'auditLogs'])
+                    ->hasAll(['isSample', 'semester', 'counts', 'reportCompliance', 'noSecretary', 'approvals', 'gradingQueue', 'activePrograms', 'auditLogs'])
                     ->has('reportCompliance', fn (Assert $c) => $c->hasAll(['month', 'onTime', 'submitted', 'expected', 'target']))
                     ->has('approvals.0', fn (Assert $a) => $a->hasAll(['id', 'type', 'name', 'detail', 'requestedBy', 'requestedAt', 'href']))
                 )

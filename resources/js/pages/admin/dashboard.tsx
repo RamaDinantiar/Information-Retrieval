@@ -1,5 +1,11 @@
 import { Head, Link } from '@inertiajs/react';
-import { CalendarRange, FlaskConical, Megaphone, Upload } from 'lucide-react';
+import {
+    CalendarRange,
+    FlaskConical,
+    Megaphone,
+    TriangleAlert,
+    Upload,
+} from 'lucide-react';
 import { useRef } from 'react';
 import { ActivePrograms } from '@/components/dashboard/active-programs';
 import { ApprovalQueue } from '@/components/dashboard/approval-queue';
@@ -11,6 +17,7 @@ import { SemesterCard } from '@/components/dashboard/semester-card';
 import { DashboardGreeting } from '@/components/dashboard-greeting';
 import { useDashboardMotion } from '@/hooks/use-dashboard-motion';
 import { StatCard } from '@/components/stat-card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { AdminDashboard as AdminDashboardData } from '@/types';
@@ -32,6 +39,25 @@ export default function AdminDashboard({
         <>
             <Head title="Dashboard" />
             <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
+                {dashboard.noSecretary && (
+                    <Alert variant="destructive">
+                        <TriangleAlert aria-hidden />
+                        <AlertTitle>
+                            Belum ada Sekretaris/Bendahara aktif
+                        </AlertTitle>
+                        <AlertDescription>
+                            Tidak ada yang diingatkan memverifikasi laporan
+                            ngawas dan menetapkan Rekap Jam Ngawas.{' '}
+                            <Link
+                                href="/admin/users"
+                                className="font-semibold underline"
+                            >
+                                Tunjuk di Admin › Pengguna
+                            </Link>
+                            .
+                        </AlertDescription>
+                    </Alert>
+                )}
                 <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                     <div className="space-y-3">
                         {dashboard.isSample && (
