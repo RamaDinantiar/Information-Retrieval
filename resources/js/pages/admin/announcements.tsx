@@ -26,10 +26,7 @@ export default function AdminAnnouncements({
     return (
         <>
             <Head title="Pengumuman" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Pengumuman"
                     description="Pengumuman global dengan target peran dan masa tayang, atau untuk satu kelas. Yang dipin tampil paling atas di dashboard."

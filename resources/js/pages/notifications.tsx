@@ -32,10 +32,7 @@ export default function Notifications({
     return (
         <>
             <Head title="Notifikasi" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Notifikasi & Pengumuman"
                     description="Pembaruan tugas, nilai, jadwal, dan pengumuman laboratorium."

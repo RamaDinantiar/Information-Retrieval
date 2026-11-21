@@ -580,10 +580,7 @@ export default function AsistenSchedule({
     return (
         <>
             <Head title="Schedule" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div className="space-y-1">
                         <h1 className="text-h1 font-bold text-primary-900">

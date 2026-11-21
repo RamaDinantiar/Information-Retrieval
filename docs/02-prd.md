@@ -36,14 +36,14 @@ IR Lab Management System adalah aplikasi web internal (Laravel + React) yang men
 
 ### Keputusan hasil klarifikasi (4 Okt 2026)
 
-| Pertanyaan                                                         | Keputusan                                                | Bagian terdampak                      |
-| ------------------------------------------------------------------ | -------------------------------------------------------- | ------------------------------------- |
-| Apakah Asisten boleh membuat Mata Kuliah/Kelas sendiri?            | Boleh, tetapi **wajib disetujui Admin**.                 | Bagian 2, US-A01, FR-AS-02, FR-ADM-03 |
-| Apakah ada peran yang menyetujui laporan mengawas sebelum direkap? | Ya, oleh **Sekretaris dan Bendahara** (jabatan Asisten). | Bagian 2, FR-AR-05, FR-AGN-03         |
-| Apakah honor asisten dihitung dari laporan mengawas?               | **Tidak** (revisi Kepala Lab, 12 Nov 2026): yang dihitung jam dan SKS mengawas per mata kuliah. | FR-AGN-03 |
-| Apakah nilai dikirim ke SIAKAD?                                    | **Tidak**; nilai hanya disimpan di arsip lab.            | Bagian 9                              |
-| Perkiraan jumlah pengguna aktif per semester?                      | **± 200 pengguna**.                                      | NFR 8.3                               |
-| Apakah pelamar Rekrutmen wajib memiliki akun Praktikan?            | **Wajib** memiliki akun Praktikan.                       | FR-APR-03                             |
+| Pertanyaan                                                         | Keputusan                                                                                       | Bagian terdampak                      |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- | ------------------------------------- |
+| Apakah Asisten boleh membuat Mata Kuliah/Kelas sendiri?            | Boleh, tetapi **wajib disetujui Admin**.                                                        | Bagian 2, US-A01, FR-AS-02, FR-ADM-03 |
+| Apakah ada peran yang menyetujui laporan mengawas sebelum direkap? | Ya, oleh **Sekretaris dan Bendahara** (jabatan Asisten).                                        | Bagian 2, FR-AR-05, FR-AGN-03         |
+| Apakah honor asisten dihitung dari laporan mengawas?               | **Tidak** (revisi Kepala Lab, 12 Nov 2026): yang dihitung jam dan SKS mengawas per mata kuliah. | FR-AGN-03                             |
+| Apakah nilai dikirim ke SIAKAD?                                    | **Tidak**; nilai hanya disimpan di arsip lab.                                                   | Bagian 9                              |
+| Perkiraan jumlah pengguna aktif per semester?                      | **± 200 pengguna**.                                                                             | NFR 8.3                               |
+| Apakah pelamar Rekrutmen wajib memiliki akun Praktikan?            | **Wajib** memiliki akun Praktikan.                                                              | FR-APR-03                             |
 
 ### Keputusan selama pengembangan (5–21 Okt 2026)
 
@@ -107,25 +107,25 @@ Sistem memakai tiga peran tetap. Asisten dapat diberi jabatan tambahan **Sekreta
 
 Keterangan: **C** = Create, **R** = Read, **U** = Update, **D** = Delete/Arsip, **—** = tidak ada akses, **Own** = hanya data milik sendiri, **Ampu** = hanya kelas/mata kuliah yang diampu.
 
-| Modul / Resource                                        | Praktikan                     | Asisten Lab                                                    | Admin                           |
-| ------------------------------------------------------- | ----------------------------- | -------------------------------------------------------------- | ------------------------------- |
-| Semester (buat, aktifkan, arsip)                        | —                             | R                                                              | CRUD                            |
-| Mata Kuliah & bobot nilai                               | R (yang diikuti)              | R, ajukan baru (perlu persetujuan Admin)                       | CRUD                            |
-| Kelas & Jadwal                                          | R (Own)                       | CRU (Ampu); kelas baru perlu persetujuan Admin                 | CRUD                            |
-| Token kelas & Lock Class                                | Gabung via token              | CRU (Ampu)                                                     | CRUD                            |
-| Data Praktikan di kelas                                 | R teman sekelas (nama, NIM)   | R, keluarkan dari kelas (Ampu)                                 | CRUD                            |
-| Pertemuan & topik                                       | R                             | CRU (Ampu)                                                     | CRUD                            |
-| Task (Pre/Post-test, Laporan)                           | R, submit (Own)               | CRUD (Ampu)                                                    | CRUD                            |
-| Grade & feedback                                        | R (Own)                       | CRU (Ampu)                                                     | CRUD                            |
-| Seats / kontrak tempat duduk                            | C, R denah kelas yang diikuti | R (Ampu)                                                       | CRUD, ubah kontrak              |
-| Denah ruang lab                                         | R                             | R                                                              | CRUD                            |
-| Laporan mengawas                                        | —                             | CRU (Own); Sekretaris/Bendahara: verifikasi semua              | R semua, verifikasi, buka kunci |
-| Generate rekap                                          | —                             | Own; Sekretaris/Bendahara: rekap semua asisten | Semua asisten                   |
-| Tukar shift                                             | —                             | Ajukan & setujui (Own)                                         | R, override                     |
-| Program (Workshop, Quick Tutor, Rekrutmen, Maintenance) | R, daftar                     | CRUD                                                           | CRUD                            |
-| Pengumuman                                              | R                             | C (Ampu)                                                       | CRUD (global)                   |
-| Manajemen pengguna & import                             | —                             | Import praktikan ke kelas Ampu                                 | CRUD semua akun                 |
-| Audit log                                               | —                             | —                                                              | R                               |
+| Modul / Resource                                        | Praktikan                     | Asisten Lab                                       | Admin                           |
+| ------------------------------------------------------- | ----------------------------- | ------------------------------------------------- | ------------------------------- |
+| Semester (buat, aktifkan, arsip)                        | —                             | R                                                 | CRUD                            |
+| Mata Kuliah & bobot nilai                               | R (yang diikuti)              | R, ajukan baru (perlu persetujuan Admin)          | CRUD                            |
+| Kelas & Jadwal                                          | R (Own)                       | CRU (Ampu); kelas baru perlu persetujuan Admin    | CRUD                            |
+| Token kelas & Lock Class                                | Gabung via token              | CRU (Ampu)                                        | CRUD                            |
+| Data Praktikan di kelas                                 | R teman sekelas (nama, NIM)   | R, keluarkan dari kelas (Ampu)                    | CRUD                            |
+| Pertemuan & topik                                       | R                             | CRU (Ampu)                                        | CRUD                            |
+| Task (Pre/Post-test, Laporan)                           | R, submit (Own)               | CRUD (Ampu)                                       | CRUD                            |
+| Grade & feedback                                        | R (Own)                       | CRU (Ampu)                                        | CRUD                            |
+| Seats / kontrak tempat duduk                            | C, R denah kelas yang diikuti | R (Ampu)                                          | CRUD, ubah kontrak              |
+| Denah ruang lab                                         | R                             | R                                                 | CRUD                            |
+| Laporan mengawas                                        | —                             | CRU (Own); Sekretaris/Bendahara: verifikasi semua | R semua, verifikasi, buka kunci |
+| Generate rekap                                          | —                             | Own; Sekretaris/Bendahara: rekap semua asisten    | Semua asisten                   |
+| Tukar shift                                             | —                             | Ajukan & setujui (Own)                            | R, override                     |
+| Program (Workshop, Quick Tutor, Rekrutmen, Maintenance) | R, daftar                     | CRUD                                              | CRUD                            |
+| Pengumuman                                              | R                             | C (Ampu)                                          | CRUD (global)                   |
+| Manajemen pengguna & import                             | —                             | Import praktikan ke kelas Ampu                    | CRUD semua akun                 |
+| Audit log                                               | —                             | —                                                 | R                               |
 
 Pemeriksaan akses dilakukan di Back-end pada setiap request: middleware peran (`role:`), akun aktif, wajib ganti password, lalu pengecekan kepemilikan di controller/action (mis. kelas yang diampu). Front-end hanya menyembunyikan menu, tidak menjadi lapisan keamanan.
 
@@ -747,7 +747,7 @@ Fitur berikut sengaja tidak masuk MVP agar rilis pertama fokus pada alur akademi
 | Versi      | Tanggal       | Isi                                                                                                                                                                                                      |
 | ---------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0.1.0      | 4 Okt 2026    | Fondasi: Auth, RBAC + jabatan, master data Admin, kelas & token, persetujuan, enrollment, penyimpanan file aman, pertemuan, sesi, presensi                                                               |
-| 0.2.0      | 5 Okt 2026    | Task & submission, Grade (batch + Split-Screen), Seats, Schedule & tukar shift, Laporan Ngawas, Generate + rekap jam, notifikasi, pengumuman, audit log, Program, pencarian, registrasi mandiri              |
+| 0.2.0      | 5 Okt 2026    | Task & submission, Grade (batch + Split-Screen), Seats, Schedule & tukar shift, Laporan Ngawas, Generate + rekap jam, notifikasi, pengumuman, audit log, Program, pencarian, registrasi mandiri          |
 | 0.3.0      | 6 Okt 2026    | Penyesuaian Figma, Pre/Post-Test Sesi Berjalan, Akhiri Sesi, satu ruang lab                                                                                                                              |
 | Unreleased | 7–21 Okt 2026 | Topik pertemuan (tanpa modul), reset password OTP, panel Sesi Berlangsung, warna mata kuliah, profil (telepon & foto), header keamanan, Admin produksi & pemulihan darurat, PHPStan 0 error, dokumentasi |
 

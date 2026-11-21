@@ -40,10 +40,7 @@ export default function PraktikanDashboard({
     return (
         <>
             <Head title="Dashboard" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 {/* FR-PD-1: kartu sapaan + "Gabung Kelas" (selalu terlihat). */}
                 <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                     <div className="space-y-3">

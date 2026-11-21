@@ -363,10 +363,7 @@ export default function ProgramsIndex({
     return (
         <>
             <Head title={`${type.label} Management`} />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <h1 className="text-h1 font-bold text-primary-900">
                         {maintenance

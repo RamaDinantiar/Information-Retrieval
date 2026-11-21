@@ -272,10 +272,7 @@ export default function TasksIndex({
     return (
         <>
             <Head title={type ? PAGE_TITLE[type] : 'Task'} />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title={type ? PAGE_TITLE[type] : 'Manajemen Tugas'}
                     description="Kelola distribusi soal, jadwal timer buka/tutup, verifikasi berkas submission mahasiswa, dan publikasi evaluasi per sesi laboratorium secara terpusat."

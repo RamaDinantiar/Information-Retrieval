@@ -114,10 +114,7 @@ export default function CoursesIndex({
     return (
         <>
             <Head title="Mata Kuliah" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Mata Kuliah"
                     description="Kode, SKS, bobot nilai (Pre-test · Post-test · Laporan = 100%), dan asisten pengampu per semester."

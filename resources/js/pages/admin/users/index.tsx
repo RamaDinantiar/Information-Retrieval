@@ -110,10 +110,7 @@ export default function UsersIndex({
         <>
             <Head title="Pengguna" />
             <CredentialsDialog />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Pengguna"
                     description={`${counts.praktikan} praktikan · ${counts.asisten} asisten · ${counts.admin} admin. Akun dibuat Admin (tanpa registrasi mandiri); setiap akun baru wajib mengganti password sementara.`}

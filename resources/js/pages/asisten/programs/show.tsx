@@ -1043,10 +1043,7 @@ export default function ProgramShow(props: Props) {
     return (
         <>
             <Head title={program.title} />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <Link
                     href={ProgramController.index.url(program.typeSlug)}
                     className="inline-flex min-h-6 w-fit items-center gap-1.5 text-sm font-medium text-primary-700 hover:underline"

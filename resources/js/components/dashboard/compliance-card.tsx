@@ -24,7 +24,7 @@ export function ComplianceCard({
         <Link
             href="/asisten/report"
             prefetch
-            className="flex min-h-36 flex-col gap-1 border bg-card p-5 transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+            className="flex min-h-36 flex-col gap-1 border bg-card p-5 transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none motion-reduce:transition-none motion-reduce:hover:translate-y-0"
         >
             <span className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-sm font-bold text-primary-700">

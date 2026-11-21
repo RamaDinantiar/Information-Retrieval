@@ -36,10 +36,7 @@ export default function SessionsIndex({ sessions }: { sessions: Session[] }) {
     return (
         <>
             <Head title="Sesi Kelas" />
-            <div
-                ref={root}
-                className="flex flex-col gap-7 p-4 md:p-6 lg:p-8"
-            >
+            <div ref={root} className="flex flex-col gap-7 p-4 md:p-6 lg:p-8">
                 <PageHeader
                     title="Sesi Kelas"
                     description="Sesi mulai & selesai otomatis sesuai jam kelas. Buka sesi untuk mengisi presensi dan mengunduh rekapnya."
