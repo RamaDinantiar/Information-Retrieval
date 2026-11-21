@@ -115,4 +115,79 @@ class FileStoreTest extends TestCase
         $target->task->course->assistants()->attach($assistant);
         $this->actingAs($assistant)->get($file->url())->assertOk();
     }
+
+    private function ownFile(User $user, string $kind = 'pdf'): StoredFile
+    {
+        $upload = $kind === 'pdf' ? Pdf::upload('Laporan.pdf') : Pdf::zip(['a.py' => '1'], 'tugas.zip');
+
+        return app(FileStore::class)->store($upload, [$kind], 'test', null, $user);
+    }
+
+    public function test_a_file_that_is_not_scanned_clean_is_locked(): void
+    {
+        $user = User::factory()->create();
+        $file = $this->ownFile($user);
+        $file->forceFill(['scan_status' => 'pending'])->save();
+
+        $this->actingAs($user)->get($file->url())->assertStatus(423);
+
+        $file->forceFill(['scan_status' => 'clean'])->save();
+        $this->actingAs($user)->get($file->url())->assertOk();
+    }
+
+    public function test_inline_viewing_is_only_for_pdfs(): void
+    {
+        $user = User::factory()->create();
+        $pdf = $this->ownFile($user);
+        $zip = $this->ownFile($user, 'zip');
+
+        $this->actingAs($user)->get($pdf->url(inline: true))->assertOk()
+            ->assertHeader('Content-Disposition', 'inline; filename=file; filename*=utf-8\'\''.rawurlencode('Laporan.pdf'));
+
+        // ?inline=1 pada ZIP tidak boleh menampilkan inline.
+        $this->actingAs($user)->get($zip->url(inline: true))->assertOk();
+        $this->assertStringStartsWith('attachment;', (string) $this->actingAs($user)->get($zip->url(inline: true))->headers->get('Content-Disposition'));
+    }
+
+    public function test_downloads_are_not_cached_and_cannot_be_sniffed(): void
+    {
+        $user = User::factory()->create();
+        $file = $this->ownFile($user);
+
+        $response = $this->actingAs($user)->get($file->url())->assertOk()->assertHeader('X-Content-Type-Options', 'nosniff');
+
+        // Temuan audit 03: controller meminta `private, no-store`, tetapi respons akhir `no-store, public`.
+        // `no-store` yang menjaga keamanan (tidak ada cache yang boleh menyimpan), jadi hanya itu yang dikunci di sini.
+        $this->assertStringContainsString('no-store', (string) $response->headers->get('Cache-Control'));
+    }
+
+    public function test_an_expired_signed_url_is_refused_even_for_the_owner(): void
+    {
+        $user = User::factory()->create();
+        $file = $this->ownFile($user);
+        $url = $file->url();
+
+        $this->travel((int) config('lab.files.url_minutes') + 1)->minutes();
+
+        $this->actingAs($user)->get($url)->assertForbidden();
+    }
+
+    public function test_a_tampered_signed_url_is_refused(): void
+    {
+        $user = User::factory()->create();
+        $mine = $this->ownFile($user);
+        $theirs = $this->ownFile(User::factory()->create());
+
+        // Tanda tangan milik file lain tidak berlaku untuk id file lain.
+        $forged = str_replace('/files/'.$mine->id, '/files/'.$theirs->id, $mine->url());
+
+        $this->actingAs($user)->get($forged)->assertForbidden();
+    }
+
+    public function test_guests_are_sent_to_login_even_with_a_valid_signature(): void
+    {
+        $file = $this->ownFile(User::factory()->create());
+
+        $this->get($file->url())->assertRedirect(route('login'));
+    }
 }
