@@ -70,6 +70,8 @@ Artisan::command('lab:recover-admin {email : Email akun yang dipulihkan} {--forc
 
 Schedule::command('shifts:expire-swaps')->hourly();
 Schedule::command('exports:prune')->daily();
+// Job gagal memuat payload; buang setelah 48 jam agar tidak menumpuk (payload email kredensial dienkripsi).
+Schedule::command('queue:prune-failed --hours=48')->daily();
 
 // Pengumuman terjadwal → notifikasi saat terbit.
 Artisan::command('announcements:notify', function (NotifyAnnouncements $notify) {

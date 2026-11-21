@@ -104,7 +104,9 @@ stopwaitsecs=330
 stdout_logfile=/var/www/ir-lab/storage/logs/worker.log
 ```
 
-`--timeout` harus lebih besar dari batas job rekap (300 detik).
+`--timeout` harus lebih besar dari batas job rekap (300 detik), dan `DB_QUEUE_RETRY_AFTER` (default 330, di `.env`)
+harus lebih besar lagi dari `--timeout`; bila lebih kecil, job yang masih berjalan diambil ulang worker lain
+dan ekspor bisa ditandai gagal padahal selesai.
 
 - [ ] `supervisorctl reread && supervisorctl update && supervisorctl start ir-lab-worker`
 - [ ] Setiap kali deploy kode baru: `php artisan queue:restart`
@@ -122,6 +124,7 @@ Menjalankan tugas otomatis. Tanpa cron, **sesi kelas tidak mulai/berhenti sendir
 | `signatures:remind`      | Senin 08:00  | Pengingat tanda tangan belum diunggah                              |
 | `shifts:expire-swaps`    | tiap jam     | Kedaluwarsakan pengajuan tukar shift                               |
 | `exports:prune`          | harian       | Hapus file ekspor > 7 hari                                         |
+| `queue:prune-failed`     | harian       | Buang job gagal > 48 jam                                           |
 
 ```cron
 * * * * * cd /var/www/ir-lab && php artisan schedule:run >> /dev/null 2>&1

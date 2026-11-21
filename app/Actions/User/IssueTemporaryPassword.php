@@ -15,7 +15,7 @@ class IssueTemporaryPassword
 {
     public function __construct(private EndUserSessions $endSessions) {}
 
-    public function __invoke(User $user, bool $isReset = false): string
+    public function __invoke(User $user, bool $isReset = false, int $mailDelaySeconds = 0): string
     {
         $password = Str::password(10, letters: true, numbers: true, symbols: false);
 
@@ -28,7 +28,13 @@ class IssueTemporaryPassword
             ($this->endSessions)($user);
         }
 
-        $user->notify(new AccountCredentialsNotification($password, $isReset));
+        $notification = new AccountCredentialsNotification($password, $isReset, $user->name);
+
+        if ($mailDelaySeconds > 0) {
+            $notification->delay(now()->addSeconds($mailDelaySeconds));
+        }
+
+        $user->notify($notification);
 
         return $password;
     }
