@@ -195,6 +195,8 @@ class OperationsTest extends TestCase
 
     public function test_reports_can_be_filtered_by_date_and_searched()
     {
+        // Nama tetap: nama acak Faker kadang memuat "rama" sehingga pencarian di bawah ikut cocok (flaky di CI).
+        $this->asisten->update(['name' => 'Budi Santoso', 'email' => 'budi.santoso@example.test']);
         $other = User::factory()->asisten()->create(['name' => 'Rama Dinantiar']);
         $base = ['semester_id' => $this->semester->id, 'status' => 'verified'];
         SupervisionReport::factory()->create([...$base, 'user_id' => $this->asisten->id, 'date' => '2026-10-02', 'activity' => 'Jaga Pagi']);
