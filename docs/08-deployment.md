@@ -50,7 +50,9 @@ MAIL_FROM_NAME="IR Lab"
 - [ ] `chmod 600 .env`; pastikan `.env` tidak bisa diakses dari browser dan tidak ikut ke git
 
 Email dipakai untuk: kode OTP reset password, password sementara akun baru/impor, verifikasi email
-registrasi, dan pengingat tenggat H-1.
+registrasi, dan **semua notifikasi penting** (tugas, nilai, tenggat, laporan ngawas, pengumuman, pengingat harian, dll.)
+untuk semua peran. Notifikasi email dikirim lewat antrean, jadi **worker antrean wajib berjalan** (bagian 4); saklar
+global ada di Admin › Pengaturan Sistem › Notifikasi Email.
 
 ## 3. Pasang kode
 
@@ -88,8 +90,8 @@ Setelah itu akun lain dibuat/diimpor dari menu Admin › Pengguna.
 
 ### Antrean (queue worker)
 
-Tanpa ini, **ekspor ZIP/Excel tertahan di status "Antre"** dan **email password
-sementara tidak terkirim**. Jalankan terus-menerus lewat Supervisor:
+Tanpa ini, **ekspor ZIP/Excel tertahan di status "Antre"** dan **semua email (password
+sementara, notifikasi) tidak terkirim**. Jalankan terus-menerus lewat Supervisor:
 
 ```ini
 ; /etc/supervisor/conf.d/ir-lab-worker.conf
@@ -111,13 +113,15 @@ stdout_logfile=/var/www/ir-lab/storage/logs/worker.log
 
 Menjalankan tugas otomatis. Tanpa cron, **sesi kelas tidak mulai/berhenti sendiri** dan Pre-Test tidak terbuka.
 
-| Perintah                 | Jadwal       | Fungsi                                            |
-| ------------------------ | ------------ | ------------------------------------------------- |
-| `meetings:sync`          | tiap menit   | Mulai/akhiri sesi sesuai jam kelas, buka Pre-Test |
-| `announcements:notify`   | tiap 5 menit | Notifikasi pengumuman terjadwal                   |
-| `tasks:remind-deadlines` | tiap jam     | Pengingat tenggat H-1 (lonceng + email)           |
-| `shifts:expire-swaps`    | tiap jam     | Kedaluwarsakan pengajuan tukar shift              |
-| `exports:prune`          | harian       | Hapus file ekspor > 7 hari                        |
+| Perintah                 | Jadwal       | Fungsi                                                             |
+| ------------------------ | ------------ | ------------------------------------------------------------------ |
+| `meetings:sync`          | tiap menit   | Mulai/akhiri sesi sesuai jam kelas, buka Pre-Test                  |
+| `announcements:notify`   | tiap 5 menit | Notifikasi pengumuman terjadwal                                    |
+| `tasks:remind-deadlines` | tiap jam     | Pengingat tenggat H-1 (lonceng + email)                            |
+| `reminders:send`         | harian 08:00 | Pengingat: laporan belum diisi, belum menilai, menunggu verifikasi |
+| `signatures:remind`      | Senin 08:00  | Pengingat tanda tangan belum diunggah                              |
+| `shifts:expire-swaps`    | tiap jam     | Kedaluwarsakan pengajuan tukar shift                               |
+| `exports:prune`          | harian       | Hapus file ekspor > 7 hari                                         |
 
 ```cron
 * * * * * cd /var/www/ir-lab && php artisan schedule:run >> /dev/null 2>&1
@@ -142,6 +146,7 @@ Menjalankan tugas otomatis. Tanpa cron, **sesi kelas tidak mulai/berhenti sendir
 - [ ] `https://<domain>/dev/login-as/admin` → **404** (kalau terbuka, `APP_ENV` belum `production`)
 - [ ] Buka halaman yang tidak ada → halaman 404 ramah, bukan halaman debug Laravel
 - [ ] `curl -I https://<domain>/login` memuat `Strict-Transport-Security`, `X-Frame-Options`
+- [ ] Admin › Pengaturan Sistem › Notifikasi Email menyala; buat satu notifikasi (mis. terbitkan tugas) → email masuk ke akun penerima
 - [ ] Login dengan NIM dan dengan email; 6 kali salah → diminta menunggu
 - [ ] Lupa password → email benar-benar masuk
 - [ ] Unggah tugas PDF/ZIP sebagai Praktikan, buka & nilai sebagai Asisten

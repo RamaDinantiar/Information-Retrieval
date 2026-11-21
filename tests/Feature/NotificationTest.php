@@ -19,6 +19,7 @@ use App\Models\Submission;
 use App\Models\Task;
 use App\Models\TaskTarget;
 use App\Models\User;
+use App\Notifications\LabMailNotification;
 use App\Notifications\LabNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -92,8 +93,10 @@ class NotificationTest extends TestCase
         $this->assertSame(1, app(RemindDeadlines::class)());
         $this->assertSame(0, app(RemindDeadlines::class)());
 
-        Notification::assertSentTo($pending, LabNotification::class, fn (LabNotification $n, array $channels) => in_array('mail', $channels, true));
+        Notification::assertSentTo($pending, LabNotification::class);
+        Notification::assertSentTo($pending, LabMailNotification::class);
         Notification::assertNotSentTo($done, LabNotification::class);
+        Notification::assertNotSentTo($done, LabMailNotification::class);
     }
 
     public function test_announcements_respect_target_roles_classes_and_display_window()

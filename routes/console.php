@@ -2,6 +2,9 @@
 
 use App\Actions\Announcement\NotifyAnnouncements;
 use App\Actions\Meeting\SyncMeetingSessions;
+use App\Actions\Reminder\RemindMissingReports;
+use App\Actions\Reminder\RemindPendingVerification;
+use App\Actions\Reminder\RemindUngradedSubmissions;
 use App\Actions\Shift\SwapShift;
 use App\Actions\Task\RemindDeadlines;
 use App\Actions\User\EndUserSessions;
@@ -78,6 +81,11 @@ Artisan::command('tasks:remind-deadlines', function (RemindDeadlines $remind) {
     $this->info($remind().' pengingat tenggat dikirim.');
 })->purpose('Kirim pengingat tenggat H-1');
 
+// Pengingat harian (lonceng + email): laporan ngawas belum diisi, pengumpulan belum dinilai, laporan menunggu verifikasi.
+Artisan::command('reminders:send', function (RemindMissingReports $reports, RemindUngradedSubmissions $grading, RemindPendingVerification $verification) {
+    $this->info($reports().' pengingat laporan, '.$grading().' pengingat penilaian, '.$verification().' pengingat verifikasi dikirim.');
+})->purpose('Kirim pengingat harian: laporan belum diisi, belum menilai, menunggu verifikasi');
+
 // FR-AD-01: sesi kelas mulai/selesai otomatis sesuai jam kelas.
 Artisan::command('meetings:sync', function (SyncMeetingSessions $sync) {
     $this->info($sync().' sesi pertemuan diperbarui.');
@@ -86,5 +94,6 @@ Artisan::command('meetings:sync', function (SyncMeetingSessions $sync) {
 Schedule::command('meetings:sync')->everyMinute()->withoutOverlapping();
 Schedule::command('announcements:notify')->everyFiveMinutes();
 Schedule::command('tasks:remind-deadlines')->hourly();
+Schedule::command('reminders:send')->dailyAt('08:00');
 // FR-RJN-15(c): pengingat tanda tangan asisten, sekali seminggu sampai diunggah.
 Schedule::command('signatures:remind')->weeklyOn(1, '08:00');
