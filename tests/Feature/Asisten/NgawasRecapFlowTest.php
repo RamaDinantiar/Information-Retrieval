@@ -44,6 +44,14 @@ class NgawasRecapFlowTest extends TestCase
         parent::tearDown();
     }
 
+    /** Asisten pertama di rekap yang bukan pengelola (letak pengelola mengikuti urutan nama acak dari factory). */
+    private function firstRegularAssistant(array $recap): User
+    {
+        $row = collect($recap['assistants'])->first(fn ($a) => $a['userId'] !== $this->manager->id && count($a['rows']) > 0 && $a['rows'][0]['placeholder'] === false);
+
+        return User::findOrFail($row['userId']);
+    }
+
     private function finalize(?User $user = null)
     {
         return $this->actingAs($user ?? $this->manager)->post(route('asisten.ngawas-recap.finalize'), ['month' => '2026-04']);
@@ -191,7 +199,7 @@ class NgawasRecapFlowTest extends TestCase
     public function test_notifications_reach_assistants_on_final_and_reopen()
     {
         $this->finalize();
-        $assistant = User::whereKey(NgawasRecap::sole()->snapshot_json['recap']['assistants'][0]['userId'])->first();
+        $assistant = $this->firstRegularAssistant(NgawasRecap::sole()->snapshot_json['recap']);
         $this->assertSame('Rekap Jam Ngawas Final', $assistant->notifications()->first()->data['title']);
 
         $this->reopen();
@@ -221,7 +229,7 @@ class NgawasRecapFlowTest extends TestCase
         $old = NgawasRecap::sole()->file;
         $this->reopen();
         $this->finalize();
-        $assistant = User::whereKey(NgawasRecap::sole()->snapshot_json['recap']['assistants'][0]['userId'])->first();
+        $assistant = $this->firstRegularAssistant(NgawasRecap::sole()->snapshot_json['recap']);
 
         $this->actingAs($assistant)->get(route('asisten.ngawas-recap.index', ['month' => '2026-04']))
             ->assertInertia(fn (Assert $page) => $page
@@ -241,7 +249,7 @@ class NgawasRecapFlowTest extends TestCase
     {
         $this->finalize();
         $recap = NgawasRecap::sole()->snapshot_json['recap'];
-        $mine = User::whereKey($recap['assistants'][0]['userId'])->first();
+        $mine = $this->firstRegularAssistant($recap);
         $others = array_map(fn ($a) => $a['name'], array_slice($recap['assistants'], 1));
 
         $this->actingAs($mine)->get(route('asisten.ngawas-recap.index', ['month' => '2026-04']))
