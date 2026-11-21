@@ -134,7 +134,10 @@ export type HoursRecapRow = {
     name: string;
     nim: string | null;
     shifts: number;
+    /** Dibulatkan per asisten seperti template kampus. */
     hours: number;
+    /** Jam sebenarnya (2 desimal). */
+    hoursRaw: number;
     courses: {
         name: string;
         code: string | null;

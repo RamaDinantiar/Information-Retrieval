@@ -146,7 +146,7 @@ class GenerateMonthlyReport implements ShouldQueue
         }
 
         $writer->addNewSheetAndMakeItCurrent()->setName('Detail');
-        $writer->addRow(Row::fromValues(['Tanggal', 'Mulai', 'Selesai', 'Jam', 'Mata Kuliah / Kegiatan', 'Kelas', 'Ruang', 'Asisten Jaga', 'Materi', 'Catatan', 'Diverifikasi Oleh']));
+        $writer->addRow(Row::fromValues(['Tanggal', 'Mulai', 'Selesai', 'Durasi Sesi (jam)', 'Mata Kuliah / Kegiatan', 'Kelas', 'Ruang', 'Asisten Jaga', 'Materi', 'Catatan', 'Diverifikasi Oleh']));
 
         foreach ($reports as $report) {
             $writer->addRow(Row::fromValues([

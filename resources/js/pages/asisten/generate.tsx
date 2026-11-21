@@ -638,9 +638,10 @@ export default function AsistenGenerate({
                             Rekap Jam Mengawas {MONTHS[month - 1]} {year}
                         </h2>
                         <p className="-mt-2 text-xs text-muted-foreground">
-                            Dihitung dari laporan terverifikasi: jumlah shift
-                            dan jam per asisten, dirinci per mata kuliah beserta
-                            SKS-nya.
+                            Dihitung dari laporan terverifikasi dengan rumus SKS
+                            × 50 menit ÷ 60 (sama dengan Rekap Jam Ngawas).
+                            Total per asisten dibulatkan seperti template
+                            kampus; kelas ditiadakan tidak dihitung.
                         </p>
                         {recap.length === 0 ? (
                             <p className="border bg-card p-4 text-sm text-muted-foreground">
@@ -662,7 +663,9 @@ export default function AsistenGenerate({
                                             </p>
                                             <p className="font-mono text-xs">
                                                 {r.shifts} shift ·{' '}
-                                                <strong>
+                                                <strong
+                                                    title={`Jam sebenarnya: ${r.hoursRaw.toLocaleString('id-ID')}`}
+                                                >
                                                     {r.hours.toLocaleString(
                                                         'id-ID',
                                                     )}{' '}

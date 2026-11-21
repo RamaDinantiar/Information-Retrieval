@@ -220,9 +220,10 @@ class OperationsTest extends TestCase
     public function test_hours_recap_counts_verified_hours_per_course_for_every_team_member()
     {
         $partner = User::factory()->asisten()->create();
-        $course = Course::factory()->for($this->semester)->create(['name' => 'Machine Learning', 'credits' => 3]);
+        $course = Course::factory()->for($this->semester)->create(['name' => 'Machine Learning', 'credits' => 2]);
         $class = LabClass::factory()->for($course)->create(['semester_id' => $this->semester->id]);
 
+        // FR-RJN-16: jam = SKS × 50 ÷ 60 (2 SKS = 1,67 jam), bukan jam mulai–selesai (07:20–09:50 = 2,5 jam).
         $report = SupervisionReport::factory()->create(['user_id' => $this->asisten->id, 'semester_id' => $this->semester->id, 'class_id' => $class->id, 'date' => '2026-10-02', 'start_time' => '07:20', 'end_time' => '09:50', 'status' => 'verified']);
         $report->assistants()->sync([$this->asisten->id => ['position' => 1], $partner->id => ['position' => 2]]);
         SupervisionReport::factory()->create(['user_id' => $this->asisten->id, 'semester_id' => $this->semester->id, 'date' => '2026-10-03', 'status' => 'submitted'])
@@ -233,8 +234,9 @@ class OperationsTest extends TestCase
         $this->assertCount(2, $recap);
         $mine = $recap->firstWhere('userId', $this->asisten->id);
         $this->assertSame(1, $mine['shifts']);
-        $this->assertSame(2.5, $mine['hours']);
-        $this->assertSame([['name' => 'Machine Learning', 'code' => $course->code, 'credits' => 3, 'shifts' => 1, 'hours' => 2.5]], $mine['courses']);
+        $this->assertSame(2, $mine['hours']);
+        $this->assertSame(1.67, $mine['hoursRaw']);
+        $this->assertSame([['name' => 'Machine Learning', 'code' => $course->code, 'credits' => 2, 'shifts' => 1, 'hours' => 1.67]], $mine['courses']);
 
         $this->assertCount(1, HoursRecap::forMonth('2026-10', $partner->id));
         $this->assertCount(0, HoursRecap::forMonth('2026-09'));
