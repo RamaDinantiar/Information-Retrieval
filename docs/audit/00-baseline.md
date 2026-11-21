@@ -1,6 +1,6 @@
 # Audit Pra-Deploy — 00 Baseline
 
-Kondisi awal project sebelum audit. Tidak ada kode yang diubah untuk menghasilkan laporan ini.
+Kondisi awal project sebelum audit. Tidak ada kode yang diubah untuk menghasilkan laporan ini. Hasil setelah perbaikan dependensi ada di bagian "Setelah perbaikan dependensi".
 
 - **Tanggal:** 2026-11-21
 - **Branch:** `chore/pre-deploy-audit`, dari `main` @ `164cc72` (sudah memuat `feat/single-bendahara`)
@@ -24,6 +24,75 @@ Catatan:
 - `package.json` tidak punya script `lint`. Padanannya adalah `npm run check`, ditambah `npm run types:check` untuk tipe.
 - Tes memakai SQLite `:memory:` (lihat `phpunit.xml`), jadi DB MySQL lokal tidak tersentuh.
 - Build menulis ke `public/build/`, yang tidak dilacak git. `git status` tetap bersih setelahnya.
+
+## Setelah perbaikan dependensi (2026-11-21)
+
+Bagian di bawah ini (kondisi awal) dibiarkan apa adanya sebagai catatan. Hasil setelah perbaikan, di branch yang sama:
+
+| Pemeriksaan                             | Awal                                           | Sesudah                                                                      |
+| --------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------- |
+| `composer audit`                        | 12 advisory di 7 paket                         | **0** ("No security vulnerability advisories found")                         |
+| `npm audit` (semua)                     | 10 kerentanan (5 critical, 1 high, 4 moderate) | **7** (3 critical, 4 moderate), semuanya alat pengembangan lewat `vite-plus` |
+| `npm audit --omit=dev`                  | 3 (2 critical, 1 high)                         | **0**                                                                        |
+| `php artisan test`                      | 533 lolos                                      | 554 lolos (tes audit ditambahkan), 0 gagal                                   |
+| PHPStan / Pint                          | 0 error / lolos                                | 0 error / lolos                                                              |
+| `npm run check`, `types:check`, `build` | lolos                                          | lolos                                                                        |
+
+### Composer: versi sebelum → sesudah
+
+Semua pembaruan minor/patch di dalam rentang `composer.json` (`laravel/framework: ^13.17`). Tidak ada lompatan major.
+
+| Paket                   | Sebelum | Sesudah | Advisory yang tertutup                                         | Lingkungan  |
+| ----------------------- | ------- | ------- | -------------------------------------------------------------- | ----------- |
+| laravel/framework       | 13.34.0 | 13.43.0 | CVE-2026-128083 (low)                                          | produksi    |
+| symfony/http-foundation | 8.1.8   | 8.1.11  | 4 advisory (CVE-2026-121619, CVE-2026-118514, dan 2 tanpa CVE) | produksi    |
+| symfony/http-kernel     | 8.1.8   | 8.1.11  | CVE-2026-123339                                                | produksi    |
+| symfony/mime            | 8.1.7   | 8.1.10  | CVE-2026-45070 (medium)                                        | produksi    |
+| symfony/routing         | 8.1.8   | 8.1.11  | CVE-2026-118516                                                | produksi    |
+| symfony/serializer      | 8.1.8   | 8.1.11  | 3 advisory (CVE-2026-121623, -122053, -118515)                 | produksi    |
+| symfony/yaml            | 8.1.8   | 8.1.11  | CVE-2026-123792                                                | development |
+| laravel/wayfinder       | 0.1.21  | 0.1.23  | (bukan advisory; lihat di bawah)                               | development |
+
+Ikut naik 37 paket turunan (mis. `guzzlehttp/guzzle` 8.2.0 → 8.5.4, `nesbot/carbon` 3.14.2 → 3.15.1, `symfony/console`, `symfony/translation`, `monolog/monolog`, `ramsey/uuid`) karena Laravel 13.43 membutuhkannya.
+
+Dua efek samping yang harus ikut diperbaiki:
+
+- **Wayfinder:** Laravel 13.43 menambahkan metode HTTP `QUERY` pada rute. `laravel/wayfinder` 0.1.21 menghasilkan TypeScript dengan `method: 'query'` yang tidak dikenal tipe `Method`, sehingga `npm run types:check` gagal. Naik ke 0.1.23 menyelesaikannya. **Catatan urutan:** `routes/index.ts` dihasilkan saat `build`, jadi `types:check` harus dijalankan setelah `build` (atau `php artisan wayfinder:generate --with-form`), kalau tidak, ia memeriksa berkas lama.
+- **PHPStan:** `MakeNgawasTemplate` memakai `(string) $this->argument()`; Laravel 13.43 memperketat tipe kembaliannya. Tipenya kini divalidasi.
+
+### npm: versi sebelum → sesudah
+
+Semua pembaruan patch/minor kecil tanpa `--force`.
+
+| Paket                | Sebelum        | Sesudah        | Advisory yang tertutup                           |
+| -------------------- | -------------- | -------------- | ------------------------------------------------ |
+| vite                 | 8.3.2          | 8.3.8          | high: beberapa advisory Vite dan `launch-editor` |
+| concurrently         | 10.0.5         | 10.0.7         | critical (lewat `shell-quote`)                   |
+| shell-quote          | 1.9.0          | 1.12.0         | critical: command injection pada `quote()`       |
+| rolldown (+ binding) | 1.2.12         | 1.2.19         | (ikut naik bersama vite)                         |
+| postcss, nanoid      | 8.5.28, 3.3.19 | 8.5.33, 3.3.20 | (patch)                                          |
+
+Enam paket fallback WASM opsional milik rolldown (`@emnapi/*`, `@napi-rs/wasm-runtime`, dsb.) ikut terpasang.
+
+### Yang masih terbuka: 7 kerentanan npm lewat `vite-plus`
+
+Semua berada di alat pengembangan (lint, format, build lokal); `npm audit --omit=dev` melaporkan 0. Hasil build statis di `public/build/` yang dilayani, tidak ada paket ini di server produksi.
+
+| Paket                                    | Terpasang | Severity | Masalah                                                 |
+| ---------------------------------------- | --------- | -------- | ------------------------------------------------------- |
+| vite-plus                                | 0.3.0     | critical | via `tinypool`, `@vitest/*`, `launch-editor`            |
+| tinypool                                 | 2.1.0     | critical | prototype pollution yang berujung RCE lewat opsi worker |
+| oxfmt                                    | 0.64.0    | critical | via `tinypool`                                          |
+| vitest                                   | 4.1.11    | moderate | via `@vitest/*`                                         |
+| @vitest/browser, @vitest/browser-preview | 4.1.11    | moderate | via `vitest`                                            |
+| @vitest/mocker                           | 4.1.11    | moderate | injeksi kode lewat registrasi mock manual               |
+
+Satu-satunya jalan keluar adalah `vite-plus` 0.3.0 → 1.x (major) dan **belum diterapkan**, menunggu persetujuan. Hasil percobaan di salinan sementara (di luar repo):
+
+- `npm install vite-plus@1.7.0` di atas pohon yang ada gagal `ERESOLVE` (konflik peer `vitest@5.1.0`). Berhasil hanya dengan resolusi dari nol, yang menaikkan seluruh pohon dan mengubah `package-lock.json` secara besar.
+- Dengan 1.7.0, `npm run check` dan `types:check` lolos tanpa perubahan format, tetapi `npm run build` **gagal**: 1.x mewajibkan alias `vite` → `@voidzero-dev/vite-plus-core@8.3.8000`.
+- `vp migrate` otomatis memperbaikinya dengan **pindah ke pnpm** (`pnpm-lock.yaml`, `catalog:`), yang merusak `npm ci` di CI dan panduan deploy. Padanan native npm (`"vite": "npm:@voidzero-dev/vite-plus-core@8.3.8000"` + `overrides`) membuat build, tipe, dan audit lolos (0 kerentanan).
+- Node minimal 1.7.0 adalah `^22.18.0 || ^24.11.0 || >=26`; CI memakai Node `22` (bergeser ke 22.x terbaru, memenuhi syarat).
 
 ## Temuan: `composer audit`
 

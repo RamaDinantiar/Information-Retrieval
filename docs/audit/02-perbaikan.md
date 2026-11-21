@@ -53,5 +53,5 @@ Legenda: **Selesai** = diperbaiki dan diuji. **Disesuaikan** = diperbaiki, tetap
 
 1. **S9, skala huruf mutu.** Konfirmasi skala resmi IT PLN (`app/Support/Grading/FinalScore.php:56-69`).
 2. **S6, topologi server.** Bila di belakang proxy/CDN/WAF, isi `TRUSTED_PROXIES` di `.env` produksi, lalu cek kolom IP di Audit Log setelah deploy.
-3. **Dependensi (tidak termasuk dalam tahap ini).** `composer audit` (12 advisory) dan `npm audit` (10 kerentanan) di [00-baseline.md](00-baseline.md) belum diperbaiki.
+3. **Dependensi.** `composer audit` sudah bersih (0 advisory) dan `npm audit --omit=dev` 0. Tersisa 7 kerentanan npm pada alat pengembangan yang hanya bisa ditutup dengan `vite-plus` 0.3.0 → 1.x (major); lihat [00-baseline.md](00-baseline.md) untuk hasil percobaan dan risikonya.
 4. **S8 dan R3.** Ukur beban pada tenggat tugas dan waktu Tetapkan Final dengan data nyata sebelum memutuskan.
