@@ -84,7 +84,7 @@ class GenerateMonthlyReport implements ShouldQueue
         return SupervisionReport::where('status', 'verified')
             ->whereDateBetween('date', $range)
             ->when($scope !== 'all', fn ($q) => $q->where(fn ($w) => $w->where('user_id', $userId)->orWhereHas('assistants', fn ($a) => $a->whereKey($userId))))
-            ->with(['labClass.course', 'room', 'assistants', 'user', 'verifier', 'photos'])
+            ->with(['labClass.course', 'outsideClass', 'room', 'assistants', 'user', 'verifier', 'photos'])
             ->orderBy('date')->orderBy('start_time')
             ->get();
     }
@@ -146,7 +146,7 @@ class GenerateMonthlyReport implements ShouldQueue
         }
 
         $writer->addNewSheetAndMakeItCurrent()->setName('Detail');
-        $writer->addRow(Row::fromValues(['Tanggal', 'Mulai', 'Selesai', 'Jam', 'Mata Kuliah / Kegiatan', 'Kelas', 'Ruang', 'Asisten Jaga', 'Materi', 'Catatan', 'Diverifikasi Oleh']));
+        $writer->addRow(Row::fromValues(['Tanggal', 'Mulai', 'Selesai', 'Durasi Sesi (jam)', 'Mata Kuliah / Kegiatan', 'Kelas', 'Ruang', 'Asisten Jaga', 'Materi', 'Catatan', 'Diverifikasi Oleh']));
 
         foreach ($reports as $report) {
             $writer->addRow(Row::fromValues([

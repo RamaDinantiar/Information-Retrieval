@@ -19,6 +19,14 @@ class ReportSearchText
         'returned' => 'dikembalikan',
     ];
 
+    private const EXECUTION = [
+        'held' => 'terlaksana',
+        'cancelled' => 'ditiadakan',
+        'replacement' => 'pengganti',
+        'additional' => 'tambahan',
+        'exam' => 'ujian uts uas',
+    ];
+
     /**
      * @param  array<string, mixed>  $row  Baris laporan seperti yang dikirim ke halaman.
      */
@@ -45,6 +53,8 @@ class ReportSearchText
             implode(' ', Arr::pluck($row['assistants'], 'name')),
             $row['author'],
             self::STATUS[$row['status']] ?? $row['status'],
+            self::EXECUTION[$row['executionStatus'] ?? 'held'] ?? null,
+            ! empty($row['heldOutsideLab']) ? 'di luar ruang lab ir '.($row['outsideLocation'] ?? '') : null,
             $row['returnNote'],
             $row['verifier'],
         ], fn ($part) => $part !== null && $part !== '')));

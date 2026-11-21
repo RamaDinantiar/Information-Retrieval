@@ -1,8 +1,18 @@
 import { Form, Head } from '@inertiajs/react';
-import { Clock, HardDrive, UserPlus } from 'lucide-react';
+import {
+    Clock,
+    FileSpreadsheet,
+    HardDrive,
+    PenLine,
+    UserPlus,
+} from 'lucide-react';
 import type { ReactNode } from 'react';
 import SystemSettingController from '@/actions/App/Http/Controllers/Admin/SystemSettingController';
 import InputError from '@/components/input-error';
+import { ApproverCard } from '@/components/ngawas-recap/approver-card';
+import type { Approver } from '@/components/ngawas-recap/approver-card';
+import { TemplateCard } from '@/components/ngawas-recap/template-card';
+import type { NgawasTemplateInfo } from '@/components/ngawas-recap/template-card';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -89,7 +99,15 @@ function NumberField({
 }
 
 /** Admin › Pengaturan Sistem (FR-ADM-10). */
-export default function SystemSettings({ settings }: { settings: Settings }) {
+export default function SystemSettings({
+    settings,
+    approvers,
+    template,
+}: {
+    settings: Settings;
+    approvers: Approver[];
+    template: NgawasTemplateInfo;
+}) {
     const root = useRef<HTMLDivElement>(null);
     useDashboardMotion(root);
 
@@ -213,6 +231,29 @@ export default function SystemSettings({ settings }: { settings: Settings }) {
                         </>
                     )}
                 </Form>
+
+                <Section
+                    icon={PenLine}
+                    title="Pengesah Rekap Ngawas"
+                    description="Dua pengesah yang namanya dan tanda tangannya dicetak di Rekap Jam Ngawas saat Final. Tanpa NIP. Rekap yang sudah Final tidak berubah bila pengesah diganti."
+                >
+                    <div className="grid gap-4 lg:grid-cols-2">
+                        {approvers.map((approver) => (
+                            <ApproverCard
+                                key={approver.index}
+                                approver={approver}
+                            />
+                        ))}
+                    </div>
+                </Section>
+
+                <Section
+                    icon={FileSpreadsheet}
+                    title="Template Rekap Ngawas"
+                    description="File Excel kampus yang diisi saat ekspor Draft dan Final. Ganti bila kampus merilis versi baru."
+                >
+                    <TemplateCard template={template} />
+                </Section>
             </div>
         </>
     );

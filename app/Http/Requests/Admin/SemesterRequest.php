@@ -29,6 +29,9 @@ class SemesterRequest extends FormRequest
             'name' => ['required', 'string', 'max:50', Rule::unique('semesters', 'name')->ignore($this->route('semester'))],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after:start_date'],
+            // Kop rekap ngawas (US-RJN-05): nomor SK dan label semester.
+            'sk_number' => ['nullable', 'string', 'max:80'],
+            'term_label' => ['nullable', 'string', 'max:80'],
         ];
     }
 
@@ -41,6 +44,8 @@ class SemesterRequest extends FormRequest
             'name' => 'nama semester',
             'start_date' => 'tanggal mulai',
             'end_date' => 'tanggal selesai',
+            'sk_number' => 'nomor SK',
+            'term_label' => 'label semester',
         ];
     }
 

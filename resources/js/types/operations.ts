@@ -55,6 +55,14 @@ export type AllClassRow = {
 
 export type ReportStatus = 'draft' | 'submitted' | 'verified' | 'returned';
 
+/** Status pelaksanaan kelas (FR-RJN-01). */
+export type ExecutionStatus =
+    | 'held'
+    | 'cancelled'
+    | 'replacement'
+    | 'additional'
+    | 'exam';
+
 export type ReportRow = {
     id: number;
     shiftNumber: number;
@@ -63,9 +71,17 @@ export type ReportRow = {
     start: string;
     end: string;
     classId: number | null;
+    outsideClassId: number | null;
     code: string | null;
     course: string | null;
     className: string | null;
+    executionStatus: ExecutionStatus;
+    examType: 'uts' | 'uas' | null;
+    originalDate: string | null;
+    originalStart: string | null;
+    replacementNote: string | null;
+    heldOutsideLab: boolean;
+    outsideLocation: string | null;
     room: string | null;
     activity: string;
     material: string | null;
@@ -98,11 +114,13 @@ export type PendingShift = {
 export type ExportRow = {
     id: number;
     /** 'pdf' hanya untuk riwayat ekspor lama (sebelum rekap berformat Word). */
-    type: 'zip' | 'docx' | 'excel' | 'pdf';
+    type: 'zip' | 'docx' | 'excel' | 'pdf' | 'ngawas';
     month: string;
     /** Tanggal laporan untuk Single DOC (YYYY-MM-DD). */
     date: string | null;
     scope: 'mine' | 'all';
+    /** Rekap ngawas: draft | final. */
+    mode: 'draft' | 'final' | null;
     status: 'queued' | 'processing' | 'done' | 'empty' | 'failed';
     progress: number;
     error: string | null;
@@ -116,7 +134,10 @@ export type HoursRecapRow = {
     name: string;
     nim: string | null;
     shifts: number;
+    /** Dibulatkan per asisten seperti template kampus. */
     hours: number;
+    /** Jam sebenarnya (2 desimal). */
+    hoursRaw: number;
     courses: {
         name: string;
         code: string | null;
@@ -124,4 +145,25 @@ export type HoursRecapRow = {
         shifts: number;
         hours: number;
     }[];
+};
+
+/** Berkas hasil rekap Final/revisi (unduh lewat signed URL). */
+export type RecapFile = { name: string; size: number; url: string };
+
+/** Rekap Jam Ngawas berstatus Final (FR-RJN-08). */
+export type RecapFinalInfo = {
+    finalizedAt: string | null;
+    finalizedBy: string | null;
+    file: RecapFile | null;
+    /** Data laporan berubah sejak Final (hanya pengelola). */
+    changedSinceFinal: boolean;
+};
+
+/** Riwayat revisi: berkas Final lama beserta catatan Buka Kembali (FR-RJN-09). */
+export type RecapRevision = {
+    revision: number;
+    note: string | null;
+    by: string | null;
+    at: string;
+    file: RecapFile | null;
 };

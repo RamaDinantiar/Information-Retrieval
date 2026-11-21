@@ -12,14 +12,16 @@ import {
     Loader2,
     Search,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import GenerateController from '@/actions/App/Http/Controllers/Asisten/GenerateController';
 import { EmptyState } from '@/components/empty-state';
+import { GenerateTabs } from '@/components/ngawas-recap/generate-tabs';
 import { SelectField } from '@/components/select-field';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+import { useExportPolling } from '@/hooks/use-export-polling';
 import { formatRelative } from '@/lib/datetime';
 import { formatFileSize } from '@/lib/files';
 import { cn } from '@/lib/utils';
@@ -101,47 +103,6 @@ const EXPORT_STATUS: Record<
     failed: { label: 'Gagal', variant: 'destructive' },
 };
 
-/** US-A04-1: tampilkan progres ekspor yang sedang berjalan. */
-function useExportPolling(exports: ExportRow[]) {
-    const [rows, setRows] = useState(exports);
-    useEffect(() => setRows(exports), [exports]);
-
-    const running = rows
-        .filter((e) => e.status === 'queued' || e.status === 'processing')
-        .map((e) => e.id);
-    const key = running.join(',');
-
-    useEffect(() => {
-        if (!key) return;
-
-        const timer = window.setInterval(async () => {
-            const updated = await Promise.all(
-                key.split(',').map((id) =>
-                    fetch(GenerateController.show.url(Number(id)), {
-                        headers: { Accept: 'application/json' },
-                    }).then((r) => r.json() as Promise<ExportRow>),
-                ),
-            );
-            setRows((current) =>
-                current.map(
-                    (row) => updated.find((u) => u.id === row.id) ?? row,
-                ),
-            );
-            if (
-                updated.every(
-                    (u) => u.status !== 'queued' && u.status !== 'processing',
-                )
-            ) {
-                router.reload({ only: ['exports'] });
-            }
-        }, 2000);
-
-        return () => window.clearInterval(timer);
-    }, [key]);
-
-    return rows;
-}
-
 /** Asisten › Generate — Figma "Generate Rekap Laporan Bulanan" (US-A04, FR-AGN). */
 export default function AsistenGenerate({
     filters,
@@ -204,6 +165,8 @@ export default function AsistenGenerate({
                         terstruktur.
                     </p>
                 </div>
+
+                <GenerateTabs current="reports" />
 
                 <section
                     aria-labelledby="criteria"
@@ -675,9 +638,10 @@ export default function AsistenGenerate({
                             Rekap Jam Mengawas {MONTHS[month - 1]} {year}
                         </h2>
                         <p className="-mt-2 text-xs text-muted-foreground">
-                            Dihitung dari laporan terverifikasi: jumlah shift
-                            dan jam per asisten, dirinci per mata kuliah beserta
-                            SKS-nya.
+                            Dihitung dari laporan terverifikasi dengan rumus SKS
+                            × 50 menit ÷ 60 (sama dengan Rekap Jam Ngawas).
+                            Total per asisten dibulatkan seperti template
+                            kampus; kelas ditiadakan tidak dihitung.
                         </p>
                         {recap.length === 0 ? (
                             <p className="border bg-card p-4 text-sm text-muted-foreground">
@@ -699,7 +663,9 @@ export default function AsistenGenerate({
                                             </p>
                                             <p className="font-mono text-xs">
                                                 {r.shifts} shift ·{' '}
-                                                <strong>
+                                                <strong
+                                                    title={`Jam sebenarnya: ${r.hoursRaw.toLocaleString('id-ID')}`}
+                                                >
                                                     {r.hours.toLocaleString(
                                                         'id-ID',
                                                     )}{' '}

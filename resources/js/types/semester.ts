@@ -5,6 +5,9 @@ export type SemesterRow = {
     /** "YYYY-MM-DD". */
     startDate: string;
     endDate: string;
+    /** Kop rekap ngawas (US-RJN-05). */
+    skNumber: string | null;
+    termLabel: string | null;
     status: 'draft' | 'active' | 'archived';
     activatedAt: string | null;
     archivedAt: string | null;

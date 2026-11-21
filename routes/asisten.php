@@ -9,6 +9,9 @@ use App\Http\Controllers\Asisten\CourseProposalController;
 use App\Http\Controllers\Asisten\GenerateController;
 use App\Http\Controllers\Asisten\GradeController;
 use App\Http\Controllers\Asisten\MeetingController;
+use App\Http\Controllers\Asisten\NgawasRecapController;
+use App\Http\Controllers\Asisten\NgawasRecapOrderController;
+use App\Http\Controllers\Asisten\OutsideClassController;
 use App\Http\Controllers\Asisten\ProgramController;
 use App\Http\Controllers\Asisten\ReportController;
 use App\Http\Controllers\Asisten\ScheduleController;
@@ -109,6 +112,16 @@ Route::get('generate', [GenerateController::class, 'index'])->name('generate.ind
 Route::get('generate/daily', [GenerateController::class, 'daily'])->middleware('throttle:30,1')->name('generate.daily');
 Route::post('exports', [GenerateController::class, 'store'])->middleware('throttle:10,1')->name('exports.store');
 Route::get('exports/{export}', [GenerateController::class, 'show'])->name('exports.show');
+
+// FR-RJN: Rekap Jam Ngawas format kampus (pratinjau, pemeriksaan).
+Route::get('ngawas-recap', [NgawasRecapController::class, 'index'])->name('ngawas-recap.index');
+Route::post('ngawas-recap/export', [NgawasRecapController::class, 'export'])->middleware('throttle:10,1')->name('ngawas-recap.export');
+Route::post('ngawas-recap/finalize', [NgawasRecapController::class, 'finalize'])->middleware('throttle:10,1')->name('ngawas-recap.finalize');
+Route::post('ngawas-recap/reopen', [NgawasRecapController::class, 'reopen'])->middleware('throttle:10,1')->name('ngawas-recap.reopen');
+Route::put('ngawas-recap/order', [NgawasRecapOrderController::class, 'update'])->name('ngawas-recap.order.update');
+Route::delete('ngawas-recap/order', [NgawasRecapOrderController::class, 'destroy'])->name('ngawas-recap.order.destroy');
+// US-RJN-06: kelas lab lain yang diawas asisten IR (CRUD: Sekretaris/Bendahara & Admin).
+Route::resource('outside-classes', OutsideClassController::class)->only(['index', 'store', 'update', 'destroy']);
 
 // FR-APR: Program (Workshop, Quick Tutor, Rekrutmen, Maintenance).
 Route::redirect('program', '/asisten/program/workshop');

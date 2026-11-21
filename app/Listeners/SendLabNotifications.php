@@ -5,12 +5,15 @@ namespace App\Listeners;
 use App\Enums\Position;
 use App\Events\ExportFinished;
 use App\Events\GradesPublished;
+use App\Events\NgawasRecapFinalized;
+use App\Events\NgawasRecapReopened;
 use App\Events\SeatContractChanged;
 use App\Events\ShiftSwapChanged;
 use App\Events\SupervisionReportReviewed;
 use App\Events\SupervisionReportSubmitted;
 use App\Models\User;
 use App\Support\Notifications\Notify;
+use Carbon\CarbonImmutable;
 
 /**
  * Event domain → notifikasi lonceng (method handle* ditemukan otomatis oleh
@@ -75,12 +78,34 @@ class SendLabNotifications
     public function handleExportFinished(ExportFinished $event): void
     {
         $export = $event->export;
+        $ngawas = $export->type === 'ngawas';
         $body = match ($export->status) {
-            'done' => 'Rekap '.$export->params_json['month'].' siap diunduh (berlaku 24 jam).',
+            'done' => ($ngawas ? 'Rekap Jam Ngawas (Excel, Draft) ' : 'Rekap ').$export->params_json['month'].' siap diunduh (berlaku 24 jam).',
             'empty' => 'Tidak ada laporan pada periode '.$export->params_json['month'].'.',
-            default => 'Rekap gagal dibuat. Coba lagi.',
+            default => $ngawas && $export->error ? 'Rekap Excel gagal dibuat: '.$export->error : 'Rekap gagal dibuat. Coba lagi.',
         };
+        $link = ($ngawas ? '/asisten/ngawas-recap?month=' : '/asisten/generate?month=').$export->params_json['month'];
 
-        Notify::send([$export->user_id], 'export', 'Generate rekap selesai', $body, '/asisten/generate?month='.$export->params_json['month']);
+        Notify::send([$export->user_id], 'export', $ngawas ? 'Rekap Jam Ngawas selesai' : 'Generate rekap selesai', $body, $link);
+    }
+
+    public function handleNgawasRecapFinalized(NgawasRecapFinalized $event): void
+    {
+        $label = $this->monthLabel($event->recap->month);
+        $rev = $event->recap->revision > 0 ? " (revisi {$event->recap->revision})" : '';
+
+        Notify::send($event->userIds, 'export', 'Rekap Jam Ngawas Final', "Rekap Jam Ngawas {$label}{$rev} sudah ditetapkan Final. Lihat jam ngawas Anda di halaman rekap.", '/asisten/ngawas-recap?month='.$event->recap->month);
+    }
+
+    public function handleNgawasRecapReopened(NgawasRecapReopened $event): void
+    {
+        $label = $this->monthLabel($event->recap->month);
+
+        Notify::send($event->userIds, 'export', 'Rekap Jam Ngawas direvisi', "Rekap {$label} dibuka kembali (revisi {$event->recap->revision}). Catatan: {$event->note}", '/asisten/ngawas-recap?month='.$event->recap->month);
+    }
+
+    private function monthLabel(string $month): string
+    {
+        return CarbonImmutable::createFromFormat('Y-m', $month)->startOfMonth()->translatedFormat('F Y');
     }
 }

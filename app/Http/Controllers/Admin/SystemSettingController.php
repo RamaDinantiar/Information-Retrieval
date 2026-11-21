@@ -5,8 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\Setting;
+use App\Models\StoredFile;
+use App\Support\Reports\NgawasApprovers;
+use App\Support\Reports\NgawasTemplate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -20,8 +24,28 @@ class SystemSettingController extends Controller
     public function index(): Response
     {
         return Inertia::render('admin/system-settings', [
-            'settings' => Setting::current(),
+            'settings' => Arr::except(Setting::current(), [NgawasApprovers::KEY, NgawasTemplate::KEY]),
+            'template' => $this->template(),
+            'approvers' => collect(NgawasApprovers::all())->map(fn (array $a, int $i) => [
+                'index' => $i,
+                'position' => $a['position'],
+                'name' => $a['name'],
+                'signatureUrl' => $a['signature_file_id'] ? route('admin.ngawas-approvers.signature', ['index' => $i, 'v' => $a['signature_file_id']]) : null,
+            ])->values(),
         ]);
+    }
+
+    /**
+     * @return array{name: string, custom: bool, uploadedAt: string|null}
+     */
+    private function template(): array
+    {
+        $id = NgawasTemplate::uploadedId();
+        $file = $id === null ? null : StoredFile::find($id);
+
+        return $file === null
+            ? ['name' => 'Template bawaan (Mei 2026)', 'custom' => false, 'uploadedAt' => null]
+            : ['name' => $file->original_name, 'custom' => true, 'uploadedAt' => $file->created_at?->toIso8601String()];
     }
 
     public function update(Request $request): RedirectResponse

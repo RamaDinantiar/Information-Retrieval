@@ -98,6 +98,41 @@ export function SemesterFormDialog({
                                     <InputError message={errors.end_date} />
                                 </div>
                             </div>
+                            <div className="grid gap-5 sm:grid-cols-2">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="sk_number">
+                                        Nomor SK (opsional)
+                                    </Label>
+                                    <Input
+                                        id="sk_number"
+                                        name="sk_number"
+                                        maxLength={80}
+                                        defaultValue={semester?.skNumber ?? ''}
+                                        placeholder="03/SK/Genap/IRLab/2026"
+                                        aria-invalid={!!errors.sk_number}
+                                    />
+                                    <InputError message={errors.sk_number} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="term_label">
+                                        Label semester (opsional)
+                                    </Label>
+                                    <Input
+                                        id="term_label"
+                                        name="term_label"
+                                        maxLength={80}
+                                        defaultValue={semester?.termLabel ?? ''}
+                                        placeholder="SEMESTER GENAP TAHUN 2025/2026"
+                                        aria-invalid={!!errors.term_label}
+                                    />
+                                    <InputError message={errors.term_label} />
+                                </div>
+                                <p className="text-xs text-muted-foreground sm:col-span-2">
+                                    Tampil di kop Rekap Jam Ngawas. Nomor SK
+                                    wajib terisi sebelum rekap dapat ditetapkan
+                                    Final.
+                                </p>
+                            </div>
                             <DialogFooter>
                                 <DialogClose asChild>
                                     <Button type="button" variant="outline">

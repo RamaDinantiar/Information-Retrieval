@@ -1,5 +1,6 @@
-import { Head } from '@inertiajs/react';
-import { CalendarRange, Pencil, Plus } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { CalendarDays, CalendarRange, Pencil, Plus } from 'lucide-react';
+import AcademicCalendarController from '@/actions/App/Http/Controllers/Admin/AcademicCalendarController';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
 import { ActivateSemesterDialog } from '@/components/semesters/activate-semester-dialog';
@@ -42,6 +43,11 @@ function Actions({
             {semester.status === 'draft' && (
                 <ActivateSemesterDialog semester={semester} current={current} />
             )}
+            <Button size="sm" variant="outline" asChild>
+                <Link href={AcademicCalendarController.index.url(semester.id)}>
+                    <CalendarDays /> Kalender
+                </Link>
+            </Button>
             {semester.canEdit && (
                 <CopyStructureDialog
                     target={semester}
@@ -152,6 +158,11 @@ export default function SemestersIndex({
                                         <TableRow key={semester.id}>
                                             <TableCell className="font-bold">
                                                 {semester.name}
+                                                {semester.skNumber && (
+                                                    <span className="block font-mono text-xs font-normal text-muted-foreground">
+                                                        SK {semester.skNumber}
+                                                    </span>
+                                                )}
                                             </TableCell>
                                             <TableCell className="font-mono text-sm">
                                                 {formatDateRange(

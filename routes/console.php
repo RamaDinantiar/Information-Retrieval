@@ -86,3 +86,5 @@ Artisan::command('meetings:sync', function (SyncMeetingSessions $sync) {
 Schedule::command('meetings:sync')->everyMinute()->withoutOverlapping();
 Schedule::command('announcements:notify')->everyFiveMinutes();
 Schedule::command('tasks:remind-deadlines')->hourly();
+// FR-RJN-15(c): pengingat tanda tangan asisten, sekali seminggu sampai diunggah.
+Schedule::command('signatures:remind')->weeklyOn(1, '08:00');
