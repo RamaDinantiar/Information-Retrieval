@@ -144,4 +144,28 @@ class EnrollmentEdgeTest extends TestCase
 
         $this->assertSame(0, $this->class->enrollments()->count());
     }
+
+    // --- Audit 03 N11: kelas terkunci ---
+
+    public function test_the_assistant_import_still_works_when_the_class_is_locked_while_the_token_does_not(): void
+    {
+        $this->class->forceFill(['is_locked' => true])->save();
+        $student = User::factory()->create(['nim' => '2023999001']);
+
+        $this->join($student)->assertSessionHasErrors();
+        $this->assertSame(0, $this->class->enrollments()->where('user_id', $student->id)->count());
+
+        $this->import("nim\n2023999001\n")->assertSessionHasNoErrors();
+        $this->assertSame(1, $this->class->enrollments()->where('user_id', $student->id)->count());
+    }
+
+    public function test_the_class_page_tells_the_import_dialog_when_the_class_is_locked(): void
+    {
+        foreach ([true, false] as $locked) {
+            $this->class->forceFill(['is_locked' => $locked])->save();
+
+            $this->actingAs($this->asisten)->get(route('asisten.class.show', $this->class))
+                ->assertInertia(fn ($page) => $page->where('klass.isLocked', $locked));
+        }
+    }
 }

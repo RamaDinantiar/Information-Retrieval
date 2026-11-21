@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Enums\Position;
 use App\Events\ExportFinished;
 use App\Events\GradesPublished;
+use App\Events\GradesUpdated;
 use App\Events\NgawasRecapFinalized;
 use App\Events\NgawasRecapReopened;
 use App\Events\SeatContractChanged;
@@ -27,6 +28,13 @@ class SendLabNotifications
         $target = $event->target->loadMissing(['task', 'labClass.course']);
 
         Notify::send($event->userIds, 'grade', 'Nilai dipublikasikan', "Nilai {$target->task->title} ({$target->labClass->course->name}) sudah dapat dilihat.", '/praktikan/grade?class='.$target->class_id);
+    }
+
+    public function handleGradesUpdated(GradesUpdated $event): void
+    {
+        $target = $event->target->loadMissing(['task', 'labClass.course']);
+
+        Notify::send($event->userIds, 'grade', 'Nilai diperbarui', "Nilai {$target->task->title} ({$target->labClass->course->name}) diperbarui oleh asisten.", '/praktikan/grade?class='.$target->class_id);
     }
 
     public function handleSeatContractChanged(SeatContractChanged $event): void

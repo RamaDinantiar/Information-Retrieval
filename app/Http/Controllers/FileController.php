@@ -22,8 +22,11 @@ class FileController extends Controller
         $response = response()->file($file->absolutePath(), [
             'Content-Type' => $file->mime,
             'X-Content-Type-Options' => 'nosniff',
-            'Cache-Control' => 'private, no-store',
         ]);
+
+        // response()->file() menandai respons `public`; setPrivate() menggantinya agar proksi bersama tidak boleh menyimpan.
+        $response->setPrivate();
+        $response->headers->addCacheControlDirective('no-store');
 
         $response->setContentDisposition($inline ? 'inline' : 'attachment', $file->original_name, 'file');
 

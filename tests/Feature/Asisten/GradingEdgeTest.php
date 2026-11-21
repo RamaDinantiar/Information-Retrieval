@@ -3,6 +3,8 @@
 namespace Tests\Feature\Asisten;
 
 use App\Events\GradesPublished;
+use App\Events\GradesUpdated;
+use App\Models\AuditLog;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Grade;
@@ -150,5 +152,53 @@ class GradingEdgeTest extends TestCase
 
         $dash = $this->get(route('praktikan.dashboard'))->assertOk();
         $this->assertStringNotContainsString('RAHASIA-DRAFT', $dash->getContent());
+    }
+
+    // --- Audit 03 N12: nilai Published yang diubah ---
+
+    private function saveExisting(Grade $grade, mixed $score, ?string $feedback = null)
+    {
+        return $this->patch(route('asisten.grades.batch'), [
+            'target_id' => $this->target->id,
+            'grades' => [['submission_id' => $this->submission->id, 'score' => $score, 'feedback' => $feedback, 'version' => $grade->version]],
+        ]);
+    }
+
+    public function test_editing_a_published_grade_is_visible_at_once_notifies_the_student_and_is_audited(): void
+    {
+        $grade = Grade::factory()->for($this->submission)->create(['score' => 60, 'status' => 'published', 'published_at' => now(), 'version' => 1]);
+
+        $this->saveExisting($grade, '75')->assertSessionHasNoErrors();
+
+        $grade->refresh();
+        $this->assertSame('published', $grade->status);
+        $this->assertEquals(75, $grade->score);
+
+        $notification = $this->submission->user->notifications()->sole();
+        $this->assertSame('Nilai diperbarui', $notification->data['title']);
+        $this->assertSame(1, AuditLog::where('action', 'grade.updated_after_publish')->count());
+    }
+
+    public function test_changing_only_the_feedback_of_a_published_grade_also_notifies(): void
+    {
+        $grade = Grade::factory()->for($this->submission)->create(['score' => 60, 'feedback' => null, 'status' => 'published', 'published_at' => now(), 'version' => 1]);
+
+        $this->saveExisting($grade, '60', 'Bagus, tambahkan kesimpulan.')->assertSessionHasNoErrors();
+
+        $this->assertSame(1, $this->submission->user->notifications()->count());
+    }
+
+    public function test_saving_an_unchanged_published_grade_or_editing_a_draft_does_not_notify(): void
+    {
+        Event::fake([GradesUpdated::class]);
+        $published = Grade::factory()->for($this->submission)->create(['score' => 60, 'feedback' => null, 'status' => 'published', 'published_at' => now(), 'version' => 1]);
+
+        $this->saveExisting($published, '60')->assertSessionHasNoErrors();
+
+        $published->update(['status' => 'draft']);
+        $this->saveExisting($published->fresh(), '70')->assertSessionHasNoErrors();
+
+        Event::assertNotDispatched(GradesUpdated::class);
+        $this->assertSame(0, AuditLog::where('action', 'grade.updated_after_publish')->count());
     }
 }

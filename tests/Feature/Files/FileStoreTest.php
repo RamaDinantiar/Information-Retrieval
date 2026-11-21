@@ -156,9 +156,11 @@ class FileStoreTest extends TestCase
 
         $response = $this->actingAs($user)->get($file->url())->assertOk()->assertHeader('X-Content-Type-Options', 'nosniff');
 
-        // Temuan audit 03: controller meminta `private, no-store`, tetapi respons akhir `no-store, public`.
-        // `no-store` yang menjaga keamanan (tidak ada cache yang boleh menyimpan), jadi hanya itu yang dikunci di sini.
-        $this->assertStringContainsString('no-store', (string) $response->headers->get('Cache-Control'));
+        // Audit 03 N1: `private, no-store` (sebelumnya respons akhir `no-store, public`).
+        $cache = (string) $response->headers->get('Cache-Control');
+        $this->assertStringContainsString('no-store', $cache);
+        $this->assertStringContainsString('private', $cache);
+        $this->assertStringNotContainsString('public', $cache);
     }
 
     public function test_an_expired_signed_url_is_refused_even_for_the_owner(): void

@@ -150,6 +150,11 @@ export default function AsistenClassShow({
                             title="Import praktikan ke kelas"
                             triggerLabel="Import ke Kelas"
                             templateUrl={null}
+                            notice={
+                                klass.isLocked
+                                    ? 'Kelas sedang dikunci. Praktikan tidak bisa bergabung lewat token, tetapi import oleh asisten tetap berjalan.'
+                                    : undefined
+                            }
                             description={
                                 <>
                                     CSV atau XLSX dengan kolom{' '}

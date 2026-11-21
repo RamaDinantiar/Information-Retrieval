@@ -28,12 +28,14 @@ export function ImportUsersDialog({
     description,
     triggerLabel = 'Import Praktikan',
     templateUrl = UserController.template.url(),
+    notice,
 }: {
     action?: RouteFormDefinition<'post'>;
     title?: string;
     description?: ReactNode;
     triggerLabel?: string;
     templateUrl?: string | null;
+    notice?: ReactNode;
 } = {}) {
     const [open, setOpen] = useState(false);
     const { flash } = usePage();
@@ -70,6 +72,14 @@ export function ImportUsersDialog({
                             )}
                         </DialogDescription>
                     </DialogHeader>
+                    {notice && (
+                        <p
+                            role="status"
+                            className="border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+                        >
+                            {notice}
+                        </p>
+                    )}
                     {templateUrl && (
                         <a
                             href={templateUrl}
