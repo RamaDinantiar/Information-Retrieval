@@ -73,7 +73,9 @@ class NgawasExportTest extends TestCase
         $spreadsheet = $this->openExport($export);
         $this->assertSame('Format Aslab ', $spreadsheet->getSheet(0)->getTitle());
         // 60 baris data: 59 dari fixture + 1 baris "-" untuk Sekretaris/Bendahara (asisten aktif tanpa kelas); TOTAL di baris 76.
-        $this->assertSame('-', $spreadsheet->getSheet(0)->getCell('D75')->getValue());
+        // Letak baris "-" mengikuti urutan nama (acak dari factory), jadi dicari, bukan diasumsikan di baris 75.
+        $dash = array_filter(range(16, 75), fn (int $row) => $spreadsheet->getSheet(0)->getCell('D'.$row)->getValue() === '-');
+        $this->assertCount(1, $dash);
         $this->assertSame(495, (int) $spreadsheet->getSheet(0)->getCell('AJ76')->getCalculatedValue());
         $this->assertSame(247, (int) $spreadsheet->getSheet(0)->getCell('AI76')->getCalculatedValue());
         $this->assertStringContainsString('DRAFT', $spreadsheet->getSheet(0)->getHeaderFooter()->getOddHeader());
