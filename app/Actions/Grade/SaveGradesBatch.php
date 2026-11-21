@@ -2,6 +2,7 @@
 
 namespace App\Actions\Grade;
 
+use App\Events\GradesUpdated;
 use App\Models\AuditLog;
 use App\Models\Grade;
 use App\Models\Submission;
@@ -14,6 +15,9 @@ use Illuminate\Validation\ValidationException;
  * US-A02-3 / FR-AG-03: Simpan Batch — semua perubahan dalam satu transaksi;
  * satu baris invalid → tidak ada yang tersimpan. Optimistic locking lewat
  * `version` mencegah dua asisten menimpa nilai yang sama.
+ *
+ * Audit 03 N12: mengubah nilai yang sudah Published langsung terlihat praktikan, memicu notifikasi
+ * "Nilai diperbarui" dan dicatat di audit log (`grade.updated_after_publish`).
  */
 class SaveGradesBatch
 {
@@ -44,7 +48,9 @@ class SaveGradesBatch
             throw ValidationException::withMessages($errors);
         }
 
-        return DB::transaction(function () use ($grader, $rows) {
+        $notify = [];
+
+        $count = DB::transaction(function () use ($grader, $rows, &$notify) {
             $existing = Grade::whereIn('submission_id', array_column($rows, 'submission_id'))
                 ->lockForUpdate()->get()->keyBy('submission_id');
 
@@ -64,6 +70,9 @@ class SaveGradesBatch
                 $grade = $existing[(int) $row['submission_id']] ?? new Grade(['submission_id' => (int) $row['submission_id'], 'version' => 0]);
                 // Audit mencatat skor dan ada/tidaknya feedback, bukan isinya (feedback bersifat pribadi per praktikan).
                 $before = $grade->exists ? ['score' => $grade->score, 'has_feedback' => $grade->feedback !== null] : null;
+                $wasPublished = $grade->exists && $grade->status === 'published';
+                $oldScore = $grade->score;
+                $oldFeedback = $grade->feedback;
 
                 $grade->fill([
                     'score' => $row['score'] === '' ? null : $row['score'],
@@ -75,9 +84,21 @@ class SaveGradesBatch
                 $grade->save();
 
                 AuditLog::record('grade.saved', $grade, $before, ['score' => $grade->score, 'status' => $grade->status, 'has_feedback' => $grade->feedback !== null]);
+
+                $changed = (string) $oldScore !== (string) $grade->score || $oldFeedback !== $grade->feedback;
+                if ($wasPublished && $changed) {
+                    AuditLog::record('grade.updated_after_publish', $grade, $before, ['score' => $grade->score, 'has_feedback' => $grade->feedback !== null]);
+                    $notify[] = (int) $grade->submission()->value('user_id');
+                }
             }
 
             return count($rows);
         });
+
+        if ($notify !== []) {
+            GradesUpdated::dispatch($target, array_values(array_unique($notify)));
+        }
+
+        return $count;
     }
 }
