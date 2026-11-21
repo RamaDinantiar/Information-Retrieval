@@ -1,5 +1,11 @@
 import { Form, Head } from '@inertiajs/react';
-import { Clock, FileSpreadsheet, HardDrive, PenLine, UserPlus } from 'lucide-react';
+import {
+    Clock,
+    FileSpreadsheet,
+    HardDrive,
+    PenLine,
+    UserPlus,
+} from 'lucide-react';
 import type { ReactNode } from 'react';
 import SystemSettingController from '@/actions/App/Http/Controllers/Admin/SystemSettingController';
 import InputError from '@/components/input-error';

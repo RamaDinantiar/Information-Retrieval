@@ -12,7 +12,7 @@ import {
     Loader2,
     Search,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import GenerateController from '@/actions/App/Http/Controllers/Asisten/GenerateController';
 import { EmptyState } from '@/components/empty-state';
 import { GenerateTabs } from '@/components/ngawas-recap/generate-tabs';

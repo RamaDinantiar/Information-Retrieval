@@ -4,12 +4,12 @@
 
 ## Kebutuhan
 
-| Perangkat lunak | Versi | Catatan                                                                                                   |
-| --------------- | ----- | --------------------------------------------------------------------------------------------------------- |
+| Perangkat lunak | Versi | Catatan                                                                                                                                                                                                    |
+| --------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | PHP             | 8.4+  | Ekstensi: `pdo_mysql`, `mbstring`, `xml`, `dom`, `fileinfo`, `zip`, `gd`, `intl`; `pdo_sqlite` untuk test. `zip` + `gd` wajib untuk Rekap Jam Ngawas (PhpSpreadsheet: berkas xlsx dan gambar tanda tangan) |
-| Composer        | 2.x   |                                                                                                           |
-| Node.js         | 20+   | Beserta npm                                                                                               |
-| MySQL           | 8.x   |                                                                                                           |
+| Composer        | 2.x   |                                                                                                                                                                                                            |
+| Node.js         | 20+   | Beserta npm                                                                                                                                                                                                |
+| MySQL           | 8.x   |                                                                                                                                                                                                            |
 
 Di macOS, [Laravel Herd](https://herd.laravel.com) menyediakan PHP, Composer, dan Node sekaligus.
 
