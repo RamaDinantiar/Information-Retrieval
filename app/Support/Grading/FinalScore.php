@@ -54,18 +54,31 @@ class FinalScore
     }
 
     /**
-     * Huruf mutu (asumsi skala umum; sesuaikan dengan kebijakan kampus).
+     * ASUMSI S9 – menunggu skala resmi IT PLN. Batas bawah nilai (skor ≥ batas) → huruf mutu, urut dari
+     * tertinggi. Ini SATU-SATUNYA sumber skala di sisi PHP; test membaca konstanta ini, bukan angka
+     * yang ditulis ulang. Salinan di sisi tampilan: `GRADE_SCALE` di resources/js/pages/asisten/grades/review.tsx
+     * (dijaga sama oleh GradeScaleTest). Saat skala resmi diketahui, ubah kedua tempat itu.
      */
+    public const LETTER_SCALE = [
+        85 => 'A',
+        80 => 'AB',
+        70 => 'B',
+        65 => 'BC',
+        55 => 'C',
+        40 => 'D',
+    ];
+
+    /** Huruf bila skor di bawah semua batas pada LETTER_SCALE. */
+    public const LOWEST_LETTER = 'E';
+
     public static function letter(float $score): string
     {
-        return match (true) {
-            $score >= 85 => 'A',
-            $score >= 80 => 'AB',
-            $score >= 70 => 'B',
-            $score >= 65 => 'BC',
-            $score >= 55 => 'C',
-            $score >= 40 => 'D',
-            default => 'E',
-        };
+        foreach (self::LETTER_SCALE as $minimum => $letter) {
+            if ($score >= $minimum) {
+                return $letter;
+            }
+        }
+
+        return self::LOWEST_LETTER;
     }
 }
