@@ -143,3 +143,24 @@ export type HoursRecapRow = {
         hours: number;
     }[];
 };
+
+/** Berkas hasil rekap Final/revisi (unduh lewat signed URL). */
+export type RecapFile = { name: string; size: number; url: string };
+
+/** Rekap Jam Ngawas berstatus Final (FR-RJN-08). */
+export type RecapFinalInfo = {
+    finalizedAt: string | null;
+    finalizedBy: string | null;
+    file: RecapFile | null;
+    /** Data laporan berubah sejak Final (hanya pengelola). */
+    changedSinceFinal: boolean;
+};
+
+/** Riwayat revisi: berkas Final lama beserta catatan Buka Kembali (FR-RJN-09). */
+export type RecapRevision = {
+    revision: number;
+    note: string | null;
+    by: string | null;
+    at: string;
+    file: RecapFile | null;
+};

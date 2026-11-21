@@ -9,10 +9,18 @@ import { GenerateTabs } from '@/components/ngawas-recap/generate-tabs';
 import { RecapChecksPanel } from '@/components/ngawas-recap/recap-checks';
 import { RecapGrid } from '@/components/ngawas-recap/recap-grid';
 import { RecapLegend } from '@/components/ngawas-recap/recap-legend';
+import { RecapStatusBar } from '@/components/ngawas-recap/recap-status-bar';
+import { RevisionHistory } from '@/components/ngawas-recap/revision-history';
 import { SelectField } from '@/components/select-field';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import type { ExportRow, NgawasRecapData, RecapChecks } from '@/types';
+import type {
+    ExportRow,
+    NgawasRecapData,
+    RecapChecks,
+    RecapFinalInfo,
+    RecapRevision,
+} from '@/types';
 
 type Props = {
     filters: { month: string };
@@ -22,6 +30,8 @@ type Props = {
     status: { value: 'draft' | 'final'; revision: number } | null;
     signatures: { signed: number; total: number } | null;
     exports: ExportRow[];
+    final: RecapFinalInfo | null;
+    revisions: RecapRevision[];
 };
 
 const MONTHS = [
@@ -74,6 +84,8 @@ export default function AsistenNgawasRecap({
     checks,
     status,
     signatures,
+    final,
+    revisions,
     exports,
 }: Props) {
     const semester = usePage().props.activeSemester;
@@ -200,13 +212,25 @@ export default function AsistenNgawasRecap({
                             )}
                         </div>
 
+                        {status && (
+                            <RecapStatusBar
+                                month={filters.month}
+                                isFinal={status.value === 'final'}
+                                final={final}
+                                checks={checks}
+                                canManage={canManage}
+                            />
+                        )}
                         {canManage && (
                             <ExportPanel
                                 month={filters.month}
                                 exports={exports}
                             />
                         )}
-                        {checks && <RecapChecksPanel checks={checks} />}
+                        {checks && status?.value !== 'final' && (
+                            <RecapChecksPanel checks={checks} />
+                        )}
+                        <RevisionHistory revisions={revisions} />
 
                         <RecapLegend />
                         <RecapGrid recap={recap} manager={canManage} />

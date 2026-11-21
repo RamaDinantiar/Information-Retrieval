@@ -5,15 +5,14 @@ namespace App\Jobs;
 use App\Events\ExportFinished;
 use App\Models\Export;
 use App\Models\Semester;
-use App\Models\StoredFile;
 use App\Models\User;
 use App\Support\Files\FileStore;
 use App\Support\Reports\NgawasApprovers;
 use App\Support\Reports\NgawasRecap;
 use App\Support\Reports\NgawasRecapWorkbook;
+use App\Support\Reports\NgawasSignatureFiles;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use Throwable;
 
@@ -56,13 +55,13 @@ class GenerateNgawasRecapWorkbook implements ShouldQueue
                 $approvers[] = [
                     'position' => $approver['position'],
                     'name' => $approver['name'],
-                    'signaturePath' => $mode === NgawasRecapWorkbook::FINAL ? $this->materialize($approver['signature_file_id'], $temp) : null,
+                    'signaturePath' => $mode === NgawasRecapWorkbook::FINAL ? NgawasSignatureFiles::materialize($approver['signature_file_id'], $temp) : null,
                 ];
             }
 
             $signatures = [];
             foreach ($recap['assistants'] as $assistant) {
-                $path = $this->materialize($this->signatureIdOf($assistant['userId']), $temp);
+                $path = NgawasSignatureFiles::materialize($this->signatureIdOf($assistant['userId']), $temp);
 
                 if ($path !== null) {
                     $signatures[$assistant['userId']] = $path;
@@ -95,25 +94,5 @@ class GenerateNgawasRecapWorkbook implements ShouldQueue
     private function signatureIdOf(int $userId): ?int
     {
         return User::whereKey($userId)->value('signature_file_id');
-    }
-
-    /**
-     * Salin berkas tanda tangan dari disk privat ke file sementara agar bisa dibaca PhpSpreadsheet.
-     *
-     * @param  list<string>  $temp  daftar file sementara yang dibersihkan di akhir
-     */
-    private function materialize(?int $fileId, array &$temp): ?string
-    {
-        $file = $fileId === null ? null : StoredFile::find($fileId);
-
-        if ($file === null || ! Storage::disk($file->disk)->exists($file->path)) {
-            return null;
-        }
-
-        $path = tempnam(sys_get_temp_dir(), 'sig').'.png';
-        file_put_contents($path, Storage::disk($file->disk)->get($file->path));
-        $temp[] = $path;
-
-        return $path;
     }
 }

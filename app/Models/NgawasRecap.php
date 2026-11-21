@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\HasFiles;
 use App\Enums\NgawasRecapStatus;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $file_id
  * @property-read Semester $semester
  */
-class NgawasRecap extends Model
+class NgawasRecap extends Model implements HasFiles
 {
     protected $guarded = ['id'];
 
@@ -60,6 +61,14 @@ class NgawasRecap extends Model
     }
 
     /**
+     * @return BelongsTo<User, $this>
+     */
+    public function finalizer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'finalized_by');
+    }
+
+    /**
      * @return HasMany<NgawasRecapRevision, $this>
      */
     public function revisions(): HasMany
@@ -70,5 +79,17 @@ class NgawasRecap extends Model
     public function isFinal(): bool
     {
         return $this->status === NgawasRecapStatus::Final;
+    }
+
+    /** Berkas Final/revisi: pengelola rekap, atau asisten yang tampil di rekap itu (hanya-baca). */
+    public function fileVisibleTo(User $user): bool
+    {
+        if ($user->canManageNgawasRecap()) {
+            return true;
+        }
+
+        $ids = array_column($this->snapshot_json['recap']['assistants'] ?? [], 'userId');
+
+        return in_array($user->id, $ids, true);
     }
 }
