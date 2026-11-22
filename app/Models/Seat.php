@@ -44,9 +44,4 @@ class Seat extends Model
     {
         return $this->hasMany(SeatContract::class);
     }
-
-    public function isSeat(): bool
-    {
-        return $this->type === 'seat';
-    }
 }
