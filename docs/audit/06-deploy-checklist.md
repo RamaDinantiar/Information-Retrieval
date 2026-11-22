@@ -49,9 +49,9 @@ Checklist tunggal untuk hari deploy. **Menggantikan** [03-checklist-deploy.md](0
 
     Bila sama: hapus komentar "asumsi", catat sumbernya. Bila berbeda: kirim skalanya; ubah PHP, TSX, dan dua test lama yang menulis huruf langsung (N9). Bila belum pasti: **biarkan**, dan beri tahu asisten bahwa huruf mutu bersifat sementara.
 
-- [ ] ⚠️ **4. Back setelah logout (W1). Disarankan sebelum deploy.** Praktikan memakai komputer lab bersama; setelah logout, tombol Back menampilkan dashboard sebelumnya dari cache (server tetap menolak saat dimuat ulang). Perbaikan kecil: `INERTIA_ENCRYPT_HISTORY=true` dan `Inertia::clearHistory()` saat logout. Enkripsi riwayat butuh HTTPS. Jika tidak diperbaiki sebelum deploy, catat sebagai risiko yang diterima.
+- [ ] ✅/🖥️ **4. Back setelah logout (W1). Diperbaiki di kode, tinggal diuji di server.** Respons logout (`App\Http\Responses\LogoutResponse`) memanggil `Inertia::clearHistory()`; test PHP memastikan penanda `clearHistory` terbawa ke halaman berikutnya (dan gagal bila baris itu dihapus). Syarat di server: `INERTIA_ENCRYPT_HISTORY=true` di `.env` (sudah di `.env.production.example`) dan HTTPS. **Belum diuji di browser**: enkripsi riwayat butuh konteks aman. Uji setelah deploy: login, buka dashboard, logout, tekan Back; halaman lama tidak boleh tampil.
 
-- [ ] ⚠️ **5. ClamAV (R11). Keputusan peluncuran.** Pemindaian virus belum aktif: `FileStore` menandai semua unggahan `clean` langsung (komentar NFR-F06 di kode). Unggahan dibatasi jenis dan ukuran, dan diunduh sebagai `attachment` dengan `nosniff`, tetapi tidak dipindai. Putuskan: terima risikonya untuk peluncuran awal, atau tunda membuka unggahan ke banyak pengguna.
+- [x] ✅ **5. ClamAV (R11). Diputuskan: rilis pertama tanpa pemindaian virus (opsi a).** Pemindaian belum aktif: `FileStore` menandai semua unggahan `clean` langsung. Kompensasinya sudah berjalan dan diuji (`FileStoreTest`, 15 test): ekstensi dan MIME asli dari isi file (finfo), batas ukuran per jenis (PDF 10 MB, ZIP 20 MB, gambar 5 MB), pemeriksaan ZIP tanpa ekstraksi (path traversal, symlink, zip bomb), disk privat `lab` di luar web root dengan nama UUID dan unduhan hanya lewat `FileController` (`attachment`, `nosniff`, `private, no-store`). **Tugas setelah rilis:** pasang ClamAV (opsi b), lihat bagian 8.
 
 Keputusan lain yang tercatat tetapi **tidak menghalangi**: pelacak galat eksternal atau cukup peringatan `failed_jobs` (T1), modul Program tetap nonaktif (T8), job CI MySQL (T2). Lihat [04](04-tech-debt.md).
 
@@ -70,7 +70,7 @@ Keputusan lain yang tercatat tetapi **tidak menghalangi**: pelacak galat ekstern
 Rincian kebutuhan server: 08 §1. Konfigurasi `.env` disalin dari `.env.production.example`, lalu pastikan:
 
 - [ ] `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://<domain>`; HTTPS aktif
-- [ ] `SESSION_SECURE_COOKIE=true`, `SESSION_ENCRYPT=true`, `SESSION_LIFETIME=30`
+- [ ] `SESSION_SECURE_COOKIE=true`, `SESSION_ENCRYPT=true`, `SESSION_LIFETIME=30`, `INERTIA_ENCRYPT_HISTORY=true` (W1)
 - [ ] `DB_*` memakai user khusus (bukan `root`); `DB_QUEUE_RETRY_AFTER=330` (harus **lebih besar** dari `--timeout` worker 320 dan job rekap 300)
 - [ ] `TRUSTED_PROXIES=` sesuai keputusan 1 (dibaca lewat `config/app.php`, jadi `php artisan config:cache` wajib setelah mengubahnya)
 - [ ] `MAIL_MAILER=smtp` dengan kredensial sungguhan (keputusan 2)
@@ -138,22 +138,23 @@ Belum ada pelacak galat (T1), jadi pemantauan ini manual. Tentukan siapa yang me
 
 ## 8. Item terbuka setelah deploy (tidak menghalangi)
 
-| Item                                             | Sumber  | Status                                                                                                          | Kapan                             |
-| ------------------------------------------------ | ------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| Tidak ada pelacak galat atau peringatan antrean  | T1      | Belum ada                                                                                                       | Minggu pertama (versi terkecil)   |
-| Test dan CI hanya SQLite                         | T2      | Belum ada job MySQL; N8 aman di MySQL pada pengecekan manual (05)                                               | Dua minggu pertama                |
-| Skala huruf mutu dua tempat dan belum resmi      | T3, S9  | Menunggu skala resmi                                                                                            | Sebelum nilai akhir dipakai resmi |
-| Dependensi tertinggal; `vite-plus` 0.3.0 → 1.x   | T4      | 7 kerentanan npm hanya di alat pengembangan. Butuh `overrides` dan lockfile baru; **jangan** pakai `vp migrate` | Setelah deploy awal, PR terpisah  |
-| Tidak ada test komponen frontend                 | T5      | Belum ada                                                                                                       | Bulan pertama                     |
-| `AddSecurityHeaders` tidak global                | T7, N13 | Alihan tamu dan 404 tanpa rute tidak berheader                                                                  | Dua minggu pertama                |
-| Modul Program nonaktif dan belum ditinjau        | T8      | `LAB_PROGRAMS_ENABLED=false`                                                                                    | Tinjau sebelum diaktifkan         |
-| Mode tinjauan nilai di ponsel                    | W2      | Kolom kosong di kanan                                                                                           | Opsional                          |
-| Jam kosong lolos ke dialog konfirmasi laporan    | W3      | Server menolak setelah konfirmasi                                                                               | Opsional                          |
-| Laporan lewat H+1 bisa dibuat (lahir terkunci)   | W4      | Pertanyaan kebijakan                                                                                            | Putuskan bersama Kepala Lab       |
-| Publikasi nilai tanpa konfirmasi                 | W6      | Pertanyaan kebijakan                                                                                            | Putuskan bersama Kepala Lab       |
-| Entri audit `grade.saved` pertama `status: null` | W5      | Kecil                                                                                                           | Opsional                          |
-| Foto profil terbaca antar-pengguna               | R8      | Disengaja                                                                                                       | Opsional                          |
-| Pembatasan hak DB untuk `audit_logs`             | —       | Di luar kode aplikasi                                                                                           | Opsional, oleh pengelola DB       |
+| Item                                             | Sumber  | Status                                                                                                                                   | Kapan                             |
+| ------------------------------------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| Tidak ada pelacak galat atau peringatan antrean  | T1      | Belum ada                                                                                                                                | Minggu pertama (versi terkecil)   |
+| Test dan CI hanya SQLite                         | T2      | Belum ada job MySQL; N8 aman di MySQL pada pengecekan manual (05)                                                                        | Dua minggu pertama                |
+| Skala huruf mutu dua tempat dan belum resmi      | T3, S9  | Menunggu skala resmi                                                                                                                     | Sebelum nilai akhir dipakai resmi |
+| Dependensi tertinggal; `vite-plus` 0.3.0 → 1.x   | T4      | 7 kerentanan npm hanya di alat pengembangan. Butuh `overrides` dan lockfile baru; **jangan** pakai `vp migrate`                          | Setelah deploy awal, PR terpisah  |
+| Tidak ada test komponen frontend                 | T5      | Belum ada                                                                                                                                | Bulan pertama                     |
+| `AddSecurityHeaders` tidak global                | T7, N13 | Alihan tamu dan 404 tanpa rute tidak berheader                                                                                           | Dua minggu pertama                |
+| Modul Program nonaktif dan belum ditinjau        | T8      | `LAB_PROGRAMS_ENABLED=false`                                                                                                             | Tinjau sebelum diaktifkan         |
+| Mode tinjauan nilai di ponsel                    | W2      | Kolom kosong di kanan                                                                                                                    | Opsional                          |
+| Jam kosong lolos ke dialog konfirmasi laporan    | W3      | Server menolak setelah konfirmasi                                                                                                        | Opsional                          |
+| Laporan lewat H+1 bisa dibuat (lahir terkunci)   | W4      | Pertanyaan kebijakan                                                                                                                     | Putuskan bersama Kepala Lab       |
+| Publikasi nilai tanpa konfirmasi                 | W6      | Pertanyaan kebijakan                                                                                                                     | Putuskan bersama Kepala Lab       |
+| Entri audit `grade.saved` pertama `status: null` | W5      | Kecil                                                                                                                                    | Opsional                          |
+| Foto profil terbaca antar-pengguna               | R8      | Disengaja                                                                                                                                | Opsional                          |
+| Pembatasan hak DB untuk `audit_logs`             | —       | Di luar kode aplikasi                                                                                                                    | Opsional, oleh pengelola DB       |
+| Pemindaian virus ClamAV belum aktif              | R11     | Diterima untuk rilis pertama (bagian 2, butir 5). Pasang ClamAV, ubah `FileStore` agar `scan_status` mengikuti hasil pindai, tambah test | Minggu pertama sampai kedua       |
 
 ## 9. Rollback
 
