@@ -1,7 +1,7 @@
 # Audit 07 — Kode mati, dependensi tak terpakai, dan kerumitan
 
 **Tanggal:** 2026-11-22 · **Dasar:** `main` @ `281148a` (PR #14 ter-merge) · **Branch:** `chore/tech-debt`
-**Sifat dokumen:** daftar temuan dan status pengerjaannya. Item yang Anda setujui (C1, C2, C3, C5, C6, C7) sudah dikerjakan, satu commit per item; sisanya dicatat sebagai tugas lanjutan (bagian 6).
+**Sifat dokumen:** daftar temuan dan status pengerjaannya. Item yang Anda setujui (C1, C2, C3, C5, C6, C7, C9) sudah dikerjakan, satu commit per item; sisanya dicatat sebagai tugas lanjutan (bagian 6).
 
 Melengkapi `04-tech-debt.md` (T1–T13). Temuan yang sudah ada di sana hanya dirujuk, tidak diulang.
 
@@ -20,7 +20,7 @@ Setiap commit lolos `php artisan test` (671 test), PHPStan (0 galat), `pint --te
 | C4  | ⏳ Tugas setelah deploy                                                                                                                                           | —                                                                                                                     | Lihat bagian 6 dan `06-deploy-checklist.md` bagian 8                                                                                                                                            |
 | C8  | ⏳ Rencana setelah ada test komponen                                                                                                                              | —                                                                                                                     | Menunggu T5. Lihat bagian 6                                                                                                                                                                     |
 | C9  | Sisa cabang `header` di `AppShell` dan `AppContent` serta tipe `AppVariant = 'header' \| 'sidebar'`. Satu-satunya layout yang tersisa memakai `variant="sidebar"` | `resources/js/components/app-shell.tsx:14`, `resources/js/components/app-content.tsx:6`, `resources/js/types/ui.ts:9` | Sangat rendah. Cabang tak pernah dijalankan setelah `app-header-layout` dihapus (C1)                                                                                                            | Rendah. Satu rujukan `variant="header"` tidak ada di kode | Sederhanakan jadi tanpa properti `variant`, ubah `app-sidebar-layout.tsx`, hapus tipe. Perlu build dan cek browser | Tidak | 12  | 20 mnt |
-| C9  | 🆕 Temuan baru, belum dikerjakan                                                                                                                                  | —                                                                                                                     | Muncul setelah C1. Lihat tabel temuan                                                                                                                                                           |
+| C9  | ✅ Selesai                                                                                                                                                        | `a226cfe`                                                                                                             | Properti `variant`, cabang `header`, dan tipe `AppVariant` dihapus di `AppShell`, `AppContent`, `types/ui.ts`, `app-sidebar-layout.tsx`. Build, test, dan cek browser tiga peran lolos          |
 
 ## 1. Ringkasan
 
@@ -77,8 +77,7 @@ Duplikasi: T11 (format tanggal di 17 berkas TSX), T12 (urutan status `CASE …` 
 
 1. **Setelah deploy awal, C4:** hapus hanya dua baris `@rollup/rollup-*` di `optionalDependencies` (`package.json`). Jangan sentuh `lightningcss` dan `@tailwindcss/oxide`. Syarat selesai: `npm run build` hijau di CI Linux, lockfile diperbarui, dan `npm audit --omit=dev` tetap 0. Dicatat juga di `06-deploy-checklist.md` bagian 8.
 2. **Setelah test komponen frontend ada (T5), C8:** pecah berkas besar secara bertahap, mulai dari yang paling sering berubah (`pages/asisten/report.tsx`, `components/tasks/task-form-dialog.tsx`). Jangan dipecah sebelum T5 karena perilakunya hanya dicakup test PHP dan uji browser. Dicatat juga di `06-deploy-checklist.md` bagian 8.
-3. **Opsional, C9:** sisa cabang `header` setelah C1. Boleh digabung ke PR berikutnya bila Anda mau.
-4. **C5:** dipertahankan sebagai alat pengembangan; tidak ada tindakan lagi.
+3. **C5:** dipertahankan sebagai alat pengembangan; tidak ada tindakan lagi.
 
 Tidak ada item di sini yang perlu selesai sebelum deploy. Urutan prioritas sebelum deploy tetap di `06-deploy-checklist.md`.
 
