@@ -75,7 +75,6 @@ Rincian kebutuhan server: 08 §1. Konfigurasi `.env` disalin dari `.env.producti
 - [ ] `TRUSTED_PROXIES=` sesuai keputusan 1 (dibaca lewat `config/app.php`, jadi `php artisan config:cache` wajib setelah mengubahnya)
 - [ ] `MAIL_MAILER=smtp` dengan kredensial sungguhan (keputusan 2)
 - [ ] `LAB_PROGRAMS_ENABLED=false`
-- [ ] `INERTIA_ENCRYPT_HISTORY=true` bila keputusan 4 diambil (variabel ini belum ada di `.env.production.example`; tambahkan)
 - [ ] `ADMIN_NAME` dan `ADMIN_EMAIL` terisi (`ADMIN_EMAIL=lab.ir@itpln.ac.id`, akun lab, diputuskan Anda); `ADMIN_PASSWORD` dikosongkan agar dibuat acak
 - [ ] `chmod 600 .env`; `storage/` dan `bootstrap/cache/` dapat ditulis user web server
 - [ ] PHP 8.4 dengan `pdo_mysql, mbstring, xml, dom, fileinfo, zip, gd, intl`; `upload_max_filesize` dan `post_max_size` ≥ 25M; Nginx `client_max_body_size 25M`; document root ke `public/`
@@ -83,6 +82,30 @@ Rincian kebutuhan server: 08 §1. Konfigurasi `.env` disalin dari `.env.producti
 ## 5. Langkah deploy
 
 Detail dan contoh konfigurasi: 08 §3–4. Urutan ringkas:
+
+### 5.1 Cadangan sebelum migrasi, dan migrasi Rekap Jam Ngawas
+
+Server baru yang masih kosong boleh melewati cadangan. Server yang sudah berisi data **wajib** punya cadangan sebelum `migrate`.
+
+- [ ] Ekstensi PHP terpasang: `php -m | grep -E "^(gd|zip|pdo_mysql|intl|fileinfo)$"` mencetak kelimanya. `zip` dan `gd` dipakai ekspor Rekap Jam Ngawas (xlsx dan gambar tanda tangan); tanpa keduanya ekspor gagal di antrean, bukan di layar
+- [ ] Cadangan database, tepat sebelum migrasi: `mysqldump --single-transaction --routines ir_lab > ir_lab-pra-deploy-$(date +%F-%H%M).sql`; periksa berkasnya tidak kosong (`ls -lh`, `tail -n 3` berakhir dengan `Dump completed`)
+- [ ] Cadangan berkas pada waktu yang sama: `tar czf storage-pra-deploy-$(date +%F-%H%M).tgz storage/app/private/`. Simpan keduanya **di luar server**
+- [ ] Lihat migrasi tertunda lebih dulu: `php artisan migrate:status | grep Pending`
+- [ ] Jalankan `php artisan migrate --force`, lalu `php artisan migrate:status` tidak boleh menyisakan `Pending`
+
+Migrasi fitur Rekap Jam Ngawas (semuanya **menambah**, tidak mengubah atau menghapus data lama):
+
+- `2026_11_20_100003_add_recap_fields_to_semesters_table`: kolom `sk_number` dan `term_label` di `semesters` (boleh kosong; diisi Admin di Semester)
+- `2026_11_20_100004_add_signature_file_id_to_users_table`: kolom `signature_file_id` di `users`
+- `2026_11_20_100005_create_ngawas_recaps_tables`: tabel `ngawas_recaps`, `ngawas_recap_revisions`, `ngawas_recap_orders`
+
+Setelah migrasi:
+
+- [ ] Template ada di server: `resources/templates/rekap-ngawas.xlsx` dan `laporan-mengawas.docx` (keduanya dilacak git)
+- [ ] Admin › Semester: isi **Nomor SK** dan **Label periode** semester aktif; rekap Final memuatnya
+- [ ] Worker antrean hidup sebelum ekspor pertama (Draft Excel lewat antrean; Final dibuat saat Tetapkan Final)
+
+**Jangan memakai `migrate:rollback` untuk mundur.** `down()` migrasi 100003 membuang kolom `sk_number` dan `term_label`, dan 100005 membuang tiga tabel rekap beserta semua rekap Final dan revisinya. Mundur berarti memulihkan cadangan di atas (bagian 9).
 
 - [ ] Mode pemeliharaan bila ini pembaruan: `php artisan down`
 - [ ] Ambil kode pada commit yang dicatat
@@ -170,7 +193,7 @@ Belum ada pelacak galat (T1), jadi pemantauan ini manual. Tentukan siapa yang me
 Langkah:
 
 - [ ] Kode: deploy ulang commit yang dicatat di bagian 3 (atau tag rilis sebelumnya), lalu `php artisan queue:restart`, `php artisan config:cache`, `php artisan route:cache`
-- [ ] **Database:** rilis ini tidak menambah migrasi sejak `23f4848`, jadi mundur kode **tidak** butuh `migrate:rollback`. Bila server memang baru, rollback berarti menghentikan layanan, bukan memulihkan versi lama
+- [ ] **Database:** rilis ini tidak menambah migrasi sejak `23f4848`, jadi mundur kode **tidak** butuh `migrate:rollback`. Bila server memang baru, rollback berarti menghentikan layanan, bukan memulihkan versi lama. Pada server yang sudah berisi data dan baru menjalankan migrasi Rekap Jam Ngawas (5.1), mundur **harus** lewat cadangan pra-deploy, bukan `migrate:rollback`
 - [ ] Data yang rusak: pulihkan dari cadangan database dan `storage/app/private/` (bagian 3). Pulihkan **keduanya** dari waktu yang sama
 - [ ] Konfigurasi baru (`TRUSTED_PROXIES`, `DB_QUEUE_RETRY_AFTER`, `INERTIA_ENCRYPT_HISTORY`) aman diabaikan oleh versi lama
 - [ ] Setelah rollback: beri tahu pengguna, catat penyebab di bagian 8, dan jangan deploy ulang sebelum penyebabnya dipahami
