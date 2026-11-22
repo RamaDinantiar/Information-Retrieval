@@ -170,4 +170,23 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
         $this->assertNotSame($loggedIn, session()->getId(), 'ID sesi harus diganti lagi saat logout.');
     }
+
+    public function test_logout_clears_inertia_history_on_the_next_page(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('logout'))->assertRedirect('/');
+
+        // Penanda bertahan melewati redirect `/` → `/login` dan dibawa halaman Inertia berikutnya.
+        $page = $this->get(route('login'))->viewData('page');
+
+        $this->assertTrue($page['clearHistory'] ?? false);
+    }
+
+    public function test_history_is_not_cleared_on_ordinary_pages(): void
+    {
+        $this->get(route('login'))->assertOk();
+
+        $this->assertArrayNotHasKey('clearHistory', $this->get(route('login'))->viewData('page'));
+    }
 }
