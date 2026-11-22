@@ -33,7 +33,7 @@ Checklist tunggal untuk hari deploy. **Menggantikan** [03-checklist-deploy.md](0
 
     `*` mempercayai semua pengirim header `X-Forwarded-For`, sehingga siapa pun bisa memalsukan IP-nya dan melewati pembatas per IP. Pakai hanya bila server **hanya** bisa dijangkau lewat proxy.
 
-- [ ] ⚠️ **2. Akun SMTP untuk email. Wajib.** `.env.production.example` mengarah ke `smtp.office365.com:587` dengan akun `irlab@itpln.ac.id`. Pastikan akun itu boleh mengirim lewat SMTP dengan kata sandi/aplikasi yang Anda miliki (kebijakan Microsoft 365 kampus bisa melarang SMTP AUTH; tanyakan ke pengelola email kampus). Tanpa email, **password sementara dan reset password tidak sampai**, dan Admin tidak bisa membuat akun yang berguna. Mailer `log` menulis OTP dan password sementara ke `laravel.log`, jadi jangan dipakai di produksi.
+- [ ] ⚠️ **2. Akun SMTP untuk email. Wajib.** `.env.production.example` mengarah ke `smtp.office365.com:587` dengan akun `lab.ir@itpln.ac.id`. Pastikan akun itu boleh mengirim lewat SMTP dengan kata sandi/aplikasi yang Anda miliki (kebijakan Microsoft 365 kampus bisa melarang SMTP AUTH; tanyakan ke pengelola email kampus). Tanpa email, **password sementara dan reset password tidak sampai**, dan Admin tidak bisa membuat akun yang berguna. Mailer `log` menulis OTP dan password sementara ke `laravel.log`, jadi jangan dipakai di produksi.
 
 - [ ] ⚠️ **3. Skala huruf mutu (S9). Boleh menyusul.** Skala saat ini bertanda "ASUMSI S9 – menunggu skala resmi IT PLN" di `FinalScore::LETTER_SCALE`, dengan salinan `GRADE_SCALE` di `resources/js/pages/asisten/grades/review.tsx`:
 
