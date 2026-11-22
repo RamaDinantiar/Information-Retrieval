@@ -76,7 +76,7 @@ Rincian kebutuhan server: 08 §1. Konfigurasi `.env` disalin dari `.env.producti
 - [ ] `MAIL_MAILER=smtp` dengan kredensial sungguhan (keputusan 2)
 - [ ] `LAB_PROGRAMS_ENABLED=false`
 - [ ] `INERTIA_ENCRYPT_HISTORY=true` bila keputusan 4 diambil (variabel ini belum ada di `.env.production.example`; tambahkan)
-- [ ] `ADMIN_NAME` dan `ADMIN_EMAIL` terisi; `ADMIN_PASSWORD` dikosongkan agar dibuat acak
+- [ ] `ADMIN_NAME` dan `ADMIN_EMAIL` terisi (`ADMIN_EMAIL=lab.ir@itpln.ac.id`, akun lab, diputuskan Anda); `ADMIN_PASSWORD` dikosongkan agar dibuat acak
 - [ ] `chmod 600 .env`; `storage/` dan `bootstrap/cache/` dapat ditulis user web server
 - [ ] PHP 8.4 dengan `pdo_mysql, mbstring, xml, dom, fileinfo, zip, gd, intl`; `upload_max_filesize` dan `post_max_size` ≥ 25M; Nginx `client_max_body_size 25M`; document root ke `public/`
 
