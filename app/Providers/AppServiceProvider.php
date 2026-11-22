@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Laravel\Fortify\Contracts\LogoutResponse;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -55,6 +56,9 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(['eloquent.saved: *', 'eloquent.deleted: *'], function (): void {
             LiveVersion::bump();
         });
+
+        // W1: respons logout membersihkan riwayat terenkripsi Inertia.
+        $this->app->singleton(LogoutResponse::class, \App\Http\Responses\LogoutResponse::class);
 
         // Catat apakah sesi dibuat dengan Remember Me. Frontend memakainya untuk
         // tidak memaksa logout idle pada perangkat yang dipilih untuk diingat.

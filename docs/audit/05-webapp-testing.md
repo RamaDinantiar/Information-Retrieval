@@ -14,7 +14,7 @@ Alur utama berjalan dari ujung ke ujung: login, registrasi, reset password denga
 
 Temuan yang perlu keputusan sebelum deploy:
 
-1. **W1 (sedang):** setelah logout, tombol **Back** peramban menampilkan lagi halaman dashboard pengguna sebelumnya dari cache. Relevan karena praktikan memakai komputer lab bersama.
+1. **W1 (sedang, diperbaiki di branch `fix/pre-deploy`; uji di server dengan HTTPS):** setelah logout, tombol **Back** peramban menampilkan lagi halaman dashboard pengguna sebelumnya dari cache. Relevan karena praktikan memakai komputer lab bersama.
 2. **W2 (rendah):** di ponsel, mode tinjauan nilai tidak memakai lebar penuh (ada kolom kosong di kanan).
 
 Dua temuan lain bersifat pertanyaan kebijakan (W4, W6). Selain itu, tahap ini menutup tiga butir yang sebelumnya menunggu data nyata: **N8 aman di MySQL**, **waktu Tetapkan Final 1,34 detik** pada data lokal, dan **latensi pembaruan langsung 2,0 detik** (bagian 5).
