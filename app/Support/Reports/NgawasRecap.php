@@ -190,6 +190,35 @@ class NgawasRecap
         ];
     }
 
+    /**
+     * Sidik jari isi rekap untuk mendeteksi perubahan data sejak Final (audit 08 W10).
+     * Tidak bergantung pada urutan kunci objek: kolom JSON MySQL menyusun ulang kunci
+     * (yang pendek lebih dulu), sedangkan SQLite menyimpan teks apa adanya, sehingga
+     * membandingkan json_encode mentah selalu "berubah" di MySQL. Larik berindeks
+     * (daftar) tetap dibandingkan menurut urutannya.
+     *
+     * @param  array<string, mixed>  $recap
+     */
+    public static function fingerprint(array $recap): string
+    {
+        $normalize = function (mixed $value) use (&$normalize): mixed {
+            if (! is_array($value)) {
+                return $value;
+            }
+
+            if (! array_is_list($value)) {
+                ksort($value);
+            }
+
+            return array_map($normalize, $value);
+        };
+
+        // Lewat json dulu agar sisi hidup dan sisi tersimpan memakai representasi tipe yang sama.
+        $roundTripped = json_decode((string) json_encode($recap), true);
+
+        return md5((string) json_encode($normalize($roundTripped)));
+    }
+
     /** ROUND(x,0) Excel: setengah menjauhi nol; selisih float ±1e-9 diabaikan. */
     public static function roundHours(float $hours): int
     {

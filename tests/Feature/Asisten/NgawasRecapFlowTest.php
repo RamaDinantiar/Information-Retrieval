@@ -281,4 +281,27 @@ class NgawasRecapFlowTest extends TestCase
         $this->actingAs($this->manager)->get(route('asisten.ngawas-recap.index', ['month' => '2026-04']))
             ->assertInertia(fn (Assert $page) => $page->where('final.changedSinceFinal', true));
     }
+
+    public function test_key_order_in_the_stored_snapshot_is_not_a_data_change()
+    {
+        // Audit 08 W10: kolom JSON MySQL menyusun ulang kunci objek. SQLite tidak, jadi urutannya
+        // dibalik di sini agar perilaku MySQL tertangkap juga di CI.
+        $this->finalize();
+        $state = NgawasRecap::sole();
+        $reverse = function (mixed $value) use (&$reverse): mixed {
+            if (! is_array($value)) {
+                return $value;
+            }
+
+            return array_map($reverse, array_is_list($value) ? $value : array_reverse($value, true));
+        };
+        $snapshot = $state->snapshot_json;
+        $original = json_encode($snapshot['recap']);
+        $snapshot['recap'] = $reverse($snapshot['recap']);
+        $this->assertNotSame($original, json_encode($snapshot['recap']), 'urutan kunci harus benar-benar berbeda');
+        $state->update(['snapshot_json' => $snapshot]);
+
+        $this->actingAs($this->manager)->get(route('asisten.ngawas-recap.index', ['month' => '2026-04']))
+            ->assertInertia(fn (Assert $page) => $page->where('final.changedSinceFinal', false));
+    }
 }
