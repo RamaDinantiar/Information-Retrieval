@@ -1,5 +1,7 @@
 # Audit Pra-Deploy — 03 Checklist Deploy Final
 
+> **Digantikan oleh [06-deploy-checklist.md](06-deploy-checklist.md).** Berkas ini dipertahankan sebagai riwayat; rujukan baris kode dan nama test di bawah sudah bergeser dan tidak dipakai lagi.
+
 Checklist ini merangkum **item terbuka dari audit** ([02-perbaikan.md](02-perbaikan.md)) dan hal baru yang ikut berubah. Ia melengkapi, bukan menggantikan, [08 · Deployment](../08-deployment.md). Kerjakan 08 lebih dulu, lalu pakai checklist ini sebagai lapisan tambahan.
 
 - **Basis kode:** `main` @ `8d8dd77` (merge PR #7), CI `tests` lolos
