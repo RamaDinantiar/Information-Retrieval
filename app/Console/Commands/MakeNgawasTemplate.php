@@ -21,6 +21,18 @@ use ZipArchive;
  * kop, logo, legenda, gaya sel, lebar kolom, merge header, dan pengaturan cetak
  * tetap. Jabatan/nama pengesah pada kotak teks diganti penanda. Dijalankan
  * sekali; file sumber berisi nama dan NIM asli dan TIDAK boleh masuk repo.
+ *
+ * ALAT PENGEMBANGAN SEKALI PAKAI, bukan bagian operasi produksi: tidak dijadwalkan
+ * dan tidak perlu dijalankan saat deploy. Dipertahankan agar template bisa dibuat
+ * ulang bila kampus mengganti format rekap. Cara memakai:
+ *
+ *   php artisan ngawas:make-template /path/ke/Rekap_Kampus.xlsx
+ *   php artisan ngawas:make-template /path/ke/Rekap_Kampus.xlsx --output=/tmp/uji.xlsx
+ *
+ * Tanpa --output, hasil menimpa `resources/templates/rekap-ngawas.xlsx` (lihat
+ * NgawasTemplate::path()). Perintah menolak hasil yang masih memuat data pribadi
+ * atau tidak lolos NgawasTemplateValidator, dan tidak menulis berkas dalam kasus itu.
+ * Admin juga bisa mengunggah template pengganti di Pengaturan Sistem tanpa perintah ini.
  */
 class MakeNgawasTemplate extends Command
 {
