@@ -26,7 +26,8 @@ class AuditLogController extends Controller
             'q' => trim((string) $request->query('q', '')),
         ];
 
-        $logs = AuditLog::query()
+        // `task.viewed` (jejak "Hanya melihat") bukan kejadian audit: disembunyikan dari daftar.
+        $logs = AuditLog::query()->where('action', '!=', 'task.viewed')
             ->with('user:id,name,role')
             ->when($filters['module'], fn ($q, $m) => $q->where('action', 'like', $m.'.%'))
             ->when($filters['user'], fn ($q, $u) => $q->where('user_id', $u))
@@ -51,7 +52,7 @@ class AuditLogController extends Controller
         return Inertia::render('admin/audit-logs', [
             'logs' => $logs,
             'filters' => $filters,
-            'modules' => AuditLog::query()->selectRaw('distinct action')->pluck('action')
+            'modules' => AuditLog::query()->where('action', '!=', 'task.viewed')->selectRaw('distinct action')->pluck('action')
                 ->map(fn ($a) => Str::before($a, '.'))->unique()->sort()->values(),
             'actors' => User::whereIn('id', AuditLog::query()->select('user_id')->distinct())->orderBy('name')->get(['id', 'name']),
         ]);

@@ -157,10 +157,17 @@ export function PdfViewer({
         setError(null);
         setPage(1);
         setRotation(0);
+        // Efek berjalan ulang saat `url` berganti (pindah praktikan). `destroy()` membuat promise tugas lama
+        // ditolak; tanpa penjaga ini penolakan itu menimpa hasil tugas baru dengan galat "PDF tidak dapat dibuka".
+        let cancelled = false;
         const loading = getDocument({ url, withCredentials: true });
-        loading.promise.then(setPdf, () => setError('PDF tidak dapat dibuka.'));
+        loading.promise.then(
+            (document) => !cancelled && setPdf(document),
+            () => !cancelled && setError('PDF tidak dapat dibuka.'),
+        );
 
         return () => {
+            cancelled = true;
             void loading.destroy();
         };
     }, [url]);

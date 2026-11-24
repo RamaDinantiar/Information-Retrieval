@@ -27,6 +27,7 @@ trait CourseValidationRules
             'weight_pretest' => ['required', 'integer', 'between:0,100'],
             'weight_posttest' => ['required', 'integer', 'between:0,100'],
             'weight_report' => ['required', 'integer', 'between:0,100'],
+            'report_has_video' => ['sometimes', 'boolean'],
         ];
     }
 
@@ -57,6 +58,7 @@ trait CourseValidationRules
             'weight_pretest' => 'bobot pre-test',
             'weight_posttest' => 'bobot post-test',
             'weight_report' => 'bobot laporan',
+            'report_has_video' => 'nilai video laporan',
             'assistant_ids' => 'asisten pengampu',
         ];
     }

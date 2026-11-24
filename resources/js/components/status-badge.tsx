@@ -4,6 +4,7 @@ import {
     CircleDashed,
     CircleSlash,
     Clock,
+    Eye,
     FileText,
     Lock,
     Send,
@@ -28,6 +29,8 @@ const STATUSES = {
         tone: 'outline',
         icon: CircleDashed,
     },
+    // Laporan praktikum (tabel nilai asisten): sudah membuka tugas, belum mengumpulkan.
+    viewed_only: { label: 'Hanya Melihat', tone: 'warning', icon: Eye },
 
     // Nilai (US-P03, US-A02)
     graded: { label: 'Dinilai', tone: 'success', icon: CheckCircle2 },

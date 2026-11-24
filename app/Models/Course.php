@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $weight_pretest
  * @property int $weight_posttest
  * @property int $weight_report
+ * @property bool $report_has_video
  * @property ApprovalStatus $approval_status
  * @property int|null $proposed_by
  * @property int|null $approved_by
@@ -34,7 +35,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $rejection_reason
  * @property-read Semester $semester
  */
-#[Fillable(['code', 'name', 'color', 'credits', 'weight_pretest', 'weight_posttest', 'weight_report'])]
+#[Fillable(['code', 'name', 'color', 'credits', 'weight_pretest', 'weight_posttest', 'weight_report', 'report_has_video'])]
 class Course extends Model
 {
     /** @use HasFactory<CourseFactory> */
@@ -54,6 +55,7 @@ class Course extends Model
     {
         return [
             'approval_status' => ApprovalStatus::class,
+            'report_has_video' => 'boolean',
             'approved_at' => 'datetime',
         ];
     }
