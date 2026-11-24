@@ -94,12 +94,14 @@ final class NgawasTemplate
      * @var array<int, array<int, array{cell: string, width: int, height: int}>>
      */
     public const SIGNATURE_SLOTS = [
+        // UAT 2026-11-24: jangkar lama (baris 77/79) menimpa teks jabatan karena TextBox pengesah mulai di baris 78 / 81;
+        // gambar kini ditaruh di ruang kosong antara jabatan dan nama (tinggi dikecilkan agar tidak menyentuh nama).
         self::RECAP => [
-            1 => ['cell' => 'T77', 'width' => 175, 'height' => 135],
-            2 => ['cell' => 'AF77', 'width' => 175, 'height' => 135],
+            1 => ['cell' => 'T80', 'width' => 175, 'height' => 120],
+            2 => ['cell' => 'AF80', 'width' => 175, 'height' => 120],
         ],
         self::ATTENDANCE => [
-            2 => ['cell' => 'AB79', 'width' => 175, 'height' => 135],
+            2 => ['cell' => 'AB83', 'width' => 175, 'height' => 120],
         ],
     ];
 
