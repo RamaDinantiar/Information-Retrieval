@@ -15,6 +15,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $submission_id
  * @property string|null $score
+ * @property string|null $score_theory
+ * @property string|null $score_practice
+ * @property string|null $score_video
  * @property string|null $feedback
  * @property int|null $graded_by
  * @property CarbonImmutable|null $graded_at

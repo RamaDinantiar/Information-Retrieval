@@ -178,6 +178,147 @@ class GradingTest extends TestCase
         $this->assertStringContainsString('.xlsx', $response->headers->get('content-disposition'));
     }
 
+    /**
+     * @return array<string, string> isi XML tiap sheet ekspor (nama sheet → xml), dibaca dari berkas xlsx.
+     */
+    private function exportSheets(string $jenis): array
+    {
+        $response = $this->get(route('asisten.classes.grades.export', [$this->class, 'jenis' => $jenis]));
+        $response->assertOk();
+        $disposition = $response->headers->get('content-disposition');
+        $this->assertStringContainsString($this->class->course->name, $disposition);
+        $this->assertStringContainsString('Rekap Nilai', $disposition);
+
+        $path = tempnam(sys_get_temp_dir(), 'x');
+        file_put_contents($path, $response->streamedContent());
+        $zip = new \ZipArchive;
+        $this->assertTrue($zip->open($path));
+        $workbook = $zip->getFromName('xl/workbook.xml');
+        preg_match_all('/<sheet name="([^"]+)" sheetId="(\d+)"/', $workbook, $matches, PREG_SET_ORDER);
+        $sheets = [];
+        foreach ($matches as $match) {
+            $sheets[html_entity_decode($match[1])] = $zip->getFromName("xl/worksheets/sheet{$match[2]}.xml");
+        }
+        $zip->close();
+        unlink($path);
+
+        return $sheets;
+    }
+
+    private function makeGraded(TaskType $type, string $title, array $grade, ?string $text = null): TaskTarget
+    {
+        $task = Task::factory()->create(['course_id' => $this->class->course_id, 'type' => $type, 'title' => $title, 'status' => 'published', 'meeting_number' => null, 'max_score' => 100]);
+        $target = TaskTarget::factory()->for($task)->create(['class_id' => $this->class->id]);
+        $submission = Submission::factory()->for($target, 'target')->create(['user_id' => $this->submissions[0]->user_id, 'text_answer' => $text, 'is_current' => true]);
+        Grade::factory()->published()->for($submission)->create($grade);
+
+        return $target;
+    }
+
+    public function test_report_export_follows_the_recap_template_layout()
+    {
+        $this->class->course->update(['report_has_video' => true]);
+        $this->makeGraded(TaskType::Report, 'Laporan A', ['score' => 80, 'score_theory' => 80, 'score_practice' => 70, 'score_video' => 90]);
+        $this->makeGraded(TaskType::Report, 'Laporan B', ['score' => 60]); // nilai lama tanpa komponen
+
+        $sheets = $this->exportSheets('laporan');
+        $this->assertSame([preg_replace('/^kelas\s+/i', '', $this->class->name)], array_keys($sheets));
+        $xml = array_values($sheets)[0];
+
+        foreach (['NILAI MAHASISWA', 'LAPORAN 1', 'LAPORAN 2', 'TEORI', 'PRAKTIKUM', 'VIDEO', 'TOTAL NILAI', 'NILAI HASIL LAPORAN'] as $label) {
+            $this->assertStringContainsString($label, $xml);
+        }
+        $this->assertStringContainsString('<mergeCell ref="B1:', $xml);
+        $this->assertStringContainsString('<mergeCell ref="E3:H3"/>', $xml); // grup LAPORAN 1 = Teori, Praktikum, Video, Total
+        $this->assertMatchesRegularExpression('~<f>\(E(\d)\+F\1\+G\1\)/3</f><v>80</v>~', $xml);
+        $this->assertMatchesRegularExpression('~<f>SUM\(H\d,L\d\)/2</f><v>70</v>~', $xml);
+        // Nilai lama (hanya satu angka): TOTAL tampil apa adanya, tanpa rumus.
+        $this->assertMatchesRegularExpression('~<c r="L\d" s="\d+"><v>60</v></c>~', $xml);
+        $this->assertStringContainsString('<pane xSplit="4" ySplit="4" topLeftCell="E5"', $xml);
+    }
+
+    public function test_report_export_without_video_has_two_components_per_report()
+    {
+        $this->makeGraded(TaskType::Report, 'Laporan A', ['score' => 75, 'score_theory' => 80, 'score_practice' => 70]);
+
+        $xml = array_values($this->exportSheets('laporan'))[0];
+        $this->assertStringNotContainsString('VIDEO', $xml);
+        $this->assertStringContainsString('<mergeCell ref="E3:G3"/>', $xml);
+        $this->assertMatchesRegularExpression('~<f>\(E\d\+F\d\)/2</f><v>75</v>~', $xml);
+        $this->assertMatchesRegularExpression('~<f>SUM\(G\d\)/1</f><v>75</v>~', $xml);
+    }
+
+    public function test_test_export_has_pre_and_post_sheets_with_prefixed_column_titles()
+    {
+        $this->makeGraded(TaskType::Pretest, 'Pre-Test Pertemuan 1 · Basis Data', ['score' => 80]);
+        $this->makeGraded(TaskType::Posttest, 'Post Test: Normalisasi', ['score' => 90]);
+
+        $sheets = $this->exportSheets('tes');
+        $this->assertSame(['Pre-Test', 'Post-Test'], array_keys($sheets));
+        $this->assertStringContainsString('Pre-Test: Pertemuan 1 · Basis Data', $sheets['Pre-Test']);
+        $this->assertStringContainsString('RATA-RATA PRE-TEST', $sheets['Pre-Test']);
+        $this->assertStringContainsString('Post-Test: Normalisasi', $sheets['Post-Test']);
+        // setUp sudah punya satu Post-Test lain (kolom pertama) → rata-rata dibagi 2 tes.
+        $this->assertMatchesRegularExpression('~<f>SUM\(E\d:F\d\)/2</f><v>45</v>~', $sheets['Post-Test']);
+        $this->assertStringContainsString('NILAI POST-TEST MAHASISWA', $sheets['Post-Test']);
+        $this->assertStringNotContainsString('Normalisasi', $sheets['Pre-Test']);
+    }
+
+    public function test_final_export_has_weighted_final_score_without_letter()
+    {
+        $this->makeGraded(TaskType::Report, 'Laporan A', ['score' => 90]);
+
+        $xml = array_values($this->exportSheets('akhir'))[0];
+        $this->assertStringContainsString('NILAI AKHIR', $xml);
+        $this->assertStringNotContainsString('HURUF', $xml);
+        $this->assertMatchesRegularExpression('~<c r="H\d" s="\d+"><v>90</v></c>~', $xml);
+    }
+
+    public function test_report_grades_are_saved_as_components_and_averaged()
+    {
+        $report = $this->makeGraded(TaskType::Report, 'Laporan A', ['score' => null]);
+        $submission = $report->submissions()->first();
+        $grade = $submission->grade;
+
+        $save = fn (array $row) => $this->patch(route('asisten.grades.batch'), ['target_id' => $report->id, 'grades' => [[
+            'submission_id' => $submission->id, 'version' => $grade->fresh()->version, 'feedback' => null, ...$row,
+        ]]]);
+
+        $save(['theory' => '80', 'practice' => '70', 'video' => ''])->assertSessionHasNoErrors();
+        $this->assertEquals(75, $grade->fresh()->score);
+        $this->assertEquals(80, $grade->fresh()->score_theory);
+        $this->assertNull($grade->fresh()->score_video);
+
+        // Video dipakai mata kuliah: TOTAL baru terisi bila semua komponen ada.
+        $this->class->course->update(['report_has_video' => true]);
+        $save(['theory' => '80', 'practice' => '70', 'video' => ''])->assertSessionHasNoErrors();
+        $this->assertNull($grade->fresh()->score);
+        $save(['theory' => '80', 'practice' => '70', 'video' => '90'])->assertSessionHasNoErrors();
+        $this->assertEquals(80, $grade->fresh()->score);
+
+        $save(['theory' => '101', 'practice' => '70', 'video' => '90'])->assertSessionHasErrors('grades.0.score');
+    }
+
+    public function test_report_table_marks_students_who_only_viewed_the_task()
+    {
+        $report = $this->makeGraded(TaskType::Report, 'Laporan V', ['score' => 80]);
+        $viewer = $this->submissions[1]->user;
+
+        // Praktikan membuka tugas dua kali → hanya satu catatan "dilihat".
+        $this->actingAs($viewer);
+        $this->get(route('praktikan.tasks.show', $report))->assertOk();
+        $this->get(route('praktikan.tasks.show', $report))->assertOk();
+        $this->assertSame(1, AuditLog::where('action', 'task.viewed')->where('user_id', $viewer->id)->where('auditable_id', $report->id)->count());
+
+        $this->actingAs($this->asisten);
+        $this->get(route('asisten.grades.index', ['type' => 'laporan', 'class' => $this->class->id, 'target' => $report->id]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('asisten/grades/index')
+                ->where('rows', fn ($rows) => collect($rows)->firstWhere('userId', $viewer->id)['viewed'] === true
+                    && collect($rows)->firstWhere('userId', $viewer->id)['submission'] === null
+                    && collect($rows)->firstWhere('userId', $this->submissions[2]->user_id)['viewed'] === false));
+    }
+
     public function test_students_only_see_published_grades()
     {
         $draft = Grade::factory()->for($this->submissions[0])->create(['score' => 55, 'feedback' => 'rahasia']);

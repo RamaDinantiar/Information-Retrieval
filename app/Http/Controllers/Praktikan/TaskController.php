@@ -6,6 +6,7 @@ use App\Actions\Task\SubmitTask;
 use App\Actions\Task\UnsubmitTask;
 use App\Enums\TaskType;
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\Semester;
 use App\Models\StoredFile;
 use App\Models\Submission;
@@ -42,6 +43,7 @@ class TaskController extends Controller
     {
         $this->authorizeView($request, $target);
         $user = $request->user();
+        $this->recordFirstView($user->id, $target);
         $target->load(['task.course', 'task.attachments', 'labClass.room', 'labClass.assistants', 'meeting']);
         $task = $target->task;
         // Soal baru tampil saat tugas dibuka.
@@ -94,6 +96,20 @@ class TaskController extends Controller
                 'sha256' => $submission->files->first()?->sha256,
             ]),
         ]);
+    }
+
+    /**
+     * Status "Hanya melihat" (tabel nilai asisten): praktikan sudah membuka tugas tetapi belum mengumpulkan.
+     * Disimpan di audit log (`task.viewed`) satu kali per praktikan per tugas; tanpa tabel baru.
+     */
+    private function recordFirstView(int $userId, TaskTarget $target): void
+    {
+        $seen = AuditLog::where('action', 'task.viewed')->where('user_id', $userId)
+            ->where('auditable_type', $target->getMorphClass())->where('auditable_id', $target->id)->exists();
+
+        if (! $seen) {
+            AuditLog::record('task.viewed', $target);
+        }
     }
 
     public function submit(Request $request, TaskTarget $target, SubmitTask $submit): RedirectResponse

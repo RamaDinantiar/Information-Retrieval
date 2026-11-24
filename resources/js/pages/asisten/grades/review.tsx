@@ -6,8 +6,12 @@ import {
     ChevronRight,
     ClipboardCheck,
     Download,
+    ExternalLink,
+    FileArchive,
+    FileText,
     MessageSquareText,
     UserRound,
+    Video,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import GradeController from '@/actions/App/Http/Controllers/Asisten/GradeController';
@@ -48,6 +52,21 @@ type Position = {
     next: number | null;
 };
 type ZipEntry = { path: string; size: number; viewable: boolean };
+type ComponentKey = 'theory' | 'practice' | 'video';
+
+const COMPONENT_LABEL: Record<ComponentKey, string> = {
+    theory: 'Teori',
+    practice: 'Praktikum',
+    video: 'Video',
+};
+
+function componentsOf(row: GradeRow | null): Record<ComponentKey, string> {
+    return {
+        theory: row?.grade?.theory?.toString() ?? '',
+        practice: row?.grade?.practice?.toString() ?? '',
+        video: row?.grade?.video?.toString() ?? '',
+    };
+}
 
 const MIN = 50;
 const MAX = 80;
@@ -88,21 +107,33 @@ export default function GradeReview({
     const [split, setSplit] = useState(70);
     const [tab, setTab] = useState<'doc' | 'grade'>('doc');
     const [score, setScore] = useState(current?.grade?.score?.toString() ?? '');
+    const [parts, setParts] = useState<Record<ComponentKey, string>>(
+        componentsOf(current),
+    );
     const [feedback, setFeedback] = useState(current?.grade?.feedback ?? '');
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [fileId, setFileId] = useState<number | null>(null);
     const container = useRef<HTMLDivElement>(null);
     const getInitials = useInitials();
+    const isReport = target.type === 'report';
+    const componentKeys: ComponentKey[] = target.hasVideo
+        ? ['theory', 'practice', 'video']
+        : ['theory', 'practice'];
     const dirty =
         score !== (current?.grade?.score?.toString() ?? '') ||
+        JSON.stringify(parts) !== JSON.stringify(componentsOf(current)) ||
         feedback !== (current?.grade?.feedback ?? '');
 
     useEffect(() => {
         setScore(current?.grade?.score?.toString() ?? '');
+        setParts(componentsOf(current));
         setFeedback(current?.grade?.feedback ?? '');
         setError(null);
     }, [current?.userId, current?.grade?.version]);
+
+    const prevName = students.find((s) => s.userId === position?.prev)?.name;
+    const nextName = students.find((s) => s.userId === position?.next)?.name;
 
     const go = useCallback(
         (userId: number | null | undefined) => {
@@ -143,7 +174,13 @@ export default function GradeReview({
                 grades: [
                     {
                         submission_id: current.submission.id,
-                        score: score.trim(),
+                        ...(isReport
+                            ? {
+                                  theory: parts.theory.trim(),
+                                  practice: parts.practice.trim(),
+                                  video: parts.video.trim(),
+                              }
+                            : { score: score.trim() }),
                         feedback,
                         version: current.grade?.version ?? null,
                     },
@@ -220,8 +257,34 @@ export default function GradeReview({
         files[0] ??
         current?.submission?.file;
     const downloadUrl = file?.url.replace('inline=1', '');
+    const videoLink = current?.submission?.videoLink ?? null;
+    // Berkas yang bisa tampil di panel dokumen: PDF, dan ZIP utama (Code Viewer). Selebihnya diunduh.
+    const viewable = (f: (typeof files)[number]) =>
+        f.mime === 'application/pdf' ||
+        (f.mime === 'application/zip' &&
+            zipEntries !== null &&
+            f.id === (current?.submission?.file?.id ?? files[0]?.id));
     const typeLabel = TASK_TYPE_LABEL[target.type];
-    const numeric = score.trim() === '' ? null : Number(score);
+    const inRange = (text: string) =>
+        text.trim() !== '' &&
+        !Number.isNaN(Number(text)) &&
+        Number(text) >= 0 &&
+        Number(text) <= target.maxScore;
+    // Laporan: TOTAL = rata-rata komponen, baru ada bila semuanya terisi.
+    const numeric = isReport
+        ? componentKeys.every((key) => inRange(parts[key]))
+            ? Math.round(
+                  (componentKeys.reduce(
+                      (sum, key) => sum + Number(parts[key]),
+                      0,
+                  ) /
+                      componentKeys.length) *
+                      100,
+              ) / 100
+            : null
+        : score.trim() === ''
+          ? null
+          : Number(score);
     const valid =
         numeric !== null &&
         !Number.isNaN(numeric) &&
@@ -361,15 +424,19 @@ export default function GradeReview({
                     {position && (
                         <div className="flex items-center bg-primary-50">
                             <Button
-                                size="icon"
                                 variant="ghost"
-                                className="size-10 text-primary-700"
+                                className="h-10 max-w-48 gap-1 px-2 text-primary-700"
                                 onClick={() => go(position.prev)}
                                 disabled={!position.prev}
-                                aria-label="Praktikan sebelumnya (K)"
-                                title="Praktikan sebelumnya (K)"
+                                aria-label={`Praktikan sebelumnya${prevName ? `: ${prevName}` : ''} (K)`}
+                                title={`Praktikan sebelumnya${prevName ? `: ${prevName}` : ''} (K)`}
                             >
-                                <ChevronLeft />
+                                <ChevronLeft className="shrink-0" />
+                                {prevName && (
+                                    <span className="hidden truncate text-sm xl:inline">
+                                        {prevName}
+                                    </span>
+                                )}
                             </Button>
                             <Select
                                 value={String(current?.userId ?? '')}
@@ -402,15 +469,19 @@ export default function GradeReview({
                                 </SelectContent>
                             </Select>
                             <Button
-                                size="icon"
                                 variant="ghost"
-                                className="size-10 text-primary-700"
+                                className="h-10 max-w-48 gap-1 px-2 text-primary-700"
                                 onClick={() => go(position.next)}
                                 disabled={!position.next}
-                                aria-label="Praktikan berikutnya (J)"
-                                title="Praktikan berikutnya (J)"
+                                aria-label={`Praktikan berikutnya${nextName ? `: ${nextName}` : ''} (J)`}
+                                title={`Praktikan berikutnya${nextName ? `: ${nextName}` : ''} (J)`}
                             >
-                                <ChevronRight />
+                                {nextName && (
+                                    <span className="hidden truncate text-sm xl:inline">
+                                        {nextName}
+                                    </span>
+                                )}
+                                <ChevronRight className="shrink-0" />
                             </Button>
                         </div>
                     )}
@@ -545,6 +616,156 @@ export default function GradeReview({
                                         </div>
                                     </div>
 
+                                    {current?.submission &&
+                                        (files.length > 0 || videoLink) && (
+                                            <section
+                                                aria-labelledby="submitted-files"
+                                                className="grid gap-2"
+                                            >
+                                                <p
+                                                    id="submitted-files"
+                                                    className="font-medium text-muted-foreground"
+                                                >
+                                                    Berkas yang dikumpulkan (
+                                                    {files.length +
+                                                        (videoLink ? 1 : 0)}
+                                                    )
+                                                </p>
+                                                <ul className="grid gap-1.5">
+                                                    {files.map((f) => {
+                                                        const Icon =
+                                                            f.mime ===
+                                                            'application/zip'
+                                                                ? FileArchive
+                                                                : FileText;
+                                                        const active =
+                                                            f.id === file?.id;
+                                                        const content = (
+                                                            <>
+                                                                <Icon
+                                                                    className="size-5 shrink-0 text-danger"
+                                                                    aria-hidden
+                                                                />
+                                                                <span className="min-w-0 flex-1 text-left">
+                                                                    <span
+                                                                        className="block truncate text-sm font-medium"
+                                                                        title={
+                                                                            f.name
+                                                                        }
+                                                                    >
+                                                                        {f.name}
+                                                                    </span>
+                                                                    <span className="block text-xs text-muted-foreground">
+                                                                        {formatFileSize(
+                                                                            f.size,
+                                                                        )}
+                                                                        {active &&
+                                                                            ' · sedang dibuka'}
+                                                                    </span>
+                                                                </span>
+                                                            </>
+                                                        );
+
+                                                        return (
+                                                            <li
+                                                                key={f.id}
+                                                                className={cn(
+                                                                    'flex items-center gap-1 border bg-white',
+                                                                    active &&
+                                                                        'border-primary-700 bg-primary-50',
+                                                                )}
+                                                            >
+                                                                {viewable(f) ? (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            setFileId(
+                                                                                f.id,
+                                                                            );
+                                                                            setTab(
+                                                                                'doc',
+                                                                            );
+                                                                        }}
+                                                                        className="flex min-w-0 flex-1 items-center gap-2 p-2.5 hover:bg-primary-50"
+                                                                        aria-label={`Buka ${f.name}`}
+                                                                    >
+                                                                        {
+                                                                            content
+                                                                        }
+                                                                    </button>
+                                                                ) : (
+                                                                    <a
+                                                                        href={f.url.replace(
+                                                                            'inline=1',
+                                                                            '',
+                                                                        )}
+                                                                        download
+                                                                        className="flex min-w-0 flex-1 items-center gap-2 p-2.5 hover:bg-primary-50"
+                                                                        aria-label={`Unduh ${f.name}`}
+                                                                    >
+                                                                        {
+                                                                            content
+                                                                        }
+                                                                    </a>
+                                                                )}
+                                                                <a
+                                                                    href={f.url.replace(
+                                                                        'inline=1',
+                                                                        '',
+                                                                    )}
+                                                                    download
+                                                                    title="Unduh"
+                                                                    aria-label={`Unduh ${f.name}`}
+                                                                    className="p-2.5 text-primary-700 hover:bg-primary-100"
+                                                                >
+                                                                    <Download
+                                                                        className="size-4"
+                                                                        aria-hidden
+                                                                    />
+                                                                </a>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                    {videoLink && (
+                                                        <li className="flex items-center border bg-white">
+                                                            <a
+                                                                href={videoLink}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="flex min-w-0 flex-1 items-center gap-2 p-2.5 hover:bg-primary-50"
+                                                                aria-label="Buka link video di tab baru"
+                                                            >
+                                                                <Video
+                                                                    className="size-5 shrink-0 text-danger"
+                                                                    aria-hidden
+                                                                />
+                                                                <span className="min-w-0 flex-1">
+                                                                    <span className="block text-sm font-medium">
+                                                                        Link
+                                                                        video
+                                                                    </span>
+                                                                    <span
+                                                                        className="block truncate text-xs text-muted-foreground"
+                                                                        title={
+                                                                            videoLink
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            videoLink
+                                                                        }
+                                                                    </span>
+                                                                </span>
+                                                                <ExternalLink
+                                                                    className="size-4 shrink-0 text-primary-700"
+                                                                    aria-hidden
+                                                                />
+                                                            </a>
+                                                        </li>
+                                                    )}
+                                                </ul>
+                                            </section>
+                                        )}
+
                                     {current.submission?.textAnswer && file && (
                                         <details className="border bg-white p-4 text-sm">
                                             <summary className="cursor-pointer font-medium">
@@ -573,37 +794,105 @@ export default function GradeReview({
                                                         Skor 0–{target.maxScore}
                                                     </p>
                                                 </div>
-                                                <div className="flex items-end gap-1">
-                                                    <Input
-                                                        id="review-score"
-                                                        inputMode="decimal"
-                                                        value={score}
-                                                        onChange={(event) =>
-                                                            setScore(
-                                                                event.target.value.replace(
-                                                                    ',',
-                                                                    '.',
-                                                                ),
-                                                            )
-                                                        }
-                                                        className="h-12 w-20 text-center text-lg font-bold"
-                                                        aria-invalid={
-                                                            !!error ||
-                                                            (numeric !== null &&
-                                                                !valid)
-                                                        }
-                                                        aria-describedby="review-score-max"
-                                                        disabled={
-                                                            !target.canEdit
-                                                        }
-                                                    />
-                                                    <span
-                                                        id="review-score-max"
-                                                        className="pb-1 text-muted-foreground"
-                                                    >
-                                                        / {target.maxScore}
-                                                    </span>
-                                                </div>
+                                                {isReport ? (
+                                                    <div className="flex items-end gap-2">
+                                                        {componentKeys.map(
+                                                            (key) => (
+                                                                <div
+                                                                    key={key}
+                                                                    className="grid gap-1 text-center"
+                                                                >
+                                                                    <Label
+                                                                        htmlFor={`review-${key}`}
+                                                                        className="text-xs text-muted-foreground"
+                                                                    >
+                                                                        {
+                                                                            COMPONENT_LABEL[
+                                                                                key
+                                                                            ]
+                                                                        }
+                                                                    </Label>
+                                                                    <Input
+                                                                        id={`review-${key}`}
+                                                                        inputMode="decimal"
+                                                                        value={
+                                                                            parts[
+                                                                                key
+                                                                            ]
+                                                                        }
+                                                                        onChange={(
+                                                                            event,
+                                                                        ) =>
+                                                                            setParts(
+                                                                                (
+                                                                                    current,
+                                                                                ) => ({
+                                                                                    ...current,
+                                                                                    [key]: event.target.value.replace(
+                                                                                        ',',
+                                                                                        '.',
+                                                                                    ),
+                                                                                }),
+                                                                            )
+                                                                        }
+                                                                        className="h-12 w-20 text-center text-lg font-bold"
+                                                                        aria-invalid={
+                                                                            !!error ||
+                                                                            (parts[
+                                                                                key
+                                                                            ].trim() !==
+                                                                                '' &&
+                                                                                !inRange(
+                                                                                    parts[
+                                                                                        key
+                                                                                    ],
+                                                                                ))
+                                                                        }
+                                                                        disabled={
+                                                                            !target.canEdit
+                                                                        }
+                                                                    />
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                        <span className="pb-1 text-muted-foreground">
+                                                            / {target.maxScore}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-end gap-1">
+                                                        <Input
+                                                            id="review-score"
+                                                            inputMode="decimal"
+                                                            value={score}
+                                                            onChange={(event) =>
+                                                                setScore(
+                                                                    event.target.value.replace(
+                                                                        ',',
+                                                                        '.',
+                                                                    ),
+                                                                )
+                                                            }
+                                                            className="h-12 w-20 text-center text-lg font-bold"
+                                                            aria-invalid={
+                                                                !!error ||
+                                                                (numeric !==
+                                                                    null &&
+                                                                    !valid)
+                                                            }
+                                                            aria-describedby="review-score-max"
+                                                            disabled={
+                                                                !target.canEdit
+                                                            }
+                                                        />
+                                                        <span
+                                                            id="review-score-max"
+                                                            className="pb-1 text-muted-foreground"
+                                                        >
+                                                            / {target.maxScore}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
                                             <div
                                                 aria-hidden

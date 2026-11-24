@@ -5,6 +5,7 @@ import {
     Download,
     ExternalLink,
     FileText,
+    Video,
     Search,
     Send,
 } from 'lucide-react';
@@ -35,6 +36,8 @@ export type GradeRow = {
     userId: number;
     nim: string | null;
     name: string;
+    /** Sudah membuka tugas (dipakai status "Hanya Melihat" pada laporan). */
+    viewed: boolean;
     submission: {
         id: number;
         submittedAt: string;
@@ -42,11 +45,15 @@ export type GradeRow = {
         lateLabel: string | null;
         version: number;
         textAnswer: string | null;
+        videoLink: string | null;
         file: FileLink | null;
         files: FileLink[];
     } | null;
     grade: {
         score: number | null;
+        theory: number | null;
+        practice: number | null;
+        video: number | null;
         feedback: string | null;
         status: 'draft' | 'published';
         version: number;
@@ -63,6 +70,7 @@ export type GradeTarget = {
     title: string;
     type: TaskType;
     maxScore: number;
+    hasVideo: boolean;
     dueAt: string | null;
     submitted: number;
     graded: number;
@@ -71,7 +79,14 @@ export type GradeTarget = {
     canEdit: boolean;
 };
 
-type Draft = { score: string; feedback: string };
+type Draft = {
+    score: string;
+    theory: string;
+    practice: string;
+    video: string;
+    feedback: string;
+};
+type ComponentKey = 'theory' | 'practice' | 'video';
 
 const stamp = new Intl.DateTimeFormat('id-ID', {
     day: 'numeric',
@@ -153,6 +168,29 @@ export default function GradesIndex({
         };
     }, [dirty]);
 
+    // Klik baris tabel membuka Mode Tinjauan; abaikan klik pada kontrol di dalam baris atau saat memilih teks.
+    const openReview = (event: React.MouseEvent, userId: number) => {
+        if (!target) {
+            return;
+        }
+
+        const element = event.target as HTMLElement;
+        if (
+            element.closest(
+                'a,button,input,textarea,select,label,[role=button],[role=checkbox],[role=combobox],[role=link]',
+            ) ||
+            window.getSelection()?.toString()
+        ) {
+            return;
+        }
+
+        router.get(
+            GradeController.review.url(target.id, {
+                query: { student: userId },
+            }),
+        );
+    };
+
     const visible = useMemo(() => {
         const term = search.trim().toLowerCase();
 
@@ -188,9 +226,29 @@ export default function GradesIndex({
             return draft[field];
         }
 
-        return field === 'score'
-            ? (row.grade?.score?.toString() ?? '')
-            : (row.grade?.feedback ?? '');
+        return field === 'feedback'
+            ? (row.grade?.feedback ?? '')
+            : (row.grade?.[field]?.toString() ?? '');
+    };
+
+    // Laporan praktikum: Teori + Praktikum (+ Video) → TOTAL = rata-rata (dihitung ulang server).
+    const componentFields: { key: ComponentKey; label: string }[] = [
+        { key: 'theory', label: 'Teori' },
+        { key: 'practice', label: 'Praktikum' },
+        ...(target?.hasVideo
+            ? [{ key: 'video' as const, label: 'Video' }]
+            : []),
+    ];
+    const total = (row: GradeRow): string => {
+        const parts = componentFields.map((f) => value(row, f.key).trim());
+
+        if (parts.some((part) => part === '' || Number.isNaN(Number(part)))) {
+            return '–';
+        }
+
+        const sum = parts.reduce((acc, part) => acc + Number(part), 0);
+
+        return String(Math.round((sum / parts.length) * 100) / 100);
     };
 
     const change = (row: GradeRow, field: keyof Draft, next: string) => {
@@ -204,6 +262,9 @@ export default function GradesIndex({
             [id]: {
                 ...(current[id] ?? {
                     score: value(row, 'score'),
+                    theory: value(row, 'theory'),
+                    practice: value(row, 'practice'),
+                    video: value(row, 'video'),
                     feedback: value(row, 'feedback'),
                 }),
                 [field]: next,
@@ -227,7 +288,13 @@ export default function GradesIndex({
 
             return {
                 submission_id: id,
-                score: drafts[id].score.trim(),
+                ...(target.type === 'report'
+                    ? {
+                          theory: drafts[id].theory.trim(),
+                          practice: drafts[id].practice.trim(),
+                          video: drafts[id].video.trim(),
+                      }
+                    : { score: drafts[id].score.trim() }),
                 feedback: drafts[id].feedback,
                 version: row.grade?.version ?? null,
             };
@@ -494,9 +561,36 @@ export default function GradesIndex({
                                                 <a
                                                     href={GradeController.export.url(
                                                         target.classId,
+                                                        {
+                                                            query: {
+                                                                jenis:
+                                                                    type ===
+                                                                    'report'
+                                                                        ? 'laporan'
+                                                                        : 'tes',
+                                                            },
+                                                        },
                                                     )}
                                                 >
-                                                    <Download /> Export Excel
+                                                    <Download />{' '}
+                                                    {type === 'report'
+                                                        ? 'Export Laporan Praktikum'
+                                                        : 'Export Pre/Post-Test'}
+                                                </a>
+                                            </Button>
+                                            <Button variant="outline" asChild>
+                                                <a
+                                                    href={GradeController.export.url(
+                                                        target.classId,
+                                                        {
+                                                            query: {
+                                                                jenis: 'akhir',
+                                                            },
+                                                        },
+                                                    )}
+                                                >
+                                                    <Download /> Export Nilai
+                                                    Akhir
                                                 </a>
                                             </Button>
                                             {target.canEdit && (
@@ -550,7 +644,13 @@ export default function GradesIndex({
                                                 <TableHead>
                                                     Lampiran Tugas
                                                 </TableHead>
-                                                <TableHead className="w-28">
+                                                <TableHead
+                                                    className={
+                                                        target.type === 'report'
+                                                            ? 'min-w-72'
+                                                            : 'w-28'
+                                                    }
+                                                >
                                                     Input Nilai
                                                 </TableHead>
                                                 <TableHead className="min-w-56">
@@ -573,7 +673,17 @@ export default function GradesIndex({
                                                     <TableRow
                                                         key={row.userId}
                                                         data-dirty={isDirty}
+                                                        // Klik baris (di luar input/tautan) → Mode Tinjauan untuk praktikan ini.
+                                                        onClick={(event) =>
+                                                            row.submission &&
+                                                            openReview(
+                                                                event,
+                                                                row.userId,
+                                                            )
+                                                        }
                                                         className={cn(
+                                                            row.submission &&
+                                                                'cursor-pointer hover:bg-primary-50',
                                                             error &&
                                                                 'bg-danger-soft/60',
                                                         )}
@@ -582,9 +692,27 @@ export default function GradesIndex({
                                                             {row.nim}
                                                         </TableCell>
                                                         <TableCell className="whitespace-normal">
-                                                            <span className="block">
-                                                                {row.name}
-                                                            </span>
+                                                            {row.submission ? (
+                                                                <Link
+                                                                    href={GradeController.review.url(
+                                                                        target.id,
+                                                                        {
+                                                                            query: {
+                                                                                student:
+                                                                                    row.userId,
+                                                                            },
+                                                                        },
+                                                                    )}
+                                                                    className="block hover:underline"
+                                                                    title="Buka di Mode Tinjauan"
+                                                                >
+                                                                    {row.name}
+                                                                </Link>
+                                                            ) : (
+                                                                <span className="block">
+                                                                    {row.name}
+                                                                </span>
+                                                            )}
                                                             {row.grade
                                                                 ?.status ===
                                                                 'published' && (
@@ -632,13 +760,32 @@ export default function GradesIndex({
                                                                             row
                                                                                 .submission
                                                                                 .lateLabel ??
-                                                                            undefined
+                                                                            (target.type ===
+                                                                            'report'
+                                                                                ? 'Mengumpulkan'
+                                                                                : undefined)
                                                                         }
                                                                         className="mt-1"
                                                                     />
                                                                 </>
                                                             ) : (
-                                                                <StatusBadge status="not_submitted" />
+                                                                <StatusBadge
+                                                                    status={
+                                                                        target.type ===
+                                                                            'report' &&
+                                                                        row.viewed
+                                                                            ? 'viewed_only'
+                                                                            : 'not_submitted'
+                                                                    }
+                                                                    label={
+                                                                        target.type ===
+                                                                        'report'
+                                                                            ? row.viewed
+                                                                                ? 'Hanya Melihat'
+                                                                                : 'Tidak Mengumpulkan'
+                                                                            : undefined
+                                                                    }
+                                                                />
                                                             )}
                                                         </TableCell>
                                                         <TableCell>
@@ -673,6 +820,36 @@ export default function GradesIndex({
                                                                     />
                                                                 </a>
                                                             ) : row.submission
+                                                                  ?.videoLink ? (
+                                                                <a
+                                                                    href={
+                                                                        row
+                                                                            .submission
+                                                                            .videoLink
+                                                                    }
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    className="inline-flex max-w-52 items-center gap-1.5 bg-primary-50 px-2.5 py-1.5 text-sm text-primary-700 hover:underline"
+                                                                    title={
+                                                                        row
+                                                                            .submission
+                                                                            .videoLink
+                                                                    }
+                                                                >
+                                                                    <Video
+                                                                        className="size-4 shrink-0 text-danger"
+                                                                        aria-hidden
+                                                                    />
+                                                                    <span className="truncate">
+                                                                        Link
+                                                                        video
+                                                                    </span>
+                                                                    <ExternalLink
+                                                                        className="size-3.5 shrink-0"
+                                                                        aria-hidden
+                                                                    />
+                                                                </a>
+                                                            ) : row.submission
                                                                   ?.textAnswer ? (
                                                                 <span className="text-xs text-muted-foreground">
                                                                     Jawaban teks
@@ -680,59 +857,142 @@ export default function GradesIndex({
                                                             ) : null}
                                                         </TableCell>
                                                         <TableCell>
-                                                            {row.submission && (
-                                                                <Input
-                                                                    ref={(
-                                                                        el,
-                                                                    ) => {
-                                                                        if (el)
-                                                                            inputs.current.set(
-                                                                                `${id}-score`,
-                                                                                el,
-                                                                            );
-                                                                    }}
-                                                                    inputMode="decimal"
-                                                                    value={value(
-                                                                        row,
-                                                                        'score',
-                                                                    )}
-                                                                    onChange={(
-                                                                        event,
-                                                                    ) =>
-                                                                        change(
+                                                            {row.submission &&
+                                                                target.type ===
+                                                                    'report' && (
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        {componentFields.map(
+                                                                            (
+                                                                                field,
+                                                                            ) => (
+                                                                                <Input
+                                                                                    key={
+                                                                                        field.key
+                                                                                    }
+                                                                                    ref={(
+                                                                                        el,
+                                                                                    ) => {
+                                                                                        if (
+                                                                                            el
+                                                                                        )
+                                                                                            inputs.current.set(
+                                                                                                `${id}-${field.key}`,
+                                                                                                el,
+                                                                                            );
+                                                                                    }}
+                                                                                    inputMode="decimal"
+                                                                                    value={value(
+                                                                                        row,
+                                                                                        field.key,
+                                                                                    )}
+                                                                                    onChange={(
+                                                                                        event,
+                                                                                    ) =>
+                                                                                        change(
+                                                                                            row,
+                                                                                            field.key,
+                                                                                            event.target.value.replace(
+                                                                                                ',',
+                                                                                                '.',
+                                                                                            ),
+                                                                                        )
+                                                                                    }
+                                                                                    onKeyDown={(
+                                                                                        event,
+                                                                                    ) => {
+                                                                                        if (
+                                                                                            event.key ===
+                                                                                            'Enter'
+                                                                                        ) {
+                                                                                            event.preventDefault();
+                                                                                            focusNext(
+                                                                                                index,
+                                                                                                field.key,
+                                                                                            );
+                                                                                        }
+                                                                                    }}
+                                                                                    placeholder={
+                                                                                        field.label
+                                                                                    }
+                                                                                    aria-label={`${field.label} ${row.name} (0 - ${target.maxScore})`}
+                                                                                    title={`${field.label} (0 - ${target.maxScore})`}
+                                                                                    aria-invalid={
+                                                                                        !!error
+                                                                                    }
+                                                                                    disabled={
+                                                                                        !target.canEdit
+                                                                                    }
+                                                                                    className="w-20 text-center font-mono"
+                                                                                />
+                                                                            ),
+                                                                        )}
+                                                                        <span
+                                                                            title="Total = rata-rata komponen"
+                                                                            className="w-14 text-center font-mono text-sm font-bold text-primary-700"
+                                                                        >
+                                                                            {total(
+                                                                                row,
+                                                                            )}
+                                                                        </span>
+                                                                    </div>
+                                                                )}
+                                                            {row.submission &&
+                                                                target.type !==
+                                                                    'report' && (
+                                                                    <Input
+                                                                        ref={(
+                                                                            el,
+                                                                        ) => {
+                                                                            if (
+                                                                                el
+                                                                            )
+                                                                                inputs.current.set(
+                                                                                    `${id}-score`,
+                                                                                    el,
+                                                                                );
+                                                                        }}
+                                                                        inputMode="decimal"
+                                                                        value={value(
                                                                             row,
                                                                             'score',
-                                                                            event.target.value.replace(
-                                                                                ',',
-                                                                                '.',
-                                                                            ),
-                                                                        )
-                                                                    }
-                                                                    onKeyDown={(
-                                                                        event,
-                                                                    ) => {
-                                                                        if (
-                                                                            event.key ===
-                                                                            'Enter'
-                                                                        ) {
-                                                                            event.preventDefault();
-                                                                            focusNext(
-                                                                                index,
+                                                                        )}
+                                                                        onChange={(
+                                                                            event,
+                                                                        ) =>
+                                                                            change(
+                                                                                row,
                                                                                 'score',
-                                                                            );
+                                                                                event.target.value.replace(
+                                                                                    ',',
+                                                                                    '.',
+                                                                                ),
+                                                                            )
                                                                         }
-                                                                    }}
-                                                                    placeholder={`0 - ${target.maxScore}`}
-                                                                    aria-label={`Nilai ${row.name}`}
-                                                                    aria-invalid={
-                                                                        !!error
-                                                                    }
-                                                                    disabled={
-                                                                        !target.canEdit
-                                                                    }
-                                                                    className="w-20 text-center font-mono"
-                                                                />
-                                                            )}
+                                                                        onKeyDown={(
+                                                                            event,
+                                                                        ) => {
+                                                                            if (
+                                                                                event.key ===
+                                                                                'Enter'
+                                                                            ) {
+                                                                                event.preventDefault();
+                                                                                focusNext(
+                                                                                    index,
+                                                                                    'score',
+                                                                                );
+                                                                            }
+                                                                        }}
+                                                                        placeholder={`0 - ${target.maxScore}`}
+                                                                        aria-label={`Nilai ${row.name}`}
+                                                                        aria-invalid={
+                                                                            !!error
+                                                                        }
+                                                                        disabled={
+                                                                            !target.canEdit
+                                                                        }
+                                                                        className="w-20 text-center font-mono"
+                                                                    />
+                                                                )}
                                                         </TableCell>
                                                         <TableCell className="whitespace-normal">
                                                             {row.submission && (

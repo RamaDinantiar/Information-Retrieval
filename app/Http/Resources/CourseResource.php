@@ -32,6 +32,7 @@ class CourseResource extends JsonResource
                 'posttest' => $this->weight_posttest,
                 'report' => $this->weight_report,
             ],
+            'reportHasVideo' => $this->report_has_video,
             'assistants' => $this->whenLoaded('assistants', fn () => $this->assistants
                 ->map(fn (User $user) => ['id' => $user->id, 'name' => $user->name])
                 ->values()),

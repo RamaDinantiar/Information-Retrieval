@@ -9,6 +9,7 @@ export type CourseRow = {
     color: ScheduleColor;
     credits: number;
     weights: { pretest: number; posttest: number; report: number };
+    reportHasVideo: boolean;
     /** Hanya ada bila relasi dimuat. */
     assistants?: { id: number; name: string }[];
     approvalStatus: 'pending' | 'approved' | 'rejected';

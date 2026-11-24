@@ -204,6 +204,31 @@ export function CourseFormDialog({
                                 />
                             </fieldset>
 
+                            <div className="grid gap-1.5">
+                                <input
+                                    type="hidden"
+                                    name="report_has_video"
+                                    value="0"
+                                />
+                                <div className="flex items-center gap-2">
+                                    <Checkbox
+                                        id="report-has-video"
+                                        name="report_has_video"
+                                        value="1"
+                                        defaultChecked={course?.reportHasVideo}
+                                    />
+                                    <Label htmlFor="report-has-video">
+                                        Laporan praktikum memakai nilai Video
+                                    </Label>
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    Bila aktif, nilai laporan terdiri dari
+                                    Teori, Praktikum, dan Video. Bila tidak,
+                                    hanya Teori dan Praktikum.
+                                </p>
+                                <InputError message={errors.report_has_video} />
+                            </div>
+
                             {assistants && (
                                 <fieldset className="grid gap-2">
                                     <legend className="mb-2 text-sm font-medium">
