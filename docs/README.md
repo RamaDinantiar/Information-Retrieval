@@ -15,6 +15,7 @@
 | 09  | [Panduan pengguna](09-user-guide/)                 | Praktikan, Asisten, Admin    |
 | 10  | [Keamanan](10-security.md)                         | Pengembang, pengelola server |
 | 11  | [PRD Rekap Jam Ngawas](11-prd-rekap-jam-ngawas.md) | Product, pengembang, QA      |
+| 12  | [Serah terima](12-serah-terima.md)                 | Perawat sistem               |
 | —   | [CHANGELOG](../CHANGELOG.md)                       | Semua                        |
 
 Screenshot di `images/` diambil dari data demo (`php artisan db:seed`) pada lebar 1440 px.
