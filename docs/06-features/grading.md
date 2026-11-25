@@ -52,7 +52,7 @@ Selama semester berjalan, komponen yang belum punya nilai tidak dihitung dan bob
 | ≥ 40        | D     |
 | < 40        | E     |
 
-> Skala huruf di `app/Support/Grading/FinalScore.php` adalah asumsi umum. Sesuaikan dengan kebijakan kampus.
+> Skala huruf di `app/Support/Grading/FinalScore.php` adalah skala umum yang dipilih Lab (keputusan 2026-11-25). Huruf mutu hanya tampil di web; ekspor Excel tidak memuat huruf mutu.
 
 ## Ekspor
 

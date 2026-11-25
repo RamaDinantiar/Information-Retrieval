@@ -6,7 +6,7 @@ use App\Support\Grading\FinalScore;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Audit 03 P1-1. ASUMSI S9 – menunggu skala resmi IT PLN.
+ * Audit 03 P1-1. Skala umum (S9 diputuskan 2026-11-25).
  *
  * Skala huruf mutu ditulis dua kali: FinalScore::LETTER_SCALE (PHP) dan GRADE_SCALE di halaman review (TypeScript).
  * Ini pengecualian yang disengaja dari aturan "jangan membaca isi berkas": satu-satunya cara menjaga dua salinan

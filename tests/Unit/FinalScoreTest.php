@@ -12,7 +12,7 @@ use App\Support\Grading\FinalScore;
 use Tests\TestCase;
 
 /**
- * Audit 03 P1-1. Skala huruf mutu = ASUMSI S9 – menunggu skala resmi IT PLN.
+ * Audit 03 P1-1. Skala huruf mutu = skala umum (S9 diputuskan 2026-11-25: huruf hanya di web, bukan di Excel).
  * Test huruf mengambil batas dari FinalScore::LETTER_SCALE (satu sumber), bukan angka yang ditulis ulang di sini,
  * jadi saat skala resmi diketahui cukup ubah konstanta itu (dan GRADE_SCALE di review.tsx, dijaga GradeScaleTest).
  */

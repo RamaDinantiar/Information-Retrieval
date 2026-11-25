@@ -12,7 +12,7 @@ Checklist ini merangkum **item terbuka dari audit** ([02-perbaikan.md](02-perbai
 
 Dua butir ini tidak bisa saya putuskan. Selesaikan sebelum hari deploy.
 
-- [ ] **Skala huruf mutu (S9).** Konfirmasi skala resmi IT PLN (buku pedoman akademik atau Kepala Lab). Skala di kode saat ini, bertanda "asumsi" di `app/Support/Grading/FinalScore.php:56-69`:
+- [x] **Skala huruf mutu (S9).** Diputuskan 2026-11-25: skala umum dipakai, huruf hanya di web (Excel tanpa huruf). Lihat `06-deploy-checklist.md` butir 3.
 
     | Nilai | Huruf |
     | ----- | ----- |
@@ -91,7 +91,7 @@ Dua temuan audit sengaja ditunda karena butuh data nyata. Ukur pada beban sunggu
 | Item                                       | Status                                                                                                                                                   | Kapan dikerjakan                                     |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
 | `vite-plus` 0.3.0 → 1.x (7 kerentanan npm) | Ditunda. Hanya alat pengembangan; `npm audit --omit=dev` = 0. Butuh alias `overrides` dan lockfile baru, **jangan** pakai `vp migrate` (pindah ke pnpm). | Setelah deploy awal, sebagai tahap terpisah          |
-| S9 skala huruf mutu                        | Menunggu skala resmi (bagian A)                                                                                                                          | Sebelum nilai akhir dipakai resmi                    |
+| S9 skala huruf mutu                        | Diputuskan: skala umum, hanya di web                                                                                                                     | Sebelum nilai akhir dipakai resmi                    |
 | S8, R3                                     | Menunggu pengukuran (bagian E)                                                                                                                           | Setelah ada data beban nyata                         |
 | R8 foto profil terbaca antar-pengguna      | Disengaja                                                                                                                                                | Opsional                                             |
 | R11 ClamAV belum aktif                     | Keputusan peluncuran                                                                                                                                     | Putuskan sebelum membuka unggahan ke banyak pengguna |
