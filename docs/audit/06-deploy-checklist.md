@@ -35,7 +35,7 @@ Checklist tunggal untuk hari deploy. **Menggantikan** [03-checklist-deploy.md](0
 
 - [ ] ⚠️ **2. Akun SMTP untuk email. Wajib.** `.env.production.example` mengarah ke `smtp.office365.com:587` dengan akun `lab.ir@itpln.ac.id`. Pastikan akun itu boleh mengirim lewat SMTP dengan kata sandi/aplikasi yang Anda miliki (kebijakan Microsoft 365 kampus bisa melarang SMTP AUTH; tanyakan ke pengelola email kampus). Tanpa email, **password sementara dan reset password tidak sampai**, dan Admin tidak bisa membuat akun yang berguna. Mailer `log` menulis OTP dan password sementara ke `laravel.log`, jadi jangan dipakai di produksi.
 
-- [ ] ⚠️ **3. Skala huruf mutu (S9). Boleh menyusul.** Skala saat ini bertanda "ASUMSI S9 – menunggu skala resmi IT PLN" di `FinalScore::LETTER_SCALE`, dengan salinan `GRADE_SCALE` di `resources/js/pages/asisten/grades/review.tsx`:
+- [x] ✅ **3. Skala huruf mutu (S9). Diputuskan 2026-11-25.** Lab memakai skala umum di bawah ini untuk tampilan web; ekspor Excel tidak memuat huruf mutu (sudah demikian). Tidak perlu menunggu skala resmi kampus. Sumber di kode: `FinalScore::LETTER_SCALE`, salinan `GRADE_SCALE` di `resources/js/pages/asisten/grades/review.tsx`.
 
     | Nilai | Huruf |
     | ----- | ----- |
@@ -46,8 +46,6 @@ Checklist tunggal untuk hari deploy. **Menggantikan** [03-checklist-deploy.md](0
     | ≥ 55  | C     |
     | ≥ 40  | D     |
     | < 40  | E     |
-
-    Bila sama: hapus komentar "asumsi", catat sumbernya. Bila berbeda: kirim skalanya; ubah PHP, TSX, dan dua test lama yang menulis huruf langsung (N9). Bila belum pasti: **biarkan**, dan beri tahu asisten bahwa huruf mutu bersifat sementara.
 
 - [ ] ✅/🖥️ **4. Back setelah logout (W1). Diperbaiki di kode, tinggal diuji di server.** Respons logout (`App\Http\Responses\LogoutResponse`) memanggil `Inertia::clearHistory()`; test PHP memastikan penanda `clearHistory` terbawa ke halaman berikutnya (dan gagal bila baris itu dihapus). Syarat di server: `INERTIA_ENCRYPT_HISTORY=true` di `.env` (sudah di `.env.production.example`) dan HTTPS. **Belum diuji di browser**: enkripsi riwayat butuh konteks aman. Uji setelah deploy: login, buka dashboard, logout, tekan Back; halaman lama tidak boleh tampil.
 
@@ -165,7 +163,7 @@ Belum ada pelacak galat (T1), jadi pemantauan ini manual. Tentukan siapa yang me
 | -------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
 | Tidak ada pelacak galat atau peringatan antrean                      | T1         | Belum ada                                                                                                                                   | Minggu pertama (versi terkecil)   |
 | Test dan CI hanya SQLite                                             | T2         | Belum ada job MySQL; N8 aman di MySQL pada pengecekan manual (05)                                                                           | Dua minggu pertama                |
-| Skala huruf mutu dua tempat dan belum resmi                          | T3, S9     | Menunggu skala resmi                                                                                                                        | Sebelum nilai akhir dipakai resmi |
+| Skala huruf mutu dua tempat                                          | T3, S9     | Diputuskan: skala umum, hanya di web (2026-11-25)                                                                                           | Sebelum nilai akhir dipakai resmi |
 | Dependensi tertinggal; `vite-plus` 0.3.0 → 1.x                       | T4         | 7 kerentanan npm hanya di alat pengembangan. Butuh `overrides` dan lockfile baru; **jangan** pakai `vp migrate`                             | Setelah deploy awal, PR terpisah  |
 | Tidak ada test komponen frontend                                     | T5         | Belum ada                                                                                                                                   | Bulan pertama                     |
 | `AddSecurityHeaders` tidak global                                    | T7, N13    | Alihan tamu dan 404 tanpa rute tidak berheader                                                                                              | Dua minggu pertama                |

@@ -54,9 +54,9 @@ Panduan singkat bagi orang yang merawat IR Lab setelah deploy. Langkah pemasanga
 
 Perbarui bagian ini setelah dijawab.
 
-- [ ] **`TRUSTED_PROXIES`**: menunggu jawaban pengelola server.
-- [ ] **SMTP**: menunggu jawaban pengelola email kampus.
-- [ ] **Skala huruf mutu** (`app/Support/Grading/FinalScore.php`): menunggu skala resmi dari dosen pembimbing atau kepala lab.
+- [ ] **`TRUSTED_PROXIES`**: server memakai milik lab dan belum disiapkan. Tentukan saat server siap (kosong bila Nginx menerima koneksi langsung), lalu uji kolom IP di Audit Log.
+- [ ] **SMTP**: diuji langsung dengan akun lab saat kredensial tersedia; tanya pengelola email kampus hanya bila SMTP AUTH ditolak.
+- [x] **Skala huruf mutu** (`app/Support/Grading/FinalScore.php`): diputuskan 2026-11-25, skala umum dipakai dan hanya tampil di web (Excel tanpa huruf). Tidak menunggu pihak lain.
 - [ ] **Uji di server**: login, logout, tekan Back lewat HTTPS ([audit 05 W1](audit/05-webapp-testing.md)).
 - [ ] **C4 setelah deploy awal**: hapus dua baris `@rollup/rollup-*` di `optionalDependencies` ([audit 07](audit/07-kode-mati-dan-dependensi.md)).
 

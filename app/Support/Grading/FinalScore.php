@@ -54,7 +54,7 @@ class FinalScore
     }
 
     /**
-     * ASUMSI S9 – menunggu skala resmi IT PLN. Batas bawah nilai (skor ≥ batas) → huruf mutu, urut dari
+     * S9 – KEPUTUSAN 2026-11-25: skala umum dipakai untuk huruf di web; Excel tidak memuat huruf mutu. Bukan lagi menunggu skala resmi. Batas bawah nilai (skor ≥ batas) → huruf mutu, urut dari
      * tertinggi. Ini SATU-SATUNYA sumber skala di sisi PHP; test membaca konstanta ini, bukan angka
      * yang ditulis ulang. Salinan di sisi tampilan: `GRADE_SCALE` di resources/js/pages/asisten/grades/review.tsx
      * (dijaga sama oleh GradeScaleTest). Saat skala resmi diketahui, ubah kedua tempat itu.
