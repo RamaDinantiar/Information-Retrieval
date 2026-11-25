@@ -13,6 +13,7 @@ import {
     UserRound,
     Video,
 } from 'lucide-react';
+import type { CSSProperties } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import GradeController from '@/actions/App/Http/Controllers/Asisten/GradeController';
 import { CodeViewer } from '@/components/grading/code-viewer';
@@ -515,10 +516,10 @@ export default function GradeReview({
                     <section
                         aria-label="Dokumen submission"
                         className={cn(
-                            'min-w-0 flex-col bg-[#cde7ee] lg:flex',
+                            'min-w-0 flex-col bg-[#cde7ee] lg:flex lg:basis-(--split)',
                             tab === 'doc' ? 'flex w-full' : 'hidden',
                         )}
-                        style={{ flexBasis: `${split}%` }}
+                        style={{ '--split': `${split}%` } as CSSProperties}
                     >
                         {documentPanel}
                     </section>
@@ -542,10 +543,14 @@ export default function GradeReview({
                     <aside
                         aria-labelledby="grade-form-title"
                         className={cn(
-                            'min-w-0 flex-col bg-primary-50 lg:flex lg:min-w-[24rem]',
+                            'min-w-0 flex-col bg-primary-50 lg:flex lg:min-w-[24rem] lg:basis-(--split-rest)',
                             tab === 'grade' ? 'flex w-full' : 'hidden',
                         )}
-                        style={{ flexBasis: `${100 - split}%` }}
+                        style={
+                            {
+                                '--split-rest': `${100 - split}%`,
+                            } as CSSProperties
+                        }
                     >
                         <h2
                             id="grade-form-title"
