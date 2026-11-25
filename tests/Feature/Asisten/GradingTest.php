@@ -258,10 +258,23 @@ class GradingTest extends TestCase
         $this->assertStringContainsString('Pre-Test: Pertemuan 1 · Basis Data', $sheets['Pre-Test']);
         $this->assertStringContainsString('RATA-RATA PRE-TEST', $sheets['Pre-Test']);
         $this->assertStringContainsString('Post-Test: Normalisasi', $sheets['Post-Test']);
-        // setUp sudah punya satu Post-Test lain (kolom pertama) → rata-rata dibagi 2 tes.
-        $this->assertMatchesRegularExpression('~<f>SUM\(E\d:F\d\)/2</f><v>45</v>~', $sheets['Post-Test']);
+        // setUp sudah punya satu Post-Test lain (kolom pertama) yang belum dinilai untuk praktikan ini:
+        // rata-rata hanya dari kolom terisi (90), bukan dibagi 2 (45).
+        $this->assertMatchesRegularExpression('~<f>AVERAGE\(E\d:F\d\)</f><v>90</v>~', $sheets['Post-Test']);
         $this->assertStringContainsString('NILAI POST-TEST MAHASISWA', $sheets['Post-Test']);
         $this->assertStringNotContainsString('Normalisasi', $sheets['Pre-Test']);
+    }
+
+    public function test_test_average_counts_only_filled_columns_and_includes_new_tests_once_graded()
+    {
+        $this->makeGraded(TaskType::Pretest, 'Pre-Test A', ['score' => 80]);
+        $this->makeGraded(TaskType::Pretest, 'Pre-Test B', ['score' => 60]);
+
+        $this->assertMatchesRegularExpression('~<f>AVERAGE\(E\d:F\d\)</f><v>70</v>~', $this->exportSheets('tes')['Pre-Test']);
+
+        // Tes baru yang belum dinilai tidak menurunkan rata-rata; setelah dinilai, ikut dihitung.
+        $this->makeGraded(TaskType::Pretest, 'Pre-Test C', ['score' => 100]);
+        $this->assertMatchesRegularExpression('~<f>AVERAGE\(E\d:G\d\)</f><v>80</v>~', $this->exportSheets('tes')['Pre-Test']);
     }
 
     public function test_final_export_has_weighted_final_score_without_letter()

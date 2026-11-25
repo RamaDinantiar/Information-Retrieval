@@ -154,8 +154,7 @@ final class GradeRecapWorkbook
      */
     public static function testSheet(string $sheetName, string $title, string $averageLabel, array $students, array $tests): RecapSheet
     {
-        $count = count($tests);
-        $resultCol = 5 + $count;
+        $resultCol = 5 + count($tests);
         $sheet = self::frame($sheetName, $title, $students, $resultCol);
         $last = self::FIRST_DATA_ROW + count($students) - 1;
 
@@ -172,10 +171,14 @@ final class GradeRecapWorkbook
             }
         }
 
-        self::resultColumn($sheet, $resultCol, $averageLabel, $students, function (int $r, int $row) use ($tests, $count, $resultCol) {
+        // Rata-rata hanya dari kolom yang terisi: tes yang belum dinilai tidak dihitung 0, dan tes baru
+        // ikut dihitung begitu nilainya diisi (AVERAGE mengabaikan sel kosong).
+        self::resultColumn($sheet, $resultCol, $averageLabel, $students, function (int $r, int $row) use ($tests, $resultCol) {
             $values = array_filter(array_map(fn ($t) => $t['scores'][$r] ?? null, $tests), fn ($v) => $v !== null);
 
-            return [$count > 0 ? array_sum($values) / $count : null, $count > 0 ? 'SUM(E'.$row.':'.RecapSheet::column($resultCol - 1).$row.')/'.$count : null];
+            return $values === []
+                ? [null, null]
+                : [array_sum($values) / count($values), 'AVERAGE(E'.$row.':'.RecapSheet::column($resultCol - 1).$row.')'];
         });
 
         return $sheet;
