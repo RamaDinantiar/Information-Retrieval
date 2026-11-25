@@ -499,9 +499,9 @@ class NgawasRecapWorkbookTest extends TestCase
 
         $byName = fn (int $sheet) => collect($spreadsheet->getSheet($sheet)->getDrawingCollection())->keyBy(fn ($d) => $d->getName());
 
-        $this->assertSame('T'.(77 + $delta), $byName(0)['Tanda tangan pengesah 1']->getCoordinates());
-        $this->assertSame('AF'.(77 + $delta), $byName(0)['Tanda tangan pengesah 2']->getCoordinates());
-        $this->assertSame('AB'.(79 + $delta), $byName(1)['Tanda tangan pengesah 2']->getCoordinates());
+        $this->assertSame('T'.(80 + $delta), $byName(0)['Tanda tangan pengesah 1']->getCoordinates());
+        $this->assertSame('AF'.(80 + $delta), $byName(0)['Tanda tangan pengesah 2']->getCoordinates());
+        $this->assertSame('AB'.(83 + $delta), $byName(1)['Tanda tangan pengesah 2']->getCoordinates());
         $this->assertFalse($byName(1)->has('Tanda tangan pengesah 1'));
 
         foreach ([0, 1] as $i) {
@@ -509,7 +509,7 @@ class NgawasRecapWorkbookTest extends TestCase
         }
 
         $this->assertLessThanOrEqual(175, $byName(0)['Tanda tangan pengesah 1']->getWidth());
-        $this->assertLessThanOrEqual(135, $byName(0)['Tanda tangan pengesah 1']->getHeight());
+        $this->assertLessThanOrEqual(120, $byName(0)['Tanda tangan pengesah 1']->getHeight());
     }
 
     public function test_a_missing_approver_signature_is_simply_left_out()
