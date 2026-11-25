@@ -89,3 +89,35 @@ if (typeof document !== 'undefined') {
     document.addEventListener('input', clear, true);
     document.addEventListener('change', clear, true);
 }
+
+if (typeof document !== 'undefined') {
+    // Audit 09 T2: pesan kustom lama bisa tertinggal pada kolom yang kemudian
+    // diisi lewat kode (tanpa event `input`) sehingga tombol kirim terkunci.
+    // Hapus semua pesan kustom di form sebelum browser memvalidasi ulang.
+    document.addEventListener(
+        'click',
+        (event) => {
+            const button = (event.target as Element | null)?.closest?.(
+                'button, input[type="submit"]',
+            );
+
+            if (
+                !(button instanceof HTMLButtonElement) &&
+                !(button instanceof HTMLInputElement)
+            ) {
+                return;
+            }
+
+            if (button.type !== 'submit' || !button.form) {
+                return;
+            }
+
+            for (const el of Array.from(button.form.elements)) {
+                if (isField(el)) {
+                    el.setCustomValidity('');
+                }
+            }
+        },
+        true,
+    );
+}
