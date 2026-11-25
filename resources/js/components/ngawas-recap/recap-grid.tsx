@@ -316,7 +316,7 @@ export function RecapGrid({
                                         columnClass(c) || 'bg-primary-50',
                                     )}
                                 >
-                                    <span className="block text-[9px] font-normal opacity-80">
+                                    <span className="block text-[9px] font-normal">
                                         {c.weekday}
                                     </span>
                                     {c.day}

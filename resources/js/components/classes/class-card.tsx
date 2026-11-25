@@ -49,7 +49,7 @@ export function ClassCard({
         <li className="flex flex-col gap-5 border bg-card p-5 shadow-sm md:p-6">
             <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
-                    <span className="bg-primary-500 px-2 py-1 font-mono text-xs text-white">
+                    <span className="bg-primary-600 px-2 py-1 font-mono text-xs text-white">
                         {klass.course?.code}
                     </span>
                     {klass.course && (
@@ -238,7 +238,7 @@ export function ClassCard({
                         <strong>
                             {klass.membersCount} / {klass.quota} Mahasiswa
                         </strong>{' '}
-                        <span className="text-primary-500">
+                        <span className="text-primary-700">
                             (Sisa {left} Kursi)
                         </span>
                     </span>
